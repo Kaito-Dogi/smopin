@@ -1,4 +1,4 @@
-package app.kaito_dogi.smopin.data
+package app.kaito_dogi.smopin.data.smokingArea
 
 import app.kaito_dogi.smopin.domain.smokingArea.SmokingArea
 
