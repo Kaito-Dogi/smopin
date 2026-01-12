@@ -1,39 +1,38 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Smopin
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## 概要
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+喫煙者のモラルとマナーの向上を目的とした、喫煙者と非喫煙者のための喫煙所マップ
 
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+## 機能要件
 
-### Build and Run Android Application
+### コア機能
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+- マップ UI で直感的に喫煙所を見つけられる
+- Google Maps や Apple のマップにシームレスに接続され、現在地からの経路を簡単に確認できる
 
-### Build and Run iOS Application
+### MVP 以降
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+- 喫煙所の利用可能時間を確認できる
+- マップに表示されていない喫煙所を登録・公開できる
+- 喫煙所の口コミを投稿・確認できる
 
----
+## 技術要件
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- Android アプリ、iOS アプリに対応
+- KMP でロジックを共通化
+- Jetpack Compose, Swift UI で各 OS 向けの UI, State Holder を実装
+
+### ライブラリ
+
+#### KMP
+
+- DI：[Metro](https://github.com/ZacSweers/metro)
+
+#### Android
+
+- 画面遷移：[Navigation 3](https://developer.android.com/jetpack/androidx/releases/navigation3)
+
+### サーバーサイド
+
+- MVP では Firebase を採用
