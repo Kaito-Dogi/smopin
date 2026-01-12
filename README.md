@@ -28,7 +28,6 @@
 #### KMP
 
 - DI：[Metro](https://github.com/ZacSweers/metro)
-- Serialization：[kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
 
 #### Android
 
