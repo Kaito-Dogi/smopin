@@ -16,7 +16,7 @@
 ### shared
 
 - domain
-  - ドメインオブジェクト
+  - ドメインモデル
   - Repository のインターフェース
 - data
   - Repository の実装
