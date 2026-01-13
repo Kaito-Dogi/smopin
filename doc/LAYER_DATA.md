@@ -14,23 +14,24 @@
   - Android
     - ワンショット：suspend function
     - 時間経過に伴う：Flow
-- 複数の DataSource の競合を解決し、DataSource をドメインオブジェクト単位で抽象化する
-- ビジネスロジックは格納しない 🚨
-  - ビジネスロジックは UseCase に切り出す
-  - UseCase が単に Repository で定義したメソッドのプロキシとなる場合を許容する
+- 複数の DataSource の競合を解決し、DataSource をドメインモデル単位で抽象化する
+- ビジネスロジックは UseCase に切り出しても良い
+  - 重複を避け、再利用性を高める目的なら OK
+  - 単に Repository で定義したメソッドのプロキシとなる場合は NG
 - Repository が他の Repository に依存する場合、Manager と命名する
   - 例：UserRepository が LoginRepository や RegistrationRepository に依存する場合、UserManager と命名する
 
 ### DataSource
 
 - 1つのデータソースのみを処理する
-  - Network, Database, Kvs, File, Cache など
+  - network, database, preferences, file, cache など
 
-### Model
+### モデル
 
 - DataSource でやり取りするデータモデル
-- Domain Layer で扱うドメインオブジェクトと、Data Layer で扱う Model を分離して、Data Layer の変更が UI Layer に影響しないようにする
-- Repository で Model をドメインオブジェクトに変換する
+- Domain Layer で扱うドメインモデルと、Data Layer で扱うモデルを分離して、Data Layer の変更が UI Layer
+  に影響しないようにする
+- Repository でモデルをドメインモデルに変換する
 
 ## 処理の種類
 
@@ -89,7 +90,7 @@ https://developer.android.com/topic/architecture/data-layer#common-tasks
 
 ### 単体テスト
 
-✍️
+- FakeDataSource を実装する
 
 ### 結合テスト
 
