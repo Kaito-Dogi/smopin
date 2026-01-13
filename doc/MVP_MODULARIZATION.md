@@ -22,8 +22,11 @@
   - Repository の実装
   - DataSource のインターフェース
 - network
-  - NetworkDataSource の実装（Firebase）
-  - Android, iOS ごとに実装する
+  - NetworkDataSource の実装
+  - Firebase SDK をラップする
+  - 実装時に検討する 🚨
+    - OS ごとに実装を分けるか
+    - プロダクトごとに DataSource を分けるか
 
 ### composeApp, iosApp
 
