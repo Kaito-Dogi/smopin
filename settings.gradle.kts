@@ -29,6 +29,7 @@ dependencyResolutionManagement {
 }
 
 include(":android:app")
+include(":android:feature:hoge")
 include(":shared:data")
 include(":shared:database:firestore")
 include(":shared:di")

@@ -2,10 +2,12 @@ package app.kaito_dogi.smopin.shared.database.firestore.smokingArea
 
 import app.kaito_dogi.smopin.shared.data.smokingArea.SmokingAreaDataModel
 import app.kaito_dogi.smopin.shared.data.smokingArea.SmokingAreaNetworkDataSource
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
-internal class DefaultSmokingAreaNetworkDataSource(
+@Inject
+class DefaultSmokingAreaNetworkDataSource(
   private val ioDispatcher: CoroutineDispatcher,
 ) : SmokingAreaNetworkDataSource {
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> =
