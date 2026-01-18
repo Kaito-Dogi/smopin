@@ -13,9 +13,9 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.android.ActivityKey
 
+@Inject
 @ActivityKey(value = MainActivity::class)
 @ContributesIntoMap(scope = AppScope::class, binding<Activity>())
-@Inject
 internal class MainActivity(
   private val viewModelFactory: ViewModelFactory,
 ) : ComponentActivity() {

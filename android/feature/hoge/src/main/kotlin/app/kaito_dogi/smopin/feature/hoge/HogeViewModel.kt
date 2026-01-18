@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@Inject
 @ViewModelKey(value = HogeViewModel::class)
 @ContributesIntoMap(scope = AppScope::class)
-@Inject
 class HogeViewModel(
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {

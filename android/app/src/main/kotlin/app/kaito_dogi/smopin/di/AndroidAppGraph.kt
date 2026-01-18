@@ -3,6 +3,8 @@ package app.kaito_dogi.smopin.di
 import app.kaito_dogi.smopin.shared.data.smokingArea.DefaultSmokingAreaRepository
 import app.kaito_dogi.smopin.shared.data.smokingArea.SmokingAreaNetworkDataSource
 import app.kaito_dogi.smopin.shared.database.firestore.smokingArea.DefaultSmokingAreaNetworkDataSource
+import app.kaito_dogi.smopin.shared.di.AppDispatcher
+import app.kaito_dogi.smopin.shared.di.AppDispatchers
 import app.kaito_dogi.smopin.shared.di.AppGraph
 import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingAreaRepository
 import dev.zacsweers.metro.AppScope
@@ -18,8 +20,8 @@ import kotlinx.coroutines.Dispatchers
 // FIXME: :shared:di モジュールに移動する
 @DependencyGraph(scope = AppScope::class)
 internal interface AndroidAppGraph : AppGraph, MetroAppComponentProviders, ViewModelGraph {
-  // TODO: Multi provides する
   @Provides
+  @AppDispatcher(dispatcher = AppDispatchers.IO)
   fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
   @Binds

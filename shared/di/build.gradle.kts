@@ -22,12 +22,6 @@ kotlin {
       isStatic = true
     }
   }
-
-  sourceSets {
-    commonMain.dependencies {
-      implementation(projects.shared.data)
-    }
-  }
 }
 
 android {

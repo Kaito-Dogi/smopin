@@ -11,10 +11,10 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
 import kotlin.reflect.KClass
 
+@Inject
 @ContributesBinding(scope = AppScope::class)
 @SingleIn(scope = AppScope::class)
-@Inject
-class ViewModelFactory(
+internal class ViewModelFactory(
   override val viewModelProviders: Map<KClass<out ViewModel>, Provider<ViewModel>>,
   override val assistedFactoryProviders:
   Map<KClass<out ViewModel>, Provider<ViewModelAssistedFactory>>,
