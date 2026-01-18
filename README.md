@@ -62,9 +62,9 @@ graph TB
 
   subgraph shared
     direction TB
-    shared:domain[domain]:::jvm-library
     shared:data[data]:::android-library
     shared:database:firestore[database:firestore]:::android-library
+    shared:domain[domain]:::jvm-library
   end
 
   %% app dependencies
@@ -77,6 +77,7 @@ graph TB
   %% feature dependencies
   android:feature --> shared:domain
   android:feature --> android:navigation
+  android:feature --> android:ui
 
   %% data layer
   shared:data --> shared:domain
