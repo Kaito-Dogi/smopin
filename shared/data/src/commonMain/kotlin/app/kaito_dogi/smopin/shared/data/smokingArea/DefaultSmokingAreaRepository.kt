@@ -8,5 +8,6 @@ internal class DefaultSmokingAreaRepository(
 ) : SmokingAreaRepository {
   override suspend fun getSmokingAreaList(): List<SmokingArea> {
     return smokingAreaNetworkDataSource.getSmokingAreaList()
+      .map(transform = SmokingAreaDataModel::toDomainModel)
   }
 }
