@@ -19,8 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import smopin.composeapp.generated.resources.Res
-import smopin.composeapp.generated.resources.compose_multiplatform
+import smopin.android.app.generated.resources.Res
+import smopin.android.app.generated.resources.compose_multiplatform
 
 @Composable
 @Preview

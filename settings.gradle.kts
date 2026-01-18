@@ -28,7 +28,7 @@ dependencyResolutionManagement {
   }
 }
 
-include(":composeApp")
+include(":android:app")
 include(":shared:data")
 include(":shared:database:firestore")
 include(":shared:domain")
