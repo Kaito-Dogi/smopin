@@ -24,10 +24,10 @@ kotlin {
   }
 
   sourceSets {
-    commonMain.dependencies {
-      implementation(projects.shared.data)
-      implementation(projects.shared.database.firestore)
-      implementation(projects.shared.domain)
+    androidMain.dependencies {
+      implementation(libs.metroxAndroid)
+      implementation(libs.metroxViewModel)
+      implementation(libs.metroxViewModelCompose)
     }
   }
 }
