@@ -62,7 +62,7 @@ graph TB
 
   subgraph shared
     direction TB
-    shared:data[data]:::android-library
+    shared:data[data]:::jvm-library
     shared:database:firestore[database:firestore]:::android-library
     shared:domain[domain]:::jvm-library
   end
