@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.androidApplication)
   alias(libs.plugins.composeMultiplatform)
   alias(libs.plugins.composeCompiler)
+  alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -16,10 +17,13 @@ kotlin {
 
   sourceSets {
     androidMain.dependencies {
-      implementation(compose.preview)
       implementation(libs.androidx.activity.compose)
+      implementation(libs.metroxAndroid)
+      implementation(libs.metroxViewModel)
+      implementation(libs.metroxViewModelCompose)
     }
     commonMain.dependencies {
+      implementation(projects.shared.di)
       implementation(projects.shared.domain)
       implementation(compose.runtime)
       implementation(compose.foundation)

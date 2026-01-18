@@ -1,4 +1,4 @@
-package app.kaito_dogi.smopin.shared.di
+package app.kaito_dogi.smopin.di
 
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope

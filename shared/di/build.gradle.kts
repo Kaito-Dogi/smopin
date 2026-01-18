@@ -22,14 +22,6 @@ kotlin {
       isStatic = true
     }
   }
-
-  sourceSets {
-    androidMain.dependencies {
-      implementation(libs.metroxAndroid)
-      implementation(libs.metroxViewModel)
-      implementation(libs.metroxViewModelCompose)
-    }
-  }
 }
 
 android {

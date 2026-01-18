@@ -3,7 +3,6 @@ package app.kaito_dogi.smopin.hoge
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingArea
-import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingAreaRepository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -18,7 +17,8 @@ import kotlinx.coroutines.launch
 @ContributesIntoMap(scope = AppScope::class)
 @Inject
 internal class HogeViewModel(
-  private val smokingAreaRepository: SmokingAreaRepository,
+  private val isSuccess: Boolean,
+  // private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
   private val _uiState: MutableStateFlow<HogeUiState> =
     MutableStateFlow(value = HogeUiState.createInitial())
@@ -27,7 +27,9 @@ internal class HogeViewModel(
   fun onResume() {
     viewModelScope.launch {
       runCatching {
-        smokingAreaRepository.getSmokingAreaList()
+        println("あああ: $isSuccess")
+        // smokingAreaRepository.getSmokingAreaList()
+        emptyList<SmokingArea>()
       }.onSuccess { smokingAreaList ->
         _uiState.update {
           HogeUiState(smokingAreaList = smokingAreaList)
