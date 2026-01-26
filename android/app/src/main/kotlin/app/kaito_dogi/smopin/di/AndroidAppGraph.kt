@@ -3,7 +3,6 @@ package app.kaito_dogi.smopin.di
 import app.kaito_dogi.smopin.shared.data.DataScope
 import app.kaito_dogi.smopin.shared.di.AppDispatcher
 import app.kaito_dogi.smopin.shared.di.AppDispatchers
-import app.kaito_dogi.smopin.shared.di.AppGraph
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -20,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
     DataScope::class,
   ],
 )
-internal interface AndroidAppGraph : AppGraph, MetroAppComponentProviders, ViewModelGraph {
+internal interface AndroidAppGraph : MetroAppComponentProviders, ViewModelGraph {
   @Provides
   @AppDispatcher(dispatcher = AppDispatchers.IO)
   fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
