@@ -25,10 +25,9 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      implementation(projects.shared.common)
       implementation(projects.shared.data)
-      implementation(projects.shared.di)
       implementation(libs.kotlinxCoroutinesCore)
-      implementation(libs.kotlinxSerializationJson)
     }
     commonTest.dependencies {
       implementation(libs.kotlin.test)

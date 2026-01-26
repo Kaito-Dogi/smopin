@@ -18,14 +18,20 @@ kotlin {
     iosSimulatorArm64(),
   ).forEach { iosTarget ->
     iosTarget.binaries.framework {
-      baseName = "SharedDI"
+      baseName = "SharedCommon"
       isStatic = true
+    }
+  }
+
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.kotlinxCoroutinesCore)
     }
   }
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.shared.di"
+  namespace = "app.kaito_dogi.smopin.shared.common"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11

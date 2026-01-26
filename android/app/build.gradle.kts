@@ -42,9 +42,9 @@ android {
 
 dependencies {
   implementation(projects.android.feature.hoge)
+  implementation(projects.shared.common)
   implementation(projects.shared.data)
   implementation(projects.shared.database.firestore)
-  implementation(projects.shared.di)
   implementation(projects.shared.domain)
   implementation(compose.runtime)
   implementation(compose.foundation)

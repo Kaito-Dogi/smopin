@@ -26,7 +26,6 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(projects.shared.domain)
-      implementation(libs.kotlinxCoroutinesCore)
       implementation(libs.kotlinxSerializationJson)
     }
     commonTest.dependencies {
