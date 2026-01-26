@@ -48,7 +48,7 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 | 観点                      | 理由                                                                                                                                                                         |
 |:------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `AppScope` を使用する        | 現時点では、シングルトンパターンで、アプリケーションレベルで扱う依存のみを注入しているため                                                                                                                              |
-| `@ContributesTo` を使用しない | Metro の仕様上、依存グラフを `public` にする必要があり、 `@ContributesTo` を使用しても Binding Container 自体は `internal` にして隠蔽できないため\n依存グラフの定義元で、依存する Binding Container を列挙されておらず、メンテナンス性に欠けると判断できるため 
+| `@ContributesTo` を使用しない | Metro の仕様上、依存グラフを `public` にする必要があり、 `@ContributesTo` を使用しても Binding Container 自体は `internal` にして隠蔽できないため\n依存グラフの定義元で、依存する Binding Container を列挙されておらず、メンテナンス性に欠けると判断できるため | 
 | 必要に応じて分割する              | TBD（ `ViewModel` など UI Layer で扱うコンポーネントを実装するタイミングで考える）                                                                                                                     |
 
 ## インターフェースの注入
@@ -57,8 +57,8 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 
 ### 理由
 
-- インターフェースに対して、実装の詳細をシンプルに紐づけられるため
-- `@Provides` を使用したメソッド定義では、メソッドの返り値として実装クラスをインスタンス化する必要があり、依存グラフの見通しが悪くなってしまうため
+1. インターフェースに対して、実装の詳細をシンプルに紐づけられるため
+2. `@Provides` を使用したメソッド定義では、メソッドの返り値として実装クラスをインスタンス化する必要があり、依存グラフの見通しが悪くなってしまうため
 
 ### インターフェース定義例
 
@@ -88,10 +88,14 @@ internal class DefaultUserRepository(
 
 ### Binding Container 例
 
-- `abstract class` で定義する
-  - 実装クラスを `internal` にして、モジュール内に隠蔽するため
-  - `interface` では、プロパティを `internal` にできないため
-    - 補足： `@Binds` では、インターフェースを型として、実装クラスの拡張プロパティを定義する必要がある
+`abstract class` で定義する
+
+#### 理由
+
+1. 実装クラスを `internal` にして、モジュール内に隠蔽するため
+2. `interface` では、プロパティを `internal` にできないため
+
+補足： `@Binds` では、インターフェースを型として、実装クラスの拡張プロパティを定義する必要がある
 
 ```kotlin
 @ContributesTo(scope = AppScope::class)
@@ -113,9 +117,12 @@ CoroutineDispatcher, Clock, Context など、外部ライブラリのインス�
 
 ### Binding Container 例
 
-- `object` で定義する
-  - Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため
-    - `companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない
+`object` で定義する
+
+#### 理由
+
+Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため
+`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない
 
 ```kotlin
 @ContributesTo(scope = AppScope::class)
