@@ -121,7 +121,7 @@ CoroutineDispatcher, Clock, Context など、外部ライブラリのインス�
 
 #### 理由
 
-Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため
+Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため<br>
 `companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない
 
 ```kotlin
