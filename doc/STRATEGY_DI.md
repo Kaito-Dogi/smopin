@@ -93,8 +93,7 @@ internal class DefaultUserRepository(
 #### 理由
 
 1. 実装クラスを `internal` にして、モジュール内に隠蔽するため
-2. `interface` では、プロパティを `internal` にできないため
-1. `@Binds` では、インターフェースを型として、実装クラスの拡張プロパティを定義する必要がある
+2. `@Binds` では、インターフェースを型として、実装クラスの拡張プロパティを定義する必要があるものの、 `interface` では、プロパティを `internal` にできないため
 
 ```kotlin
 @ContributesTo(scope = AppScope::class)
