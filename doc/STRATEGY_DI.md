@@ -2,7 +2,7 @@
 
 ## 目的
 
-本ドキュメントは、開発者が本プロジェクトの DI 戦略を理解し、ソースコードに反映できることを目的とする
+本ドキュメントは、開発者が本プロジェクトの DI 戦略を理解し、ソースコードに反映できることを目的とする。
 
 ## 対象読者
 
@@ -25,7 +25,7 @@
 
 ## DI ライブラリ
 
-DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) を採用する
+DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) を採用する。
 
 ### 採用理由
 
@@ -53,7 +53,7 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 
 ## インターフェースの注入
 
-`@Binds` を使用する
+`@Binds` を使用する。
 
 ### 理由
 
@@ -88,14 +88,13 @@ internal class DefaultUserRepository(
 
 ### Binding Container 例
 
-`abstract class` で定義する
+`abstract class` で定義する。
 
 #### 理由
 
 1. 実装クラスを `internal` にして、モジュール内に隠蔽するため
 2. `interface` では、プロパティを `internal` にできないため
-
-補足： `@Binds` では、インターフェースを型として、実装クラスの拡張プロパティを定義する必要がある
+   a. `@Binds` では、インターフェースを型として、実装クラスの拡張プロパティを定義する必要がある
 
 ```kotlin
 @ContributesTo(scope = AppScope::class)
@@ -109,20 +108,20 @@ abstract class DataBindingContainer internal constructor() {
 
 ## インスタンスの注入
 
-`@Provides` を使用する
+`@Provides` を使用する。
 
 ### 制約
 
-CoroutineDispatcher, Clock, Context など、外部ライブラリのインスタンスを注入する場合にのみ使用する
+CoroutineDispatcher, Clock, Context など、外部ライブラリのインスタンスを注入する場合にのみ使用する。
 
 ### Binding Container 例
 
-`object` で定義する
+`object` で定義する。
 
 #### 理由
 
-Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため<br>
-`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない
+Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため。<br>
+`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない。
 
 ```kotlin
 @ContributesTo(scope = AppScope::class)
