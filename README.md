@@ -62,6 +62,7 @@ graph TB
 
   subgraph shared
     direction TB
+    shared:common[common]:::android-library
     shared:data[data]:::android-library
     shared:database:firestore[database:firestore]:::android-library
     shared:domain[domain]:::jvm-library
@@ -70,6 +71,7 @@ graph TB
   %% app dependencies
   android:app --> android:feature
   android:app --> android:navigation
+  android:app --> shared:common
   android:app --> shared:domain
   android:app -.-> shared:data
   android:app -.-> shared:database:firestore
@@ -83,6 +85,7 @@ graph TB
   shared:data --> shared:domain
 
   %% firestore
+  shared:database:firestore --> shared:common
   shared:database:firestore --> shared:data
 
 classDef android-application fill:#CAFFBF,stroke:#000,stroke-width:2px,color:#000;
