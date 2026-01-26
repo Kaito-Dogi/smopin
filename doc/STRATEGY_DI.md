@@ -145,8 +145,7 @@ object AppDispatcherBindingContainer {
   - 基本的に、1つのモジュールにつき1つの Binding Container を定義する
 - 例外的に、 `shared:common` モジュールではコンポーネントごとに分割する
   - 汎用的な Kotlin 依存のコンポーネントを格納するため
-  -
-  参考： [Now in Android の :core:common モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
+  - 参考： [Now in Android の `:core:common` モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
 
 ## テスト
 
