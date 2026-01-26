@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 @Inject
-class DefaultSmokingAreaNetworkDataSource(
+internal class DefaultSmokingAreaNetworkDataSource(
   @param:AppDispatcher(dispatcher = AppDispatchers.IO)
   private val ioDispatcher: CoroutineDispatcher,
 ) : SmokingAreaNetworkDataSource {
