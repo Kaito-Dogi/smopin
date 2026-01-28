@@ -6,13 +6,13 @@
 
 ## 対象読者
 
-- 一般的な Android/KMP 開発者
-- Android/KMP 初学の iOS 開発者
+- 一般的な Android, KMP 開発者
+- Android, KMP 初学の iOS 開発者
 
 ## 対象とするモジュール
 
 - `shared`, `android` モジュールを対象とする
-- `app-for-ios` モジュールで iOS の依存グラフを組み立てる（TBD）
+- `ios/:app` モジュールで iOS の依存グラフを組み立てる（TBD）
 
 ## 基本方針
 
@@ -55,7 +55,7 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 
 `@Binds` を使用する。
 
-### 理由
+### 使用理由
 
 1. インターフェースに対して、実装の詳細をシンプルに紐づけられるため
 2. `@Provides` を使用したメソッド定義では、メソッドの返り値として実装クラスをインスタンス化する必要があり、依存グラフの見通しが悪くなってしまうため
@@ -90,13 +90,12 @@ internal class DefaultUserRepository(
 
 `abstract class` で定義する。
 
-#### 理由
+#### 使用理由
 
 1. 実装クラスを `internal` にして、モジュール内に隠蔽するため
 2. `@Binds` では、実装クラスの拡張プロパティを定義する必要があるものの、 `interface` ではプロパティを `internal` にできないため
 
 ```kotlin
-@ContributesTo(scope = AppScope::class)
 @BindingContainer
 abstract class DataBindingContainer internal constructor() {
 
@@ -123,7 +122,6 @@ Metro の仕様上、`interface` や `abstract class` では `@Provides` を付�
 `companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない。
 
 ```kotlin
-@ContributesTo(scope = AppScope::class)
 @BindingContainer
 object AppDispatcherBindingContainer {
 
@@ -141,7 +139,7 @@ object AppDispatcherBindingContainer {
 
 - 責務単位で分割する
   - 基本的に、1つのモジュールにつき1つの Binding Container を定義する
-- 例外的に、 `shared:common` モジュールではコンポーネントごとに分割する
+- 例外的に、 `:shared:common` モジュールではコンポーネントごとに分割する
   - 汎用的な Kotlin 依存のコンポーネントを格納するため
   - 参考： [Now in Android の `:core:common` モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
 
