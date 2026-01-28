@@ -20,7 +20,7 @@
 ## 技術要件
 
 - Android アプリ、iOS アプリに対応
-- KMP でロジックを共通化
+- KMP でビジネスロジックを共通化
 - Jetpack Compose, Swift UI で各 OS 向けの UI, State Holder を実装
 
 ### ライブラリ
