@@ -1,8 +1,6 @@
 package app.kaito_dogi.smopin.shared.common
 
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
-import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.Qualifier
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,7 +24,6 @@ enum class AppDispatchers {
 @Qualifier
 annotation class AppDispatcher(val dispatcher: AppDispatchers)
 
-@ContributesTo(scope = AppScope::class)
 @BindingContainer
 object AppDispatcherBindingContainer {
 
