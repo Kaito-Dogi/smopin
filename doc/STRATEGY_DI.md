@@ -12,7 +12,7 @@
 ## 対象とするモジュール
 
 - `shared`, `android` モジュールを対象とする
-- `ios/:app` モジュールで iOS の依存グラフを組み立てる（TBD）
+- `ios/app` モジュールで iOS の依存グラフを組み立てる（TBD）
 
 ## 基本方針
 
@@ -93,7 +93,7 @@ internal class DefaultUserRepository(
 #### 使用理由
 
 1. 実装クラスを `internal` にして、モジュール内に隠蔽するため
-2. `@Binds` では、実装クラスの拡張プロパティを定義する必要があるものの、 `interface` ではプロパティを `internal` にできないため
+2. `@Binds` では、実装クラスの拡張プロパティを定義する必要があるものの、インターフェースではプロパティを `internal` にできないため
 
 ```kotlin
 @BindingContainer
@@ -118,8 +118,8 @@ CoroutineDispatcher, Clock, Context など、外部ライブラリのインス�
 
 #### 理由
 
-Metro の仕様上、`interface` や `abstract class` では `@Provides` を付与したメソッドを定義できないため。<br>
-`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではない。
+Metro の仕様上、インターフェースや抽象クラス `abstract class` では `@Provides` を付与したメソッドを定義できないため。<br>
+`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではないため避ける。
 
 ```kotlin
 @BindingContainer
@@ -139,9 +139,9 @@ object AppDispatcherBindingContainer {
 
 - 責務単位で分割する
   - 基本的に、1つのモジュールにつき1つの Binding Container を定義する
-- 例外的に、 `:shared:common` モジュールではコンポーネントごとに分割する
+- 例外的に、 `shared:common` モジュールではコンポーネントごとに分割する
   - 汎用的な Kotlin 依存のコンポーネントを格納するため
-  - 参考： [Now in Android の `:core:common` モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
+  - 参考： [Now in Android の `core:common` モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
 
 ## テスト
 
