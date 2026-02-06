@@ -2,41 +2,47 @@
 
 ## モジュール構成
 
-- shared：共通ロジック
-- composeApp：Android アプリ
-- iosApp：iOS アプリ
+### shared モジュール
+
+| モジュール                | 説明                                                                              |
+|:---------------------|:--------------------------------------------------------------------------------|
+| `common`             | Kotlin 依存の汎用的なコンポーネントを格納する                                                      |
+| `data`               | ・データレイヤの抽象モジュール<br/>・Repository の実装、データモデル、DataSource のインターフェース定義を格納する          |
+| `database:firestore` | ・データレイヤの具象モジュール<br/>主に NetworkDataSource の実装を格納する<br/>・Firebase Firestore に依存する |
+| `domain`             | ・ドメインレイヤの抽象モジュール<br/>・ドメインモデル、Repository のインターフェースを格納する                         |
+
+### android モジュール
+
+| モジュール     | 説明                                                         |
+|:----------|:-----------------------------------------------------------|
+| `app`     | アプリモジュール                                                   |
+| `feature` | ・機能モジュール<br/>・画面単位ではなく、機能単位でモジュールを分割する                     |
+| `ui`      | ・UI レイヤの汎用的なコンポーネントを格納する<br/>・共通 UI コンポーネント、カスタムテーマなどを格納する |
+
+### ios モジュール
+
+| モジュール         | 説明                                                                   |
+|:--------------|:---------------------------------------------------------------------|
+| `di`          | iOS の依存グラフを組み立てる                                                     |
+| その他 iOS モジュール | ・Swift Package Manager（SPM）を使用する<br/>・原則として、`android` モジュールと共通の構成とする |
 
 ## パッケージ構成
 
-### 原則
+### shared:domain モジュール
 
-- Domain 単位でパッケージを切り分ける（例：smokingArea など）
-  - model, repository など、役割ごとにパッケージを切らない
+知識単位でパッケージを切り分ける（例：smokingArea など）。<br>
+model や repository など、責務ごとにパッケージを切らない。
 
-### shared
+### android:ui モジュール
 
-- domain
-  - ドメインモデル
-  - Repository のインターフェース
-- data
-  - Repository の実装
-  - DataSource のインターフェース
-- network
-  - NetworkDataSource の実装
-  - Firebase SDK をラップする
-  - 実装時に検討する 🚨
-    - OS ごとに実装を分けるか
-    - プロダクトごとに DataSource を分けるか
+責務単位でパッケージを切り分ける。
 
-### composeApp, iosApp
-
-- app：アプリのエントリーポイント
-- ui：例外的に、役割ごとにパッケージを切る
-  - component：共通 Composable
-  - designSystem：Color, Typography, Shape, Spacing
-- feature：機能
+| パッケージ          | 説明                                                |
+|:---------------|:--------------------------------------------------|
+| `component`    | 共通 UI コンポーネントを格納する                                |
+| `designSystem` | Color, Typography, Shape, Spacing などのカスタムテーマを格納する |
 
 ## MVP で採用しないコンポーネント
 
-- UseCase
+- UseCase（TBD）
 - インメモリキャッシュ（CacheDataSource）

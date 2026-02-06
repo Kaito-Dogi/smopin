@@ -12,7 +12,7 @@
 ## 対象とするモジュール
 
 - `shared`, `android` モジュール
-- `ios/app` モジュールで iOS の依存グラフを組み立てる（TBD）
+- `ios/di` モジュールで iOS の依存グラフを組み立てる（TBD）
 
 ## 基本方針
 
@@ -140,7 +140,7 @@ object AppDispatcherBindingContainer {
 - 責務単位で分割する
   - 基本的に、1つのモジュールにつき1つの BindingContainer を定義する
 - 例外的に `shared:common` モジュールでは、コンポーネントごとに分割する
-  - 汎用的な Kotlin 依存のコンポーネントを格納するため
+  - Kotlin 依存の汎用的なコンポーネントを格納するため
   - 参考： [Now in Android の `core:common` モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
 
 ## テスト
