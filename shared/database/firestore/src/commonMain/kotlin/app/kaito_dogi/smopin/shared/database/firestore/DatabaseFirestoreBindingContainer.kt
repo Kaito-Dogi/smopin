@@ -6,7 +6,7 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Binds
 
 @BindingContainer
-abstract class DatabaseFirestoreBindingContainer internal constructor() {
+abstract class DatabaseFirestoreBindingContainer private constructor() {
 
   @Binds
   internal abstract val DefaultSmokingAreaNetworkDataSource.binds: SmokingAreaNetworkDataSource
