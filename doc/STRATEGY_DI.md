@@ -4,11 +4,6 @@
 
 本ドキュメントは、開発者が本プロジェクトの DI 戦略を理解し、ソースコードに反映できることを目的とする。
 
-## 対象読者
-
-- 一般的な Android, KMP 開発者
-- Android, KMP 初学の iOS 開発者
-
 ## 対象とするモジュール
 
 - `shared`, `android` モジュール
@@ -150,5 +145,5 @@ object AppDispatcherBindingContainer {
 
 ## 参考資料
 
-- [Metro ドキュメント](https://zacsweers.github.io/metro/latest/)
-- [DroidKaigi 2025 official app](https://github.com/DroidKaigi/conference-app-2025)
+- [Metro](https://zacsweers.github.io/metro/latest/)
+- [DroidKaigi/conference-app-2025](https://github.com/DroidKaigi/conference-app-2025)
