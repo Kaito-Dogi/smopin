@@ -11,7 +11,7 @@
 
 ## 対象とするモジュール
 
-- `shared`, `android` モジュールを対象とする
+- `shared`, `android` モジュール
 - `ios/app` モジュールで iOS の依存グラフを組み立てる（TBD）
 
 ## 基本方針
@@ -29,7 +29,7 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 
 ### 理由
 
-- KMP 対応されているため
+- KMP に対応しているため
 - 依存解決が静的なので、コンパイル時にエラーを検出でき、デバッグしやすいため
 - Hilt に近い使用感なので、Android 開発者の学習コストが小さいため
 
@@ -45,11 +45,11 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 
 ## スコープ
 
-| 観点                      | 理由                                                                                                                                                                           |
-|:------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `AppScope` を使用する        | TBD（シングルトンパターンで、アプリケーションレベルで扱う依存のみを注入しているため）                                                                                                                                 |
-| `@ContributesTo` を使用しない | ・Metro の仕様上、依存グラフを `public` にする必要があり、 `@ContributesTo` を使用しても BindingContainer 自体は `internal` にして隠蔽できないため<br>・依存グラフの定義元で、依存する BindingContainer が列挙されておらず、メンテナンス性に欠けると判断できるため | 
-| 必要に応じて分割する              | TBD（ `ViewModel` など UI レイヤで扱うコンポーネントを実装するタイミングで考える）                                                                                                                          |
+| 観点                      | 理由                                                                                                                                                                                   |
+|:------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AppScope` を使用する        | TBD（シングルトンパターンで、アプリケーションレベルで扱う依存のみを注入しているため）                                                                                                                                         |
+| `@ContributesTo` を使用しない | ・Metro の仕様上、依存グラフを `public` にする必要があるので、 `@ContributesTo` を使用しても BindingContainer 自体の可視性は `internal` にできず、隠蔽できないため<br>・依存グラフの定義元で、依存する BindingContainer が列挙されておらず、メンテナンス性に欠けると判断できるため | 
+| 必要に応じて分割する              | TBD（ViewModel など、UI レイヤで扱うコンポーネントを実装するタイミングで考える）                                                                                                                                     |
 
 ## インターフェースの注入
 
@@ -58,11 +58,11 @@ DI フレームワーク [ZacSweers/metro](https://github.com/ZacSweers/metro) �
 ### 理由
 
 1. インターフェースに対して、実装の詳細をシンプルに紐づけられるため
-2. `@Provides` を使用したメソッド定義では、メソッドの返り値として実装クラスをインスタンス化する必要があり、依存グラフの見通しが悪くなってしまうため
+2. `@Provides` を使用したメソッド定義では、メソッドの返り値として実装クラスをインスタンス化する必要があるので、依存グラフの見通しが悪くなってしまうため
 
 ### インターフェース定義例
 
-```kotlin
+```kt
 interface UserRepository {
   suspend fun getUserList(): List<User>
 }
@@ -74,7 +74,7 @@ interface UserNetworkDataSource {
 
 ### インターフェース実装例
 
-```kotlin
+```kt
 @Inject
 internal class DefaultUserRepository(
   private val userNetworkDataSource: UserNetworkDataSource,
@@ -90,9 +90,9 @@ internal class DefaultUserRepository(
 
 抽象クラス `abstract class` で定義する。
 
-```kotlin
+```kt
 @BindingContainer
-abstract class DataBindingContainer internal constructor() {
+abstract class DataBindingContainer private constructor() {
 
   @Binds
   internal abstract val DefaultUserRepository.bind: UserRepository
@@ -102,7 +102,7 @@ abstract class DataBindingContainer internal constructor() {
 #### 理由
 
 1. 実装クラスを `internal` にして、モジュール内に隠蔽するため
-2. `@Binds` では、実装クラスの拡張プロパティを定義する必要があるものの、インターフェースではプロパティを `internal` にできないため
+2. `@Binds` では実装クラスの拡張プロパティを定義する必要があるものの、インターフェースではプロパティを `internal` にできないため
 
 ## インスタンスの注入
 
@@ -110,13 +110,13 @@ abstract class DataBindingContainer internal constructor() {
 
 ### 制約
 
-CoroutineDispatcher, Clock, Context など、外部ライブラリのインスタンスを注入する場合にのみ使用する。
+`CoroutineDispatcher` や `Context` など、外部ライブラリのインスタンスを注入する場合にのみ使用する。
 
 ### BindingContainer 例
 
 `object` で定義する。
 
-```kotlin
+```kt
 @BindingContainer
 object AppDispatcherBindingContainer {
 
@@ -132,14 +132,14 @@ object AppDispatcherBindingContainer {
 
 #### 理由
 
-1. Metro の仕様上、インターフェースや抽象クラス `abstract class` では `@Provides` を付与したメソッドを定義できないため
-2. 1の場合でも `companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではないため。
+1. Metro の仕様上、インターフェースや抽象クラス `abstract class` では、`@Provides` を付与したメソッドを定義できないため
+2. 1の場合でも、`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではないため。
 
 ### BindingContainer の分割基準
 
 - 責務単位で分割する
   - 基本的に、1つのモジュールにつき1つの BindingContainer を定義する
-- 例外的に、 `shared:common` モジュールではコンポーネントごとに分割する
+- 例外的に `shared:common` モジュールでは、コンポーネントごとに分割する
   - 汎用的な Kotlin 依存のコンポーネントを格納するため
   - 参考： [Now in Android の `core:common` モジュール](https://github.com/android/nowinandroid/tree/main/core/common/src/main/kotlin/com/google/samples/apps/nowinandroid/core)
 
