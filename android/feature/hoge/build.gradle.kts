@@ -40,4 +40,6 @@ dependencies {
   implementation(libs.metroxViewModel)
   implementation(libs.metroxViewModelCompose)
   implementation(libs.androidx.core.ktx)
+  implementation(libs.googleMapsCompose)
+  implementation(libs.googlePlayServicesMaps)
 }

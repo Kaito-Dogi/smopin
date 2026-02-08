@@ -16,6 +16,8 @@ kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0-RC"
 metro = "0.9.4"
+google-maps-compose = "6.12.1"
+google-play-services-maps = "19.2.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -35,6 +37,8 @@ kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serializati
 metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
 metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
+googleMapsCompose = { module = "com.google.maps.android:maps-compose", version.ref = "google-maps-compose" }
+googlePlayServicesMaps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-play-services-maps" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
