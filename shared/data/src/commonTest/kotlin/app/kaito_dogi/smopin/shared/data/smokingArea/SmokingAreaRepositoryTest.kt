@@ -7,7 +7,7 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingArea
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
 
 internal class SmokingAreaRepositoryTest {
   @Test
@@ -39,11 +39,8 @@ internal class SmokingAreaRepositoryTest {
       ),
     )
 
-    // TODO: Exception をテストできるようにする
-    try {
+    assertFailsWith<IllegalStateException> {
       smokingAreaRepository.getSmokingAreaList()
-    } catch (e: Exception) {
-      assertTrue { true }
     }
   }
 }
@@ -55,7 +52,7 @@ private class FakeSmokingAreaNetworkDataSource(
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = if (!shouldThrow) {
     smokingAreaList
   } else {
-    throw Exception()
+    throw IllegalStateException()
   }
 }
 
