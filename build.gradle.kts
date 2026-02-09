@@ -8,4 +8,5 @@ plugins {
   alias(libs.plugins.kotlinAndroid) apply false
   alias(libs.plugins.kotlinMultiplatform) apply false
   alias(libs.plugins.metro) apply false
+  alias(libs.plugins.paparazzi) apply false
 }

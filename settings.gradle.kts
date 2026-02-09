@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 
 include(":android:app")
 include(":android:feature:hoge")
+include(":android:ui-testing")
 include(":shared:common")
 include(":shared:data")
 include(":shared:database:firestore")
