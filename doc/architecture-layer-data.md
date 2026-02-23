@@ -89,6 +89,10 @@ internal class DefaultUserRepository(
   override fun getUser(userId: UserId): Flow<User> = userDiskDataSource
     .getUser(userId = userId)
     .map(transform = UserMapper::toDomainModel)
+
+  // override suspend fun createUser(user: User)
+  // override suspend fun updateUser(user: User)
+  // override suspend fun deleteUser(userId: UserId)
 }
 ```
 
