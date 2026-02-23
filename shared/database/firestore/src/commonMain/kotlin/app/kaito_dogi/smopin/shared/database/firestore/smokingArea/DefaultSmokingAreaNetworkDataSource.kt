@@ -10,8 +10,7 @@ import kotlinx.coroutines.withContext
 
 @Inject
 internal class DefaultSmokingAreaNetworkDataSource(
-  @param:AppDispatcher(dispatcher = AppDispatchers.IO)
-  private val ioDispatcher: CoroutineDispatcher,
+  @param:AppDispatcher(dispatcher = AppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : SmokingAreaNetworkDataSource {
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> =
     withContext(context = ioDispatcher) {
