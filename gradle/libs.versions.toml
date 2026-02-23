@@ -13,6 +13,8 @@ compose = "1.9.3"
 junit = "4.13.2"
 kotlin = "2.3.0"
 
+firebase = "34.9.0"
+googleServices = "4.4.4"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0-RC"
 metro = "0.9.4"
@@ -32,6 +34,10 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+firebaseAnalytics = { module = "com.google.firebase:firebase-analytics" }
+firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
+firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
 metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
 metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
@@ -44,4 +50,5 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
