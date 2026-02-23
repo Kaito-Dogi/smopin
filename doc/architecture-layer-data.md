@@ -82,12 +82,10 @@ internal class DefaultUserRepository(
   private val userNetworkDataSource: UserNetworkDataSource,
   private val userDiskDataSource: UserDiskDataSource,
 ) : UserRepository {
-  override suspend fun getUserList(): List<User> = userNetworkDataSource
-    .getUserList()
+  override suspend fun getUserList(): List<User> = userNetworkDataSource.getUserList()
     .map(transform = UserMapper::toDomainModel)
 
-  override fun getUser(userId: UserId): Flow<User> = userDiskDataSource
-    .getUser(userId = userId)
+  override fun getUser(userId: UserId): Flow<User> = userDiskDataSource.getUser(userId = userId)
     .map(transform = UserMapper::toDomainModel)
 
   // override suspend fun createUser(user: User)
