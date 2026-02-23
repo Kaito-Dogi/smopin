@@ -76,7 +76,7 @@ internal class DefaultUserRepository(
 ) : UserRepository {
   override suspend fun getUserList(): List<User> {
     return userNetworkDataSource.getUserList()
-      .map(transform = UserDataModel::toDomainModel)
+      .map(transform = UserMapper::toDomainModel)
   }
 }
 ```

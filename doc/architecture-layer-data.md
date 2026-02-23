@@ -84,7 +84,7 @@ internal class DefaultUserRepository(
 ) : UserRepository {
   override suspend fun getUserList(): List<User> = userNetworkDataSource
     .getUserList()
-    .map(transform = UserDataModel::toDomainModel)
+    .map(transform = UserMapper::toDomainModel)
 
   override fun getUser(userId: UserId): Flow<User> = userDiskDataSource
     .getUser(userId = userId)
