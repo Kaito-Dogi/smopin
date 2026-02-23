@@ -7,7 +7,7 @@
 ## 対象とするモジュール
 
 - `shared`, `android` モジュール
-- `ios/di` モジュールで iOS の依存グラフを組み立てる（TBD）
+- `ios/di` モジュールで iOS の依存グラフを構築する（TBD）
 
 ## 基本方針
 
@@ -76,7 +76,7 @@ internal class DefaultUserRepository(
 ) : UserRepository {
   override suspend fun getUserList(): List<User> {
     return userNetworkDataSource.getUserList()
-      .map(transform = UserDataModel::toDomainModel)
+      .map(transform = UserMapper::toDomainModel)
   }
 }
 ```
