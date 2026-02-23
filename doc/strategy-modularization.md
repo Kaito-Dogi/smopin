@@ -14,7 +14,7 @@
 
 ### 依存性逆転
 
-本プロジェクトでは依存性逆転を導入する。<br>
+本プロジェクトでは依存性逆転を導入する。<br/>
 すなわち、[Now in Android](https://github.com/android/nowinandroid) とは異なり、データレイヤがドメインレイヤに依存する構成とする。
 
 AI の活用を前提として、次のデメリットを認める。
@@ -108,7 +108,7 @@ classDef unknown fill:#FFADAD,stroke:#000,stroke-width:2px,color:#000;
 
 ### shared:domain モジュール
 
-知識単位でパッケージを切り分ける（例：smokingArea など）。<br>
+知識単位でパッケージを切り分ける（例：smokingArea など）。<br/>
 model や repository など、責務ごとにパッケージを切らない。
 
 ### android:ui モジュール

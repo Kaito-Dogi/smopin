@@ -164,7 +164,8 @@ internal class DefaultUserNetworkDataSource(
 
 ### アプリケーション指向の処理の実装方法
 
-Repository にアプリケーションレベルの `CoroutineScope` を注入する（参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)）
+Repository にアプリケーションレベルの `CoroutineScope` を注入する。<br/>
+参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)
 
 ```kt
 // https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen
@@ -204,7 +205,7 @@ WorkManger を使用する。
 
 ## エラーハンドリング
 
-データレイヤではエラーをキャッチせず、ドメインレイヤでハンドリングする。<br>
+データレイヤではエラーをキャッチせず、ドメインレイヤでハンドリングする。<br/>
 具体的な設計は TBD。
 
 ### 理由
