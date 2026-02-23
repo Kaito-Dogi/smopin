@@ -100,7 +100,6 @@ internal class DefaultUserRepository(
   - Metro などの DI ライブラリを使用し、ライブラリ経由で依存グラフを構築するため
 - I/O スレッドに切り替えてはならない
   - I/O スレッドへの切り替えは DataSource の責務のため
-  - 例外：アプリケーション志向の処理を実装する場合、アプリケーションレベルの `CoroutineScope` を注入する（参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)）
 - データモデルをドメインモデルに変換する処理は Mapper オブジェクトに定義する
   - 変換ロジックが単純な場合や再利用しない場合も、Repository に直接記述してはならない
 
@@ -162,6 +161,37 @@ internal class DefaultUserNetworkDataSource(
 | UI 指向      | ・UI レイヤでトリガーされ、呼び出し元のライフサイクルに従う<br/>・ユーザーが特定の画面にいる間にのみ処理される<br/>・ユーザーがその画面から移動したら、キャンセルされる |
 | アプリケーション指向 | ・アプリやデータレイヤのライフサイクルに従う<br/>アプリが開いている間にのみ処理される<br/>・プロセスが終了したら、キャンセルされる                     |
 | ビジネス指向     | ・キャンセルされず、プロセス終了後も継続させる<br/>・WorkManger などを使用し、バックグラウンドタスクとして実行する                          |
+
+### アプリケーション指向の処理の実装方法
+
+Repository にアプリケーションレベルの `CoroutineScope` を注入する（参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)）
+
+```kt
+// https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen
+class NewsRepository(
+  private val newsRemoteDataSource: NewsRemoteDataSource,
+  private val externalScope: CoroutineScope
+) {
+  /* ... */
+
+  suspend fun getLatestNews(refresh: Boolean = false): List<ArticleHeadline> {
+    return if (refresh) {
+      externalScope.async {
+        newsRemoteDataSource.fetchLatestNews().also { networkResult ->
+          // Thread-safe write to latestNews.
+          latestNewsMutex.withLock {
+            latestNews = networkResult
+          }
+        }
+      }.await()
+    } else {
+      return latestNewsMutex.withLock { this.latestNews }
+    }
+  }
+}
+```
+
+値を返すため、`Job` 型を返す `launch` ではなく、`async` を使用する。
 
 ### ビジネス指向の処理の実装方法（Android）
 
