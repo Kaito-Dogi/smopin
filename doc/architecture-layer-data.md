@@ -154,6 +154,19 @@ internal class DefaultUserNetworkDataSource(
 - データソースで扱うモデルをデータモデルに変換する処理は Mapper オブジェクトに定義する
   - 変換ロジックが単純な場合や再利用しない場合も、DataSource に直接記述してはならない
 
+
+### Firebase Firestore をデータソースに採用する場合
+
+- Firestore SDK の呼び出しは `shared:data` ではなく、具体実装モジュール（例: `shared:database:firestore`）に閉じ込める
+- `shared:data` には `SmokingAreaNetworkDataSource` のような抽象インターフェースのみを配置する
+- DataSource 実装は Firestore の `DocumentSnapshot` から `DataModel` に変換し、Repository では `DataModel` から `DomainModel` へ変換する
+
+#### 理由
+
+1. 依存性逆転を維持し、データレイヤの抽象モジュールを再利用可能にするため
+2. Firestore のスキーマ変更影響を具体実装モジュール内に局所化するため
+3. KMP shared ロジックからデータソースの実装差し替えを容易にするため
+
 ## 処理の種類
 
 | 処理の種類      | ライフサイクル                                                                                    |
