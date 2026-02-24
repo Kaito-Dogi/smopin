@@ -1,6 +1,8 @@
 package app.kaito_dogi.smopin.feature.hoge
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,13 +22,17 @@ fun HogeScreen(
     viewModel.onCreate()
   }
 
-  Column(
+  Scaffold(
     modifier = modifier,
-  ) {
-    uiState.smokingAreaList.forEach { smokingArea ->
-      Text(text = smokingArea.name)
-      Text(text = "latitude: ${smokingArea.location.latitude.value}")
-      Text(text = "longitude: ${smokingArea.location.longitude.value}")
+  ) { innerPadding ->
+    Column(
+      modifier = Modifier.padding(paddingValues = innerPadding),
+    ) {
+      uiState.smokingAreaList.forEach { smokingArea ->
+        Text(text = smokingArea.name)
+        Text(text = "latitude: ${smokingArea.location.latitude.value}")
+        Text(text = "longitude: ${smokingArea.location.longitude.value}")
+      }
     }
   }
 }
