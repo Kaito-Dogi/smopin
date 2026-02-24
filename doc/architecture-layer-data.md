@@ -107,13 +107,13 @@ internal class DefaultUserRepository(
 
 #### 責務
 
-- データソースの依存を隠蔽する
+- Web API や外部 SDK などのデータソースへの依存を隠蔽する
 - I/O スレッドに切り替える
 
 #### 規約
 
 - `shared:data` モジュールで DataSource のインターフェースを定義する
-  - 具体実装のモジュールで DataSource のインターフェースを実装する
+  - 具体実装のモジュールで DataSource のインターフェースを実装する（つまり、DataSource は外部 SDK に直接依存する）
 - 1つのデータソースのみを隠蔽する
 - 具体的なソースの種類を重視するため、命名にソースの種類を含める
   - Network, Database, Preferences, File など
@@ -154,20 +154,6 @@ internal class DefaultUserNetworkDataSource(
 - データソースで扱うモデルをデータモデルに変換する処理は Mapper オブジェクトに定義する
   - 変換ロジックが単純な場合や再利用しない場合も、DataSource に直接記述してはならない
 
-
-
-### Firebase / 外部 SDK を使う場合の補足
-
-- `shared:data` には SDK 依存を持ち込まず、DataSource インターフェースのみを定義する
-- Firebase Kotlin SDK などの具体実装は `shared:database:*` などの具体実装モジュールに隔離する
-- Firestore コレクション・ドキュメントのフィールド名は DataSource 実装内で閉じ込め、Repository 以降には漏らさない
-
-#### 理由
-
-1. SDK の差し替え（Firestore -> REST API など）を UI / Domain に波及させないため
-2. KMP の target ごとの差分対応を具体実装モジュールだけに限定するため
-3. ビルド影響範囲を限定し、変更時の再コンパイルコストを下げるため
-
 ## 処理の種類
 
 | 処理の種類      | ライフサイクル                                                                                    |
@@ -178,8 +164,8 @@ internal class DefaultUserNetworkDataSource(
 
 ### アプリケーション指向の処理の実装方法
 
-Repository にアプリケーションレベルの `CoroutineScope` を注入する。<br/>
-参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)
+- Repository にアプリケーションレベルの `CoroutineScope` を注入する（参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)）
+  - ただし、呼び出し側でライフサイクルの制御が必要な処理は、Repository でスコープを切り替えず、ViewModel にアプリケーションレベルの `CoroutineScope` を注入し、ViewModel でスコープを切り替える
 
 ```kt
 // https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen
