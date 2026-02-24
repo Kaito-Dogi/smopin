@@ -15,6 +15,7 @@ kotlin = "2.3.0"
 
 firebase = "34.9.0"
 googleServices = "4.4.4"
+gitlive-firebase = "2.4.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0-RC"
 metro = "0.9.4"
@@ -38,6 +39,7 @@ kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serializati
 firebaseAnalytics = { module = "com.google.firebase:firebase-analytics" }
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
 firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
+gitliveFirebaseFirestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive-firebase" }
 metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
 metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }

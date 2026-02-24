@@ -8,8 +8,7 @@ import dev.zacsweers.metro.Inject
 internal class DefaultSmokingAreaRepository(
   private val smokingAreaNetworkDataSource: SmokingAreaNetworkDataSource,
 ) : SmokingAreaRepository {
-  override suspend fun getSmokingAreaList(): List<SmokingArea> {
-    return smokingAreaNetworkDataSource.getSmokingAreaList()
-      .map(transform = SmokingAreaDataModel::toDomainModel)
-  }
+  override suspend fun getSmokingAreaList(): List<SmokingArea> =
+    smokingAreaNetworkDataSource.getSmokingAreaList()
+      .map(transform = SmokingAreaMapper::toDomainModel)
 }

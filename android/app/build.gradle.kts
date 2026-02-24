@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.androidApplication)
   alias(libs.plugins.compose)
   alias(libs.plugins.composeCompiler)
+  alias(libs.plugins.googleServices)
   alias(libs.plugins.metro)
 }
 
@@ -30,12 +31,12 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
   kotlin {
     compilerOptions {
-      jvmTarget.set(JvmTarget.JVM_11)
+      jvmTarget.set(JvmTarget.JVM_17)
     }
   }
 }
@@ -59,6 +60,7 @@ dependencies {
 
   debugImplementation(compose.uiTooling)
 
+  implementation(libs.gitliveFirebaseFirestore)
   implementation(libs.metroxAndroid)
   implementation(libs.metroxViewModel)
   implementation(libs.metroxViewModelCompose)

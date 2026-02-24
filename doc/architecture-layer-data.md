@@ -107,13 +107,13 @@ internal class DefaultUserRepository(
 
 #### 責務
 
-- データソースの依存を隠蔽する
+- Web API や外部 SDK などのデータソースへの依存を隠蔽する
 - I/O スレッドに切り替える
 
 #### 規約
 
 - `shared:data` モジュールで DataSource のインターフェースを定義する
-  - 具体実装のモジュールで DataSource のインターフェースを実装する
+  - 具体実装のモジュールで DataSource のインターフェースを実装する（つまり、DataSource は外部 SDK に直接依存する）
 - 1つのデータソースのみを隠蔽する
 - 具体的なソースの種類を重視するため、命名にソースの種類を含める
   - Network, Database, Preferences, File など
@@ -164,8 +164,8 @@ internal class DefaultUserNetworkDataSource(
 
 ### アプリケーション指向の処理の実装方法
 
-Repository にアプリケーションレベルの `CoroutineScope` を注入する。<br/>
-参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)
+- Repository にアプリケーションレベルの `CoroutineScope` を注入する（参考：[Make an operation live longer than the screen](https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen)）
+  - ただし、呼び出し側でライフサイクルの制御が必要な処理は、Repository でスコープを切り替えず、ViewModel にアプリケーションレベルの `CoroutineScope` を注入し、ViewModel でスコープを切り替える
 
 ```kt
 // https://developer.android.com/topic/architecture/data-layer#make_an_operation_live_longer_than_the_screen
