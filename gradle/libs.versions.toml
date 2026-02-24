@@ -12,6 +12,7 @@ androidx-testExt = "1.3.0"
 compose = "1.9.3"
 junit = "4.13.2"
 kotlin = "2.3.0"
+gitlive-firebase = "2.3.0"
 
 firebase = "34.9.0"
 googleServices = "4.4.4"
@@ -41,6 +42,7 @@ firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
 metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
 metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
+gitliveFirebaseFirestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive-firebase" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

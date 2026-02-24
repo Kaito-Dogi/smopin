@@ -4,6 +4,8 @@ import app.kaito_dogi.smopin.shared.common.AppDispatcher
 import app.kaito_dogi.smopin.shared.common.AppDispatchers
 import app.kaito_dogi.smopin.shared.data.smokingArea.SmokingAreaDataModel
 import app.kaito_dogi.smopin.shared.data.smokingArea.SmokingAreaNetworkDataSource
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.firestore.firestore
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -14,12 +16,20 @@ internal class DefaultSmokingAreaNetworkDataSource(
 ) : SmokingAreaNetworkDataSource {
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> =
     withContext(context = ioDispatcher) {
-      List(size = 3) {
-        SmokingAreaDataModel(
-          name = "Mock Smoking Area $it",
-          latitude = 35.6889544 + it * 0.1,
-          longitude = 139.6992443 + it * 0.1,
-        )
-      }
+      Firebase.firestore.collection(path = SMOKING_AREA_COLLECTION).get().documents
+        .map { document ->
+          SmokingAreaDataModel(
+            name = document.get(field = NAME_FIELD),
+            latitude = document.get(field = LATITUDE_FIELD),
+            longitude = document.get(field = LONGITUDE_FIELD),
+          )
+        }
     }
+
+  private companion object {
+    const val SMOKING_AREA_COLLECTION = "smoking_area"
+    const val NAME_FIELD = "name"
+    const val LATITUDE_FIELD = "latitude"
+    const val LONGITUDE_FIELD = "longitude"
+  }
 }

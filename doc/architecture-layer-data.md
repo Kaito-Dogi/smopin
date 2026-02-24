@@ -154,6 +154,20 @@ internal class DefaultUserNetworkDataSource(
 - データソースで扱うモデルをデータモデルに変換する処理は Mapper オブジェクトに定義する
   - 変換ロジックが単純な場合や再利用しない場合も、DataSource に直接記述してはならない
 
+
+
+### Firebase / 外部 SDK を使う場合の補足
+
+- `shared:data` には SDK 依存を持ち込まず、DataSource インターフェースのみを定義する
+- Firebase Kotlin SDK などの具体実装は `shared:database:*` などの具体実装モジュールに隔離する
+- Firestore コレクション・ドキュメントのフィールド名は DataSource 実装内で閉じ込め、Repository 以降には漏らさない
+
+#### 理由
+
+1. SDK の差し替え（Firestore -> REST API など）を UI / Domain に波及させないため
+2. KMP の target ごとの差分対応を具体実装モジュールだけに限定するため
+3. ビルド影響範囲を限定し、変更時の再コンパイルコストを下げるため
+
 ## 処理の種類
 
 | 処理の種類      | ライフサイクル                                                                                    |
