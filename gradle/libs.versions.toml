@@ -18,6 +18,7 @@ googleServices = "4.4.4"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0-RC"
 metro = "0.9.4"
+gitlive-firebase = "2.3.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -41,6 +42,8 @@ firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
 metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
 metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
+gitliveFirebaseApp = { module = "dev.gitlive:firebase-app", version.ref = "gitlive-firebase" }
+gitliveFirebaseFirestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive-firebase" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

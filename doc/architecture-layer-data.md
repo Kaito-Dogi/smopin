@@ -117,6 +117,8 @@ internal class DefaultUserRepository(
 - 1つのデータソースのみを隠蔽する
 - 具体的なソースの種類を重視するため、命名にソースの種類を含める
   - Network, Database, Preferences, File など
+- Firebase などの外部 SDK は、`shared:data` で定義したラッパーインターフェース経由で呼び出す
+  - SDK 実装や SDK 型を、DataSource インターフェースに漏らさない
 
 #### インターフェース例
 
@@ -153,6 +155,19 @@ internal class DefaultUserNetworkDataSource(
   - Metro などの DI ライブラリを使用し、ライブラリ経由で依存グラフを構築するため
 - データソースで扱うモデルをデータモデルに変換する処理は Mapper オブジェクトに定義する
   - 変換ロジックが単純な場合や再利用しない場合も、DataSource に直接記述してはならない
+
+### SDK ラッパー
+
+#### 責務
+
+- 外部 SDK の API 仕様差分を吸収する
+- DataSource から SDK 依存を切り離し、テスト時に Fake 実装へ差し替えやすくする
+
+#### 規約
+
+- ラッパーインターフェースは `shared:data` に定義する
+- ラッパー実装は具体実装モジュール（例：`shared:database:firestore`）に定義する
+- ラッパーでは SDK 呼び出しに専念し、Repository の責務（ドメインモデル変換）は持たない
 
 ## 処理の種類
 
