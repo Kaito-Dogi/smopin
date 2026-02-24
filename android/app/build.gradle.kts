@@ -59,6 +59,7 @@ dependencies {
 
   debugImplementation(compose.uiTooling)
 
+  implementation(libs.gitliveFirebaseFirestore)
   implementation(libs.metroxAndroid)
   implementation(libs.metroxViewModel)
   implementation(libs.metroxViewModelCompose)
