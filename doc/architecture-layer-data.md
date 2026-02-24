@@ -114,9 +114,20 @@ internal class DefaultUserRepository(
 
 - `shared:data` モジュールで DataSource のインターフェースを定義する
   - 具体実装のモジュールで DataSource のインターフェースを実装する
+- 外部 SDK を直接扱うラッパーのインターフェースは `shared:data` に定義する
+  - 具体実装は SDK 依存のモジュールに配置する
 - 1つのデータソースのみを隠蔽する
 - 具体的なソースの種類を重視するため、命名にソースの種類を含める
   - Network, Database, Preferences, File など
+
+#### ラッパー導入方針
+
+- 目的
+  - 外部 SDK の API 仕様変更の影響を局所化する
+  - DataSource の責務を「I/O とデータモデル変換」に集中させる
+- 配置
+  - インターフェース：`shared:data`
+  - 実装：外部 SDK に依存する具象モジュール（例：`shared:database:firestore`）
 
 #### インターフェース例
 

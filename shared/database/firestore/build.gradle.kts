@@ -27,6 +27,7 @@ kotlin {
     commonMain.dependencies {
       implementation(projects.shared.common)
       implementation(projects.shared.data)
+      implementation(libs.firebaseKotlinSdkFirestore)
       implementation(libs.kotlinxCoroutinesCore)
     }
     commonTest.dependencies {

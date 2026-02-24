@@ -23,7 +23,7 @@ class HogeViewModel(
     MutableStateFlow(value = HogeUiState.createInitial())
   val uiState: StateFlow<HogeUiState> = _uiState.asStateFlow()
 
-  fun onResume() {
+  fun onCreate() {
     viewModelScope.launch {
       runCatching {
         smokingAreaRepository.getSmokingAreaList()
@@ -39,4 +39,3 @@ class HogeViewModel(
     }
   }
 }
-
