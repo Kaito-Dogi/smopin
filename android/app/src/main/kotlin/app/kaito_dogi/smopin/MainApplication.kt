@@ -12,6 +12,8 @@ internal class MainApplication : Application(), MetroApplication {
 
   override fun onCreate() {
     super.onCreate()
+
+    // FIXME: App Startup を使用する（参考：https://developer.android.com/topic/libraries/app-startup）
     Firebase.initialize(context = this)
   }
 }
