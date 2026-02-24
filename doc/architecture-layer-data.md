@@ -192,7 +192,8 @@ class NewsRepository(
 }
 ```
 
-値を返すため、`Job` 型を返す `launch` ではなく、`async` を使用する。
+- 値を返す場合は `async` / `await` を使用する
+- 値を返さない場合は `Job` 型を返す `launch` / `join` を使用する
 
 ### ビジネス指向の処理の実装方法（Android）
 
