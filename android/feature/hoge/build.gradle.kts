@@ -36,6 +36,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.lifecycle.runtimeCompose)
 
+  implementation(libs.googleMapsCompose)
   implementation(libs.metroxAndroid)
   implementation(libs.metroxViewModel)
   implementation(libs.metroxViewModelCompose)

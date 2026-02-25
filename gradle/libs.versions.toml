@@ -13,7 +13,7 @@ compose = "1.9.3"
 junit = "4.13.2"
 kotlin = "2.3.0"
 
-firebase = "34.9.0"
+googleMaps = "6.1.0"
 googleServices = "4.4.4"
 gitlive-firebase = "2.4.0"
 kotlinx-coroutines = "1.10.2"
@@ -36,10 +36,8 @@ kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-cor
 kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
-firebaseAnalytics = { module = "com.google.firebase:firebase-analytics" }
-firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
-firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
 gitliveFirebaseFirestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive-firebase" }
+googleMapsCompose = { module = "com.google.maps.android:maps-compose", version.ref = "googleMaps" }
 metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
 metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
