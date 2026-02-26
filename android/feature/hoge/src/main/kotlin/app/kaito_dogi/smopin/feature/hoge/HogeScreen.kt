@@ -47,7 +47,7 @@ fun HogeScreen(
         val initialPosition = remember(key1 = initialSmokingArea) { initialSmokingArea.location.toLatLng() }
         val smokingAreaMakerState = rememberMarkerState(position = initialPosition)
         val cameraPositionState = rememberCameraPositionState {
-          position = CameraPosition.fromLatLngZoom(initialPosition, 10f)
+          position = CameraPosition.fromLatLngZoom(initialPosition, 20f)
         }
         GoogleMap(
           modifier = Modifier.weight(weight = 1f),
@@ -64,4 +64,4 @@ fun HogeScreen(
   }
 }
 
-fun Location.toLatLng() = LatLng(latitude.value, longitude.value)
+private fun Location.toLatLng() = LatLng(latitude.value, longitude.value)
