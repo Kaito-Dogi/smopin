@@ -25,7 +25,7 @@ android {
     // FIXME: local.properties に API Key を置くのをやめる
     val localProperties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
     buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAPS_API_KEY")}\"")
-    manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = "\"${localProperties.getProperty("GOOGLE_MAPS_API_KEY")}\""
+    manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY")
   }
   packaging {
     resources {
