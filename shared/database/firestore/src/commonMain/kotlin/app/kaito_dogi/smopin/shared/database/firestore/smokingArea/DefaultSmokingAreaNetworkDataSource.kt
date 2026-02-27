@@ -14,13 +14,11 @@ import kotlinx.coroutines.withContext
 internal class DefaultSmokingAreaNetworkDataSource(
   @param:AppDispatcher(dispatcher = AppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : SmokingAreaNetworkDataSource {
-  override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> =
-    withContext(context = ioDispatcher) {
-      Firebase.firestore.collection(collectionPath = SMOKING_AREA_COLLECTION)
-        .get()
-        .documents
-        .map(transform = SmokingAreaMapper::toDataModel)
-    }
+  override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = withContext(context = ioDispatcher) {
+    Firebase.firestore.collection(collectionPath = SMOKING_AREA_COLLECTION).get()
+      .documents
+      .map(transform = SmokingAreaMapper::toDataModel)
+  }
 
   companion object {
     private const val SMOKING_AREA_COLLECTION = "smoking_area"

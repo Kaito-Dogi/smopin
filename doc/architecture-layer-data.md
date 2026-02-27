@@ -72,7 +72,7 @@ interface UserRepository {
 - CRUD 処理は `create`, `get`, `update`, `delete` と命名する
 - ワンショットな読み取り処理は `suspend fun` で定義する
 - オブザーバルな読み取り処理は `suspend fun` を使用せず、返り値に `Flow` を使用する
-- 返り値が List の場合、メソッド名に接尾辞 `List` をつける
+- 返り値が `List`, `Map`, `Set` の場合、メソッド名に接尾辞 `List`, `Map`, `Set` をつける
 
 #### 実装例
 
@@ -139,11 +139,10 @@ internal class DefaultUserNetworkDataSource(
   @param:AppDispatcher(dispatcher = AppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
   private val userApi: UserApi,
 ) : UserNetworkDataSource {
-  override suspend fun getUserList(): List<UserDataModel> =
-    withContext(context = ioDispatcher) {
-      userApi.getUserList()
-        .map(transform = UserMapper::toDataModel)
-    }
+  override suspend fun getUserList(): List<UserDataModel> = withContext(context = ioDispatcher) {
+    userApi.getUserList()
+      .map(transform = UserMapper::toDataModel)
+  }
 }
 ```
 
