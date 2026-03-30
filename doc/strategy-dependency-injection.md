@@ -1,4 +1,4 @@
-# DI 戦略
+# DI（Dependency Injection）戦略
 
 ## 目的
 
