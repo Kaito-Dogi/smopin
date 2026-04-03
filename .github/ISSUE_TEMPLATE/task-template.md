@@ -1,5 +1,5 @@
 ---
-name: Task template
+name: Task Template
 about: タスクのテンプレート
 title: ''
 labels: task
@@ -7,11 +7,11 @@ assignees: Kaito-Dogi
 
 ---
 
-## 概要
+## 背景
 
 - TBD
 
-## 受け入れ条件
+## 完了条件
 
 - TBD
 
