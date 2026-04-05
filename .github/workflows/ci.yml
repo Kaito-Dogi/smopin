@@ -42,7 +42,7 @@ jobs:
                 "client_info": {
                   "mobilesdk_app_id": "xxx",
                   "android_client_info": {
-                    "package_name": "xxx"
+                    "package_name": "app.kaito_dogi.smopin"
                   }
                 },
                 "api_key": [
