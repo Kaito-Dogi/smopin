@@ -20,12 +20,6 @@ android {
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
-
-    // FIXME: 環境変数の管理を Android, iOS で一元管理する
-    // FIXME: local.properties に API Key を置くのをやめる
-    val localProperties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
-    buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAPS_API_KEY_DEV")}\"")
-    manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY_DEV")
   }
 
   packaging {
@@ -46,13 +40,19 @@ android {
 
   flavorDimensions += "env"
   productFlavors {
+    val localProperties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
+
     create("dev") {
       dimension = "env"
       applicationIdSuffix = ".dev"
       versionNameSuffix = "-dev"
+
+      manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY_DEV") ?: System.getenv("GOOGLE_MAPS_API_KEY_DEV")
     }
     create("prod") {
       dimension = "env"
+
+      manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY_PROD") ?: System.getenv("GOOGLE_MAPS_API_KEY_PROD")
     }
   }
 
