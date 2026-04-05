@@ -29,7 +29,32 @@ jobs:
           GOOGLE_MAPS_API_KEY=xxx
           EOF
       - name: Create google-services.json
-        run: printf '{}' > android/app/google-services.json
+        run: |
+          cat <<'EOF' > android/app/google-services.json
+          {
+            "project_info": {
+              "project_number": "xxx",
+              "project_id": "xxx",
+              "storage_bucket": "xxx"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "xxx",
+                  "android_client_info": {
+                    "package_name": "xxx"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "xxx"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "xxx"
+          }
+          EOF
       - name: Run Android Lint
         run: ./gradlew lintDebug
 
