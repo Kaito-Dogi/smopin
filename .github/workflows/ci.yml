@@ -97,14 +97,8 @@ jobs:
                     "package_name": "app.kaito_dogi.smopin"
                   }
                 },
-                "api_key": [
-                  {
-                    "current_key": "xxx"
-                  }
-                ]
               }
             ],
-            "configuration_version": "xxx"
           }
           EOF
       - name: Run KMP/Android Unit Test
