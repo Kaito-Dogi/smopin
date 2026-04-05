@@ -1,3 +1,7 @@
+# TODO: local.properties で設定しているシークレットを環境変数経由で取得する
+# TODO: google-services.json を GitHub Actions のシークレット経由で作成する
+# TODO: 共通する steps を .github/actiions にまとめる
+
 name: CI
 
 on:
@@ -75,6 +79,33 @@ jobs:
         run: |
           cat <<'EOF' > local.properties
           GOOGLE_MAPS_API_KEY=xxx
+          EOF
+      - name: Create google-services.json
+        run: |
+          cat <<'EOF' > android/app/google-services.json
+          {
+            "project_info": {
+              "project_number": "xxx",
+              "project_id": "xxx",
+              "storage_bucket": "xxx"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "xxx",
+                  "android_client_info": {
+                    "package_name": "app.kaito_dogi.smopin"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "xxx"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "xxx"
+          }
           EOF
       - name: Run Unit Test
         run: ./gradlew testDebug
