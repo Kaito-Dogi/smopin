@@ -13,7 +13,7 @@ assignees: Kaito-Dogi
 
 ## 完了条件
 
-- TBD
+- [ ] TBD
 
 ## 参照資料
 
