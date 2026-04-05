@@ -1,5 +1,5 @@
 ---
-name: Task Template
+name: Template Task
 about: タスクのテンプレート
 title: ''
 labels: task
