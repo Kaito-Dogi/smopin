@@ -6,6 +6,8 @@
 - OK：kotlinxCoroutinesCore：補完機能で `kotlinxCoroutinesCore` と表示されるため、間違えようがない
 - NG：kotlinx-coroutines-core：補完機能で `kotlinx`, `coroutines`, `core` と順に表示されるため、誤って `kotlinx.coroutines` と入力した状態で Sync して、エラーになる可能性がある
 
+※ プロジェクト作成時に Android Studio に生成された値はケバブケースのままである。これは将来的に本ドキュメントに沿って修正するため、参考にしない
+
 ## アルファベット順で定義する
 
 - 理由：ライブラリを重複して追加してしまうことを防ぐため
