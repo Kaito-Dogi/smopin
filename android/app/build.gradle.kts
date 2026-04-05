@@ -40,7 +40,11 @@ android {
 
   flavorDimensions += "env"
   productFlavors {
-    val localProperties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+      localPropertiesFile.inputStream().use(block = localProperties::load)
+    }
 
     create("dev") {
       dimension = "env"
