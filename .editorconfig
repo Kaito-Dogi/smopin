@@ -20,6 +20,7 @@ ktlint_standard_class-signature = disabled
 ktlint_standard_function-naming = disabled
 ktlint_standard_function-signature = disabled
 ktlint_standard_import-ordering = disabled
+ktlint_standard_package-name = disabled
 
 # Experimental rules run by default run on the ktlint code base itself. Experimental rules should not be released if
 # we are not pleased ourselves with the results on the ktlint code base.
