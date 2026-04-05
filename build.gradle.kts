@@ -10,5 +10,12 @@ plugins {
 
   // 新規に追加する場合はここから
   alias(libs.plugins.googleServices) apply false
+  alias(libs.plugins.ktlintGradle) apply false
   alias(libs.plugins.metro) apply false
+}
+
+subprojects {
+  // https://github.com/jlleitschuh/ktlint-gradle?tab=readme-ov-file#applying-to-subprojects
+  // Version should be inherited from parent
+  apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }

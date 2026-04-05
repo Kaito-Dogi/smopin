@@ -16,8 +16,6 @@ import kotlin.reflect.KClass
 @SingleIn(scope = AppScope::class)
 internal class ViewModelFactory(
   override val viewModelProviders: Map<KClass<out ViewModel>, Provider<ViewModel>>,
-  override val assistedFactoryProviders:
-  Map<KClass<out ViewModel>, Provider<ViewModelAssistedFactory>>,
-  override val manualAssistedFactoryProviders:
-  Map<KClass<out ManualViewModelAssistedFactory>, Provider<ManualViewModelAssistedFactory>>,
+  override val assistedFactoryProviders: Map<KClass<out ViewModel>, Provider<ViewModelAssistedFactory>>,
+  override val manualAssistedFactoryProviders: Map<KClass<out ManualViewModelAssistedFactory>, Provider<ManualViewModelAssistedFactory>>,
 ) : MetroViewModelFactory()
