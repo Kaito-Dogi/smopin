@@ -62,8 +62,8 @@ jobs:
       - name: Run Android Lint
         run: ./gradlew lintDebug
 
-  unit-test:
-    name: Unit Test
+  unit-test-kmp-android:
+    name: KMP/Android Unit Test
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -107,5 +107,5 @@ jobs:
             "configuration_version": "xxx"
           }
           EOF
-      - name: Run Unit Test
+      - name: Run KMP/Android Unit Test
         run: ./gradlew testDebug
