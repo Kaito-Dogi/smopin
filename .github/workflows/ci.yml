@@ -28,6 +28,8 @@ jobs:
           cat <<'EOF' > local.properties
           GOOGLE_MAPS_API_KEY=xxx
           EOF
+      - name: Create google-services.json
+        run: printf '{}' > android/app/google-services.json
       - name: Run Android Lint
         run: ./gradlew lintDebug
 
