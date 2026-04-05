@@ -20,30 +20,55 @@ android {
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
-
-    // FIXME: 環境変数の管理を Android, iOS で一元管理する
-    // FIXME: local.properties に API Key を置くのをやめる
-    val localProperties = Properties().apply { load(rootProject.file("local.properties").inputStream()) }
-    buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAPS_API_KEY")}\"")
-    manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY")
   }
+
   packaging {
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
   }
+
   buildTypes {
+    getByName("debug") {
+      applicationIdSuffix = ".debug"
+    }
     getByName("release") {
+      // TODO: リリース前に難読化対応を完了し、true にする
       isMinifyEnabled = false
     }
   }
+
+  flavorDimensions += "env"
+  productFlavors {
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+      localPropertiesFile.inputStream().use(block = localProperties::load)
+    }
+
+    create("dev") {
+      dimension = "env"
+      applicationIdSuffix = ".dev"
+      versionNameSuffix = "-dev"
+
+      manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY_DEV") ?: System.getenv("GOOGLE_MAPS_API_KEY_DEV")
+    }
+    create("prod") {
+      dimension = "env"
+
+      manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = localProperties.getProperty("GOOGLE_MAPS_API_KEY_PROD") ?: System.getenv("GOOGLE_MAPS_API_KEY_PROD")
+    }
+  }
+
   buildFeatures {
     buildConfig = true
   }
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
+
   kotlin {
     compilerOptions {
       jvmTarget.set(JvmTarget.JVM_17)

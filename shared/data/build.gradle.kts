@@ -29,6 +29,7 @@ kotlin {
 
       implementation(libs.kotlinxSerializationJson)
     }
+
     commonTest.dependencies {
       implementation(libs.kotlin.test)
       implementation(libs.kotlinxCoroutinesTest)
@@ -39,10 +40,12 @@ kotlin {
 android {
   namespace = "app.kaito_dogi.smopin.shared.data"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
+
   defaultConfig {
     minSdk = libs.versions.android.minSdk.get().toInt()
   }

@@ -31,6 +31,7 @@ kotlin {
       implementation(libs.gitliveFirebaseFirestore)
       implementation(libs.kotlinxCoroutinesCore)
     }
+
     commonTest.dependencies {
       implementation(libs.kotlin.test)
     }
@@ -40,10 +41,12 @@ kotlin {
 android {
   namespace = "app.kaito_dogi.smopin.shared.database.firestore"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
+
   defaultConfig {
     minSdk = libs.versions.android.minSdk.get().toInt()
   }
