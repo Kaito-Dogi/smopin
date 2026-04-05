@@ -25,6 +25,6 @@ runs:
         mkdir -p android/app/src/prod
         printf '%s' "$GOOGLE_SERVICES_JSON_BASE64_PROD" | base64 --decode > android/app/src/prod/google-services.json
       env:
-        GOOGLE_SERVICES_JSON_BASE64_DEV: ${{ google-services-json-base64-dev }}
-        GOOGLE_SERVICES_JSON_BASE64_PROD: ${{ google-services-json-base64-prod }}
+        GOOGLE_SERVICES_JSON_BASE64_DEV: ${{ inputs.google-services-json-base64-dev }}
+        GOOGLE_SERVICES_JSON_BASE64_PROD: ${{ inputs.google-services-json-base64-prod }}
       shell: bash
