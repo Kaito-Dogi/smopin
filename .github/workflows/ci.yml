@@ -18,6 +18,9 @@ jobs:
         uses: actions/checkout@v6
       - name: Setup Android
         uses: ./.github/actions/setup-android
+        with:
+          google-services-json-base64-dev: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_DEV }}
+          google-services-json-base64-prod: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_PROD }}
       - name: Run Android Lint
         run: ./gradlew lintDebug
         env:
@@ -32,6 +35,9 @@ jobs:
         uses: actions/checkout@v6
       - name: Setup Android
         uses: ./.github/actions/setup-android
+        with:
+          google-services-json-base64-dev: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_DEV }}
+          google-services-json-base64-prod: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_PROD }}
       - name: Run ktlint
         run: ./gradlew ktlintCheck
         env:
@@ -46,6 +52,9 @@ jobs:
         uses: actions/checkout@v6
       - name: Setup Android
         uses: ./.github/actions/setup-android
+        with:
+          google-services-json-base64-dev: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_DEV }}
+          google-services-json-base64-prod: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_PROD }}
       - name: Run Unit Test
         run: ./gradlew testDebug
         env:

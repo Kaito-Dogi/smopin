@@ -1,5 +1,13 @@
 name: Setup Android
 
+inputs:
+  google-services-json-base64-dev:
+    description: secrets.GOOGLE_SERVICES_JSON_BASE64_DEV
+    required: true
+  google-services-json-base64-prod:
+    description: secrets.GOOGLE_SERVICES_JSON_BASE64_PROD
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -17,6 +25,6 @@ runs:
         mkdir -p android/app/src/prod
         printf '%s' "$GOOGLE_SERVICES_JSON_BASE64_PROD" | base64 --decode > android/app/src/prod/google-services.json
       env:
-        GOOGLE_SERVICES_JSON_BASE64_DEV: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_DEV }}
-        GOOGLE_SERVICES_JSON_BASE64_PROD: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_PROD }}
+        GOOGLE_SERVICES_JSON_BASE64_DEV: ${{ google-services-json-base64-dev }}
+        GOOGLE_SERVICES_JSON_BASE64_PROD: ${{ google-services-json-base64-prod }}
       shell: bash
