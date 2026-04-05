@@ -8,6 +8,7 @@ plugins {
   alias(libs.plugins.kotlinAndroid) apply false
   alias(libs.plugins.kotlinMultiplatform) apply false
 
+  // 新規に追加する場合はここから
   alias(libs.plugins.googleServices) apply false
   alias(libs.plugins.metro) apply false
 }

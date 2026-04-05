@@ -27,12 +27,14 @@ android {
 
 dependencies {
   implementation(projects.shared.domain)
+
   implementation(compose.runtime)
   implementation(compose.foundation)
   implementation(compose.material3)
   implementation(compose.ui)
   implementation(compose.components.resources)
   implementation(compose.components.uiToolingPreview)
+  implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.lifecycle.runtimeCompose)
 
@@ -40,5 +42,4 @@ dependencies {
   implementation(libs.metroxAndroid)
   implementation(libs.metroxViewModel)
   implementation(libs.metroxViewModelCompose)
-  implementation(libs.androidx.core.ktx)
 }

@@ -1,0 +1,111 @@
+# TODO: local.properties で設定しているシークレットを環境変数経由で取得する
+# TODO: google-services.json を GitHub Actions のシークレット経由で作成する
+# TODO: 共通する steps を .github/actiions にまとめる
+
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android-lint:
+    name: Android Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Create local.properties
+        run: |
+          cat <<'EOF' > local.properties
+          GOOGLE_MAPS_API_KEY=xxx
+          EOF
+      - name: Create google-services.json
+        run: |
+          cat <<'EOF' > android/app/google-services.json
+          {
+            "project_info": {
+              "project_number": "xxx",
+              "project_id": "xxx",
+              "storage_bucket": "xxx"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "xxx",
+                  "android_client_info": {
+                    "package_name": "app.kaito_dogi.smopin"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "xxx"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "xxx"
+          }
+          EOF
+      - name: Run Android Lint
+        run: ./gradlew lintDebug
+
+  unit-test-kmp-android:
+    name: Unit Test
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Create local.properties
+        run: |
+          cat <<'EOF' > local.properties
+          GOOGLE_MAPS_API_KEY=xxx
+          EOF
+      - name: Create google-services.json
+        run: |
+          cat <<'EOF' > android/app/google-services.json
+          {
+            "project_info": {
+              "project_number": "xxx",
+              "project_id": "xxx",
+              "storage_bucket": "xxx"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "xxx",
+                  "android_client_info": {
+                    "package_name": "app.kaito_dogi.smopin"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "xxx"
+                  }
+                ]
+              }
+            ],
+            "configuration_version": "xxx"
+          }
+          EOF
+      - name: Run Unit Test
+        run: ./gradlew testDebug
