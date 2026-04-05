@@ -1,0 +1,22 @@
+name: Setup Android
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup JDK
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v6
+    - name: Create google-services.json
+      run: |
+        mkdir -p android/app/src/dev
+        printf '%s' "$GOOGLE_SERVICES_JSON_BASE64_DEV" | base64 --decode > android/app/src/dev/google-services.json
+        mkdir -p android/app/src/prod
+        printf '%s' "$GOOGLE_SERVICES_JSON_BASE64_PROD" | base64 --decode > android/app/src/prod/google-services.json
+      env:
+        GOOGLE_SERVICES_JSON_BASE64_DEV: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_DEV }}
+        GOOGLE_SERVICES_JSON_BASE64_PROD: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64_PROD }}
+      shell: bash
