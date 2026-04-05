@@ -63,7 +63,7 @@ jobs:
         run: ./gradlew lintDebug
 
   unit-test-kmp-android:
-    name: KMP/Android Unit Test
+    name: Unit Test
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -97,9 +97,15 @@ jobs:
                     "package_name": "app.kaito_dogi.smopin"
                   }
                 },
+                "api_key": [
+                  {
+                    "current_key": "xxx"
+                  }
+                ]
               }
             ],
+            "configuration_version": "xxx"
           }
           EOF
-      - name: Run KMP/Android Unit Test
+      - name: Run Unit Test
         run: ./gradlew testDebug
