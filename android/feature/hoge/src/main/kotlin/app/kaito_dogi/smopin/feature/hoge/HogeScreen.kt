@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,8 +37,8 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.Longitude
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -78,11 +79,29 @@ fun HogeScreen(
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(initialPosition, 17f)
   }
+  var lastCameraPosition by remember {
+    mutableStateOf(value = uiState.currentLocation)
+  }
+  var isMapLoaded by remember { mutableStateOf(value = false) }
 
   LaunchedEffect(uiState.currentLocation) {
     uiState.currentLocation?.let { currentLocation ->
-      val currentLatLng = currentLocation.toLatLng()
-      cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLatLng, 17f)
+      val currentCameraPosition = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), MAP_ZOOM_LEVEL)
+      if (!isMapLoaded) {
+        cameraPositionState.position = currentCameraPosition
+        lastCameraPosition = currentLocation
+        return@let
+      }
+      if (lastCameraPosition == null) {
+        lastCameraPosition = currentLocation
+        cameraPositionState.position = currentCameraPosition
+        return@let
+      }
+      val distance = lastCameraPosition?.distanceTo(other = currentLocation) ?: 0.0
+      if (distance >= MIN_CAMERA_UPDATE_DISTANCE_METER) {
+        lastCameraPosition = currentLocation
+        cameraPositionState.position = currentCameraPosition
+      }
     }
   }
 
@@ -91,7 +110,7 @@ fun HogeScreen(
       modifier = Modifier
         .fillMaxSize()
         .padding(paddingValues = innerPadding),
-      verticalArrangement = Arrangement.spacedBy(space = dp(8)),
+      verticalArrangement = Arrangement.spacedBy(space = 8.dp),
     ) {
       if (!hasLocationPermission) {
         Button(
@@ -107,11 +126,6 @@ fun HogeScreen(
         ) {
           Text(text = "現在地を取得")
         }
-      }
-
-      uiState.currentLocation?.let { currentLocation ->
-        Text(text = "current latitude: ${currentLocation.latitude.value}")
-        Text(text = "current longitude: ${currentLocation.longitude.value}")
       }
 
       if (uiState.isLoading) {
@@ -130,13 +144,18 @@ fun HogeScreen(
             .weight(weight = 1f),
           cameraPositionState = cameraPositionState,
           properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+          onMapLoaded = {
+            isMapLoaded = true
+          },
         ) {
           uiState.smokingAreaList.forEach { smokingArea ->
-            Marker(
-              state = rememberMarkerState(position = smokingArea.location.toLatLng()),
-              title = smokingArea.name,
-              snippet = smokingArea.name,
-            )
+            key(smokingArea.name) {
+              Marker(
+                state = rememberMarkerState(position = smokingArea.location.toLatLng()),
+                title = smokingArea.name,
+                snippet = smokingArea.name,
+              )
+            }
           }
         }
       }
@@ -213,6 +232,14 @@ private fun Context.isFineLocationPermissionGranted(): Boolean =
 
 private fun Location.toLatLng(): LatLng = LatLng(latitude.value, longitude.value)
 
+private fun Location.distanceTo(other: Location): Double {
+  val latitudeDiff = latitude.value - other.latitude.value
+  val longitudeDiff = longitude.value - other.longitude.value
+  val latitudeMeter = latitudeDiff * LATITUDE_DEGREE_TO_METER
+  val longitudeMeter = longitudeDiff * LONGITUDE_DEGREE_TO_METER
+  return kotlin.math.sqrt(latitudeMeter * latitudeMeter + longitudeMeter * longitudeMeter)
+}
+
 private fun android.location.Location.toDomainModel(): Location = Location(
   latitude = Latitude(value = latitude),
   longitude = Longitude(value = longitude),
@@ -220,5 +247,9 @@ private fun android.location.Location.toDomainModel(): Location = Location(
 
 private const val NETWORK_UPDATE_INTERVAL_MILLIS: Long = 10_000L
 private const val NETWORK_UPDATE_DISTANCE_METER: Float = 20f
-private const val GPS_UPDATE_INTERVAL_MILLIS: Long = 5_000L
+private const val GPS_UPDATE_INTERVAL_MILLIS: Long = 5_00L
 private const val GPS_UPDATE_DISTANCE_METER: Float = 10f
+private const val MIN_CAMERA_UPDATE_DISTANCE_METER: Double = 15.0
+private const val LATITUDE_DEGREE_TO_METER: Double = 111_320.0
+private const val LONGITUDE_DEGREE_TO_METER: Double = 91_000.0
+private const val MAP_ZOOM_LEVEL: Float = 17f
