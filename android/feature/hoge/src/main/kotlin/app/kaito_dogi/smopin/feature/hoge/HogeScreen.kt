@@ -3,21 +3,32 @@ package app.kaito_dogi.smopin.feature.hoge
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Looper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kaito_dogi.smopin.shared.domain.smokingArea.Latitude
@@ -26,10 +37,14 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.Longitude
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 @Composable
 fun HogeScreen(
@@ -38,89 +53,109 @@ fun HogeScreen(
 ) {
   val context = LocalContext.current
   val uiState: HogeUiState by viewModel.uiState.collectAsStateWithLifecycle()
+  var hasLocationPermission by remember { mutableStateOf(value = context.isLocationPermissionGranted()) }
 
   val permissionLauncher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.RequestMultiplePermissions(),
   ) { resultMap ->
-    val isGranted = resultMap.values.any { it }
-    if (isGranted) {
-      context.getCurrentLocation()?.let(viewModel::onCurrentLocationUpdate)
-    }
+    hasLocationPermission = resultMap.values.any { it }
   }
 
   LaunchedEffect(key1 = Unit) {
     viewModel.onCreate()
-    if (context.isLocationPermissionGranted()) {
-      context.getCurrentLocation()?.let(viewModel::onCurrentLocationUpdate)
+  }
+
+  LaunchedEffect(hasLocationPermission) {
+    if (hasLocationPermission) {
+      context.locationUpdateFlow().collect(viewModel::onCurrentLocationUpdate)
     }
   }
 
-  Scaffold(
-    modifier = modifier,
-  ) { innerPadding ->
+  val initialPosition = remember(uiState.currentLocation, uiState.smokingAreaList) {
+    uiState.currentLocation?.toLatLng()
+      ?: uiState.smokingAreaList.getOrNull(index = 0)?.location?.toLatLng()
+      ?: LatLng(35.681236, 139.767125)
+  }
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(initialPosition, 17f)
+  }
+  var lastCameraPosition by remember {
+    mutableStateOf(value = uiState.currentLocation)
+  }
+  var isMapLoaded by remember { mutableStateOf(value = false) }
+
+  LaunchedEffect(uiState.currentLocation) {
+    uiState.currentLocation?.let { currentLocation ->
+      val currentCameraPosition = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), MAP_ZOOM_LEVEL)
+      if (!isMapLoaded) {
+        cameraPositionState.position = currentCameraPosition
+        lastCameraPosition = currentLocation
+        return@let
+      }
+      if (lastCameraPosition == null) {
+        lastCameraPosition = currentLocation
+        cameraPositionState.position = currentCameraPosition
+        return@let
+      }
+      val distance = lastCameraPosition?.distanceTo(other = currentLocation) ?: 0.0
+      if (distance >= MIN_CAMERA_UPDATE_DISTANCE_METER) {
+        lastCameraPosition = currentLocation
+        cameraPositionState.position = currentCameraPosition
+      }
+    }
+  }
+
+  Scaffold(modifier = modifier) { innerPadding ->
     Column(
-      modifier = Modifier.padding(paddingValues = innerPadding),
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues = innerPadding),
+      verticalArrangement = Arrangement.spacedBy(space = 8.dp),
     ) {
-      Button(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = {
-          permissionLauncher.launch(
-            arrayOf(
-              Manifest.permission.ACCESS_COARSE_LOCATION,
-              Manifest.permission.ACCESS_FINE_LOCATION,
-            ),
-          )
-        },
-      ) {
-        Text(text = "現在地を取得")
-      }
-
-      uiState.currentLocation?.let { currentLocation ->
-        Text(text = "current latitude: ${currentLocation.latitude.value}")
-        Text(text = "current longitude: ${currentLocation.longitude.value}")
-      }
-
-      uiState.smokingAreaList.forEach { smokingArea ->
-        Text(text = smokingArea.name)
-        Text(text = "latitude: ${smokingArea.location.latitude.value}")
-        Text(text = "longitude: ${smokingArea.location.longitude.value}")
-      }
-
-      val initialPosition = remember(uiState.currentLocation, uiState.smokingAreaList) {
-        uiState.currentLocation?.toLatLng()
-          ?: uiState.smokingAreaList.getOrNull(index = 0)?.location?.toLatLng()
-      }
-      if (initialPosition != null) {
-        val cameraPositionState = rememberCameraPositionState {
-          position = CameraPosition.fromLatLngZoom(initialPosition, 17f)
-        }
-        val smokingArea = uiState.smokingAreaList.getOrNull(index = 0)
-        val smokingAreaMakerState = rememberMarkerState(
-          position = smokingArea?.location?.toLatLng() ?: initialPosition,
-        )
-        val currentLocationMarkerState = rememberMarkerState(position = initialPosition)
-
-        LaunchedEffect(initialPosition) {
-          cameraPositionState.position = CameraPosition.fromLatLngZoom(initialPosition, 17f)
-        }
-
-        GoogleMap(
-          modifier = Modifier.weight(weight = 1f),
-          cameraPositionState = cameraPositionState,
+      if (!hasLocationPermission) {
+        Button(
+          modifier = Modifier.fillMaxWidth(),
+          onClick = {
+            permissionLauncher.launch(
+              arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+              ),
+            )
+          },
         ) {
-          smokingArea?.let {
-            Marker(
-              state = smokingAreaMakerState,
-              title = it.name,
-              snippet = it.name,
-            )
-          }
-          uiState.currentLocation?.let {
-            Marker(
-              state = currentLocationMarkerState,
-              title = "現在地",
-              snippet = "現在地",
-            )
+          Text(text = "現在地を取得")
+        }
+      }
+
+      if (uiState.isLoading) {
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(weight = 1f),
+          contentAlignment = Alignment.Center,
+        ) {
+          CircularProgressIndicator()
+        }
+      } else {
+        GoogleMap(
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(weight = 1f),
+          cameraPositionState = cameraPositionState,
+          properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+          onMapLoaded = {
+            isMapLoaded = true
+          },
+        ) {
+          uiState.smokingAreaList.forEach { smokingArea ->
+            key(smokingArea.name) {
+              Marker(
+                state = rememberMarkerState(position = smokingArea.location.toLatLng()),
+                title = smokingArea.name,
+                snippet = smokingArea.name,
+              )
+            }
           }
         }
       }
@@ -128,16 +163,59 @@ fun HogeScreen(
   }
 }
 
-private fun Context.getCurrentLocation(): Location? {
-  val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return null
+private fun Context.locationUpdateFlow(): Flow<Location> = callbackFlow {
+  val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+  if (locationManager == null) {
+    close()
+    return@callbackFlow
+  }
 
-  return locationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER)
+  val listener = LocationListener { location ->
+    trySend(location.toDomainModel())
+  }
+
+  getLastKnownLocation(locationManager = locationManager)?.let { location ->
+    trySend(location)
+  }
+
+  if (
+    isLocationPermissionGranted() &&
+    locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+  ) {
+    locationManager.requestLocationUpdates(
+      LocationManager.NETWORK_PROVIDER,
+      NETWORK_UPDATE_INTERVAL_MILLIS,
+      NETWORK_UPDATE_DISTANCE_METER,
+      listener,
+      Looper.getMainLooper(),
+    )
+  }
+
+  if (
+    isFineLocationPermissionGranted() &&
+    locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+  ) {
+    locationManager.requestLocationUpdates(
+      LocationManager.GPS_PROVIDER,
+      GPS_UPDATE_INTERVAL_MILLIS,
+      GPS_UPDATE_DISTANCE_METER,
+      listener,
+      Looper.getMainLooper(),
+    )
+  }
+
+  awaitClose {
+    locationManager.removeUpdates(listener)
+  }
+}
+
+private fun Context.getLastKnownLocation(locationManager: LocationManager): Location? =
+  locationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER)
     ?.toDomainModel()
     ?: locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
       ?.toDomainModel()
     ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
       ?.toDomainModel()
-}
 
 private fun Context.isLocationPermissionGranted(): Boolean {
   val fineLocationPermission =
@@ -148,9 +226,30 @@ private fun Context.isLocationPermissionGranted(): Boolean {
     || coarseLocationPermission == PackageManager.PERMISSION_GRANTED
 }
 
+private fun Context.isFineLocationPermissionGranted(): Boolean =
+  ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+    PackageManager.PERMISSION_GRANTED
+
 private fun Location.toLatLng(): LatLng = LatLng(latitude.value, longitude.value)
+
+private fun Location.distanceTo(other: Location): Double {
+  val latitudeDiff = latitude.value - other.latitude.value
+  val longitudeDiff = longitude.value - other.longitude.value
+  val latitudeMeter = latitudeDiff * LATITUDE_DEGREE_TO_METER
+  val longitudeMeter = longitudeDiff * LONGITUDE_DEGREE_TO_METER
+  return kotlin.math.sqrt(latitudeMeter * latitudeMeter + longitudeMeter * longitudeMeter)
+}
 
 private fun android.location.Location.toDomainModel(): Location = Location(
   latitude = Latitude(value = latitude),
   longitude = Longitude(value = longitude),
 )
+
+private const val NETWORK_UPDATE_INTERVAL_MILLIS: Long = 10_000L
+private const val NETWORK_UPDATE_DISTANCE_METER: Float = 20f
+private const val GPS_UPDATE_INTERVAL_MILLIS: Long = 5_00L
+private const val GPS_UPDATE_DISTANCE_METER: Float = 10f
+private const val MIN_CAMERA_UPDATE_DISTANCE_METER: Double = 15.0
+private const val LATITUDE_DEGREE_TO_METER: Double = 111_320.0
+private const val LONGITUDE_DEGREE_TO_METER: Double = 91_000.0
+private const val MAP_ZOOM_LEVEL: Float = 17f

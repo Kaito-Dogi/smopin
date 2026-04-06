@@ -26,15 +26,24 @@ class HogeViewModel(
 
   fun onCreate() {
     viewModelScope.launch {
+      _uiState.update {
+        it.copy(isLoading = true)
+      }
       runCatching {
         smokingAreaRepository.getSmokingAreaList()
       }.onSuccess { smokingAreaList ->
         _uiState.update {
-          it.copy(smokingAreaList = smokingAreaList)
+          it.copy(
+            isLoading = false,
+            smokingAreaList = smokingAreaList,
+          )
         }
       }.onFailure {
         _uiState.update {
-          it.copy(smokingAreaList = emptyList())
+          it.copy(
+            isLoading = false,
+            smokingAreaList = emptyList(),
+          )
         }
       }
     }
