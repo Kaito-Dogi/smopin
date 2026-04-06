@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -77,10 +78,15 @@ fun HogeScreen(
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(initialPosition, 17f)
   }
+  val currentLocationMarkerState = remember {
+    MarkerState(position = initialPosition)
+  }
 
   LaunchedEffect(uiState.currentLocation) {
     uiState.currentLocation?.let { currentLocation ->
-      cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 17f)
+      val currentLatLng = currentLocation.toLatLng()
+      currentLocationMarkerState.position = currentLatLng
+      cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLatLng, 17f)
     }
   }
 
@@ -135,9 +141,9 @@ fun HogeScreen(
               snippet = smokingArea.name,
             )
           }
-          uiState.currentLocation?.let { currentLocation ->
+          uiState.currentLocation?.let {
             Marker(
-              state = rememberMarkerState(position = currentLocation.toLatLng()),
+              state = currentLocationMarkerState,
               title = "現在地",
               snippet = "現在地",
             )
