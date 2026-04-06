@@ -13,8 +13,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,6 +42,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
@@ -105,58 +110,77 @@ fun HogeScreen(
     }
   }
 
-  Scaffold(modifier = modifier) { innerPadding ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues = innerPadding),
-      verticalArrangement = Arrangement.spacedBy(space = 8.dp),
-    ) {
-      if (!hasLocationPermission) {
-        Button(
-          modifier = Modifier.fillMaxWidth(),
-          onClick = {
-            permissionLauncher.launch(
-              arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-              ),
+  Scaffold(
+    modifier = modifier,
+    contentWindowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0),
+  ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+        uiSettings = MapUiSettings(mapToolbarEnabled = true),
+        onMapLoaded = {
+          isMapLoaded = true
+        },
+      ) {
+        uiState.smokingAreaList.forEach { smokingArea ->
+          key(smokingArea.name) {
+            Marker(
+              state = rememberMarkerState(position = smokingArea.location.toLatLng()),
+              title = smokingArea.name,
+              snippet = smokingArea.name,
             )
-          },
+          }
+        }
+      }
+
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .windowInsetsPadding(WindowInsets.safeDrawing),
+        verticalArrangement = Arrangement.SpaceBetween,
+      ) {
+        Column(
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+          verticalArrangement = Arrangement.spacedBy(space = 8.dp),
         ) {
-          Text(text = "現在地を取得")
+          if (!hasLocationPermission) {
+            Button(
+              modifier = Modifier.fillMaxWidth(),
+              onClick = {
+                permissionLauncher.launch(
+                  arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                  ),
+                )
+              },
+            ) {
+              Text(text = "現在地を取得")
+            }
+          }
+        }
+
+        Card(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .navigationBarsPadding(),
+        ) {
+          Text(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            text = "ピンをタップしてから、右下の経路ボタンでルートを表示できます",
+          )
         }
       }
 
       if (uiState.isLoading) {
         Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .weight(weight = 1f),
+          modifier = Modifier.fillMaxSize(),
           contentAlignment = Alignment.Center,
         ) {
           CircularProgressIndicator()
-        }
-      } else {
-        GoogleMap(
-          modifier = Modifier
-            .fillMaxWidth()
-            .weight(weight = 1f),
-          cameraPositionState = cameraPositionState,
-          properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
-          onMapLoaded = {
-            isMapLoaded = true
-          },
-        ) {
-          uiState.smokingAreaList.forEach { smokingArea ->
-            key(smokingArea.name) {
-              Marker(
-                state = rememberMarkerState(position = smokingArea.location.toLatLng()),
-                title = smokingArea.name,
-                snippet = smokingArea.name,
-              )
-            }
-          }
         }
       }
     }
