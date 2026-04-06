@@ -2,6 +2,7 @@ package app.kaito_dogi.smopin.feature.hoge
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.kaito_dogi.smopin.shared.domain.smokingArea.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingAreaRepository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
@@ -29,13 +30,19 @@ class HogeViewModel(
         smokingAreaRepository.getSmokingAreaList()
       }.onSuccess { smokingAreaList ->
         _uiState.update {
-          HogeUiState(smokingAreaList = smokingAreaList)
+          it.copy(smokingAreaList = smokingAreaList)
         }
       }.onFailure {
         _uiState.update {
-          HogeUiState(smokingAreaList = emptyList())
+          it.copy(smokingAreaList = emptyList())
         }
       }
+    }
+  }
+
+  fun onCurrentLocationUpdate(location: Location) {
+    _uiState.update {
+      it.copy(currentLocation = location)
     }
   }
 }
