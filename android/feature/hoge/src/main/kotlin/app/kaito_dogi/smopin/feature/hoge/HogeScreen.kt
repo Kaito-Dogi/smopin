@@ -13,8 +13,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Button
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,6 +90,14 @@ fun HogeScreen(
     mutableStateOf(value = uiState.currentLocation)
   }
   var isMapLoaded by remember { mutableStateOf(value = false) }
+  val layoutDirection = LocalLayoutDirection.current
+  val safeDrawingPaddingValues = WindowInsets.safeDrawing.asPaddingValues()
+  val mapContentPadding = PaddingValues(
+    start = safeDrawingPaddingValues.calculateLeftPadding(layoutDirection),
+    end = safeDrawingPaddingValues.calculateRightPadding(layoutDirection),
+    top = safeDrawingPaddingValues.calculateTopPadding(),
+    bottom = safeDrawingPaddingValues.calculateBottomPadding() + MAP_ROUTE_GUIDE_HEIGHT,
+  )
 
   LaunchedEffect(uiState.currentLocation) {
     uiState.currentLocation?.let { currentLocation ->
@@ -120,6 +130,7 @@ fun HogeScreen(
         cameraPositionState = cameraPositionState,
         properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
         uiSettings = MapUiSettings(mapToolbarEnabled = true),
+        contentPadding = mapContentPadding,
         onMapLoaded = {
           isMapLoaded = true
         },
@@ -165,8 +176,7 @@ fun HogeScreen(
         Card(
           modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .navigationBarsPadding(),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
           Text(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -277,3 +287,4 @@ private const val MIN_CAMERA_UPDATE_DISTANCE_METER: Double = 15.0
 private const val LATITUDE_DEGREE_TO_METER: Double = 111_320.0
 private const val LONGITUDE_DEGREE_TO_METER: Double = 91_000.0
 private const val MAP_ZOOM_LEVEL: Float = 17f
+private val MAP_ROUTE_GUIDE_HEIGHT = 72.dp
