@@ -13,8 +13,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +44,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
@@ -83,6 +90,14 @@ fun HogeScreen(
     mutableStateOf(value = uiState.currentLocation)
   }
   var isMapLoaded by remember { mutableStateOf(value = false) }
+  val layoutDirection = LocalLayoutDirection.current
+  val safeDrawingPaddingValues = WindowInsets.safeDrawing.asPaddingValues()
+  val mapContentPadding = PaddingValues(
+    start = safeDrawingPaddingValues.calculateLeftPadding(layoutDirection),
+    end = safeDrawingPaddingValues.calculateRightPadding(layoutDirection),
+    top = safeDrawingPaddingValues.calculateTopPadding(),
+    bottom = safeDrawingPaddingValues.calculateBottomPadding() + MAP_ROUTE_GUIDE_HEIGHT,
+  )
 
   LaunchedEffect(uiState.currentLocation) {
     uiState.currentLocation?.let { currentLocation ->
@@ -105,58 +120,77 @@ fun HogeScreen(
     }
   }
 
-  Scaffold(modifier = modifier) { innerPadding ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues = innerPadding),
-      verticalArrangement = Arrangement.spacedBy(space = 8.dp),
-    ) {
-      if (!hasLocationPermission) {
-        Button(
-          modifier = Modifier.fillMaxWidth(),
-          onClick = {
-            permissionLauncher.launch(
-              arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-              ),
+  Scaffold(
+    modifier = modifier,
+    contentWindowInsets = WindowInsets(left = 0, top = 0, right = 0, bottom = 0),
+  ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+        uiSettings = MapUiSettings(mapToolbarEnabled = true),
+        contentPadding = mapContentPadding,
+        onMapLoaded = {
+          isMapLoaded = true
+        },
+      ) {
+        uiState.smokingAreaList.forEach { smokingArea ->
+          key(smokingArea.name) {
+            Marker(
+              state = rememberMarkerState(position = smokingArea.location.toLatLng()),
+              title = smokingArea.name,
+              snippet = smokingArea.name,
             )
-          },
+          }
+        }
+      }
+
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .windowInsetsPadding(WindowInsets.safeDrawing),
+        verticalArrangement = Arrangement.SpaceBetween,
+      ) {
+        Column(
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+          verticalArrangement = Arrangement.spacedBy(space = 8.dp),
         ) {
-          Text(text = "現在地を取得")
+          if (!hasLocationPermission) {
+            Button(
+              modifier = Modifier.fillMaxWidth(),
+              onClick = {
+                permissionLauncher.launch(
+                  arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                  ),
+                )
+              },
+            ) {
+              Text(text = "現在地を取得")
+            }
+          }
+        }
+
+        Card(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+          Text(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            text = "ピンをタップしてから、右下の経路ボタンでルートを表示できます",
+          )
         }
       }
 
       if (uiState.isLoading) {
         Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .weight(weight = 1f),
+          modifier = Modifier.fillMaxSize(),
           contentAlignment = Alignment.Center,
         ) {
           CircularProgressIndicator()
-        }
-      } else {
-        GoogleMap(
-          modifier = Modifier
-            .fillMaxWidth()
-            .weight(weight = 1f),
-          cameraPositionState = cameraPositionState,
-          properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
-          onMapLoaded = {
-            isMapLoaded = true
-          },
-        ) {
-          uiState.smokingAreaList.forEach { smokingArea ->
-            key(smokingArea.name) {
-              Marker(
-                state = rememberMarkerState(position = smokingArea.location.toLatLng()),
-                title = smokingArea.name,
-                snippet = smokingArea.name,
-              )
-            }
-          }
         }
       }
     }
@@ -253,3 +287,4 @@ private const val MIN_CAMERA_UPDATE_DISTANCE_METER: Double = 15.0
 private const val LATITUDE_DEGREE_TO_METER: Double = 111_320.0
 private const val LONGITUDE_DEGREE_TO_METER: Double = 91_000.0
 private const val MAP_ZOOM_LEVEL: Float = 17f
+private val MAP_ROUTE_GUIDE_HEIGHT = 72.dp
