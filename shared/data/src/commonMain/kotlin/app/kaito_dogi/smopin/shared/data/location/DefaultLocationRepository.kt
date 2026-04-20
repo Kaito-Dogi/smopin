@@ -10,6 +10,6 @@ import kotlinx.coroutines.flow.map
 internal class DefaultLocationRepository(
   private val locationDataSource: LocationDataSource,
 ) : LocationRepository {
-  override fun getCurrentLocation(): Flow<Location?> = locationDataSource.getCurrentLocation()
+  override fun getCurrentLocation(isPreciseEnabled: Boolean): Flow<Location> = locationDataSource.getCurrentLocation(isPreciseEnabled = isPreciseEnabled)
     .map(transform = LocationMapper::toDomainModel)
 }

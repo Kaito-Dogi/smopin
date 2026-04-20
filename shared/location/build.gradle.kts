@@ -37,6 +37,7 @@ kotlin {
 
     androidMain.dependencies {
       implementation(libs.gmsPlayServicesLocation)
+      implementation(libs.kotlinxCoroutinesPlayServices)
     }
   }
 }

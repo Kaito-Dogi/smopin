@@ -35,10 +35,14 @@ internal fun MapScreen(
     viewModel.onCreate()
   }
 
-  uiState.currentLocation?.let { currentLocation ->
-    LaunchedEffect(key1 = currentLocation) {
-      cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 20.0f)
-    }
+  // uiState.currentLocation?.let { currentLocation ->
+  //   LaunchedEffect(key1 = currentLocation) {
+  //     cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 20.0f)
+  //   }
+  // }
+  val currentLocation = uiState.currentLocation
+  LaunchedEffect(key1 = currentLocation) {
+    cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 20.0f)
   }
 
   MapScreen(
