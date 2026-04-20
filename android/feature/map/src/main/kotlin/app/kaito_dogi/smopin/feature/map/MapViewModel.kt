@@ -24,19 +24,27 @@ class MapViewModel(
 
   fun onCreate() {
     viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
+      _uiState.update { it.copy(isMapLoading = true) }
+
       runCatching {
         smokingAreaRepository.getSmokingAreaList()
       }.onSuccess { smokingAreaList ->
         _uiState.update {
           it.copy(
-            isLoading = false,
             smokingAreaList = smokingAreaList,
           )
         }
       }.onFailure {
-        _uiState.update { it.copy(isLoading = false) }
+        // TODO: エラーハンドリング
       }
+    }
+  }
+
+  fun onMapLoaded() {
+    _uiState.update {
+      it.copy(
+        isMapLoading = false,
+      )
     }
   }
 }
