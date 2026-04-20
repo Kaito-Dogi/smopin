@@ -1,9 +1,9 @@
 package app.kaito_dogi.smopin.shared.data.smokingArea
 
-import app.kaito_dogi.smopin.shared.domain.smokingArea.Latitude
-import app.kaito_dogi.smopin.shared.domain.smokingArea.Location
-import app.kaito_dogi.smopin.shared.domain.smokingArea.Longitude
-import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingArea
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Latitude
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Longitude
+import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 
 internal object SmokingAreaMapper {
   fun toDomainModel(smokingAreaDataModel: SmokingAreaDataModel) = SmokingArea(

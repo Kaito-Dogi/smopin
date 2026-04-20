@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.feature.hoge"
+  namespace = "app.kaito_dogi.smopin.feature.map"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {
@@ -42,7 +42,9 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.lifecycle.runtimeCompose)
 
+  implementation(libs.androidxLifecycleViewmodelKtx)
   implementation(libs.googleMapsCompose)
+  implementation(libs.kotlinxSerializationJson)
   implementation(libs.metroAndroid)
   implementation(libs.metroViewModel)
   implementation(libs.metroViewModelCompose)

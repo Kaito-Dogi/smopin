@@ -77,11 +77,12 @@ android {
 }
 
 dependencies {
-  implementation(projects.android.feature.hoge)
+  implementation(projects.android.feature.map)
   implementation(projects.shared.common)
   implementation(projects.shared.data)
   implementation(projects.shared.database.firestore)
   implementation(projects.shared.domain)
+  implementation(projects.shared.location)
 
   implementation(compose.runtime)
   implementation(compose.foundation)
@@ -99,7 +100,7 @@ dependencies {
   implementation(platform(libs.firebaseBom))
   implementation(libs.firebaseFirestore)
   implementation(libs.gitliveFirebaseFirestore)
-  implementation(libs.metroxAndroid)
-  implementation(libs.metroxViewModel)
-  implementation(libs.metroxViewModelCompose)
+  implementation(libs.metroAndroid)
+  implementation(libs.metroViewModel)
+  implementation(libs.metroViewModelCompose)
 }

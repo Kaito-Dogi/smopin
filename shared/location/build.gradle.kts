@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
   alias(libs.plugins.androidLibrary)
+  alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -17,15 +18,17 @@ kotlin {
     iosSimulatorArm64(),
   ).forEach { iosTarget ->
     iosTarget.binaries.framework {
-      baseName = "SharedDomain"
+      baseName = "SharedLocation"
       isStatic = true
     }
   }
 
   sourceSets {
     commonMain.dependencies {
+      implementation(projects.shared.common)
+      implementation(projects.shared.data)
+
       implementation(libs.kotlinxCoroutinesCore)
-      implementation(libs.kotlinxSerializationJson)
     }
 
     commonTest.dependencies {
@@ -35,7 +38,7 @@ kotlin {
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.shared.domain"
+  namespace = "app.kaito_dogi.smopin.shared.location"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {

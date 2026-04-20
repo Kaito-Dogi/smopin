@@ -1,4 +1,4 @@
-package app.kaito_dogi.smopin.shared.domain.smokingArea
+package app.kaito_dogi.smopin.shared.domain.smokingArea.location
 
 import kotlinx.serialization.Serializable
 

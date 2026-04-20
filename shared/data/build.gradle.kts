@@ -27,6 +27,7 @@ kotlin {
     commonMain.dependencies {
       implementation(projects.shared.domain)
 
+      implementation(libs.kotlinxCoroutinesCore)
       implementation(libs.kotlinxSerializationJson)
     }
 

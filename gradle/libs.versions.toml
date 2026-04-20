@@ -18,6 +18,7 @@ junit = "4.13.2"
 kotlin = "2.3.0"
 
 # 新規に追加する場合はここから
+androidxLifecycleViewmodelKtx = "2.10.0"
 firebaseBom = "34.11.0"
 gitliveFirebase = "2.4.0"
 googleMaps = "6.1.0"
@@ -40,6 +41,7 @@ androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
 # 新規に追加する場合はここから
+androidxLifecycleViewmodelKtx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleViewmodelKtx" }
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
 gitliveFirebaseFirestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitliveFirebase" }
@@ -47,9 +49,9 @@ googleMapsCompose = { module = "com.google.maps.android:maps-compose", version.r
 kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
-metroxAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
-metroxViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
-metroxViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
+metroAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
+metroViewModel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
+metroViewModelCompose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
