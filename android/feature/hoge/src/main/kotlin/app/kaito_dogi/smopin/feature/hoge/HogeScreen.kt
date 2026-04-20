@@ -1,5 +1,5 @@
-// package app.kaito_dogi.smopin.feature.hoge
-//
+package app.kaito_dogi.smopin.feature.hoge
+
 // import android.Manifest
 // import android.content.Context
 // import android.content.pm.PackageManager

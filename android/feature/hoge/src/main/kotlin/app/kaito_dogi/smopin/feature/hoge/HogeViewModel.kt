@@ -1,5 +1,5 @@
-// package app.kaito_dogi.smopin.feature.hoge
-//
+package app.kaito_dogi.smopin.feature.hoge
+
 // import androidx.lifecycle.ViewModel
 // import androidx.lifecycle.viewModelScope
 // import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location

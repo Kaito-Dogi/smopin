@@ -1,5 +1,5 @@
-// package app.kaito_dogi.smopin.feature.hoge
-//
+package app.kaito_dogi.smopin.feature.hoge
+
 // import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 // import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 //
