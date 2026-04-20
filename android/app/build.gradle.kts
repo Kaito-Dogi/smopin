@@ -82,6 +82,7 @@ dependencies {
   implementation(projects.shared.data)
   implementation(projects.shared.database.firestore)
   implementation(projects.shared.domain)
+  implementation(projects.shared.location)
 
   implementation(compose.runtime)
   implementation(compose.foundation)

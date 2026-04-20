@@ -3,6 +3,7 @@ package app.kaito_dogi.smopin.di
 import app.kaito_dogi.smopin.shared.common.AppDispatcherBindingContainer
 import app.kaito_dogi.smopin.shared.data.DataBindingContainer
 import app.kaito_dogi.smopin.shared.database.firestore.DatabaseFirestoreBindingContainer
+import app.kaito_dogi.smopin.shared.location.LocationBindingContainer
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createGraph
@@ -15,6 +16,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelGraph
     AppDispatcherBindingContainer::class,
     DataBindingContainer::class,
     DatabaseFirestoreBindingContainer::class,
+    LocationBindingContainer::class,
   ],
 )
 internal interface AndroidAppGraph : MetroAppComponentProviders, ViewModelGraph

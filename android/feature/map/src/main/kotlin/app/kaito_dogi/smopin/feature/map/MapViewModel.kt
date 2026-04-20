@@ -2,14 +2,19 @@ package app.kaito_dogi.smopin.feature.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingAreaRepository
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.LocationRepository
+import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingAreaRepository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -17,19 +22,34 @@ import kotlinx.coroutines.launch
 @ViewModelKey(value = MapViewModel::class)
 @ContributesIntoMap(scope = AppScope::class)
 class MapViewModel(
+  locationRepository: LocationRepository,
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
-  private val _uiState: MutableStateFlow<MapUiState> = MutableStateFlow(value = MapUiState.createInitial())
-  val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
+  private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
+  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocation()
+
+  val uiState: StateFlow<MapUiState> = viewModelState.combine(
+    flow = currentLocation,
+  ) { viewModelState, currentLocation ->
+    MapUiState(
+      isMapLoading = viewModelState.isMapLoading,
+      currentLocation = currentLocation,
+      smokingAreaList = viewModelState.smokingAreaList,
+    )
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
+    initialValue = MapUiState.createInitial(),
+  )
 
   fun onCreate() {
     viewModelScope.launch {
-      _uiState.update { it.copy(isMapLoading = true) }
+      viewModelState.update { it.copy(isMapLoading = true) }
 
       runCatching {
         smokingAreaRepository.getSmokingAreaList()
       }.onSuccess { smokingAreaList ->
-        _uiState.update {
+        viewModelState.update {
           it.copy(
             smokingAreaList = smokingAreaList,
           )
@@ -41,7 +61,7 @@ class MapViewModel(
   }
 
   fun onMapLoaded() {
-    _uiState.update {
+    viewModelState.update {
       it.copy(
         isMapLoading = false,
       )

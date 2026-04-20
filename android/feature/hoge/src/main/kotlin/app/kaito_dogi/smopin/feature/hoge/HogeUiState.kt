@@ -1,7 +1,7 @@
 package app.kaito_dogi.smopin.feature.hoge
 
-import app.kaito_dogi.smopin.shared.domain.smokingArea.Location
-import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingArea
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
+import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 
 data class HogeUiState(
   val isLoading: Boolean,

@@ -2,8 +2,8 @@ package app.kaito_dogi.smopin.feature.hoge
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.kaito_dogi.smopin.shared.domain.smokingArea.Location
-import app.kaito_dogi.smopin.shared.domain.smokingArea.SmokingAreaRepository
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
+import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingAreaRepository
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
