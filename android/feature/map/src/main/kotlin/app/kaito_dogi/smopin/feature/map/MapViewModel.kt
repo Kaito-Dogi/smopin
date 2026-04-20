@@ -44,8 +44,6 @@ class MapViewModel(
 
   fun onCreate() {
     viewModelScope.launch {
-      viewModelState.update { it.copy(isMapLoading = true) }
-
       runCatching {
         smokingAreaRepository.getSmokingAreaList()
       }.onSuccess { smokingAreaList ->

@@ -11,10 +11,12 @@ data class MapUiState(
   val smokingAreaList: List<SmokingArea>,
 ) {
   companion object {
-    fun createInitial(): MapUiState = MapUiState(
-      isMapLoading = false,
-      currentLocation = null,
-      smokingAreaList = emptyList(),
-    )
+    fun createInitial(): MapUiState = MapViewModelState.createInitial().run {
+      MapUiState(
+        isMapLoading = isMapLoading,
+        currentLocation = null,
+        smokingAreaList = smokingAreaList,
+      )
+    }
   }
 }
