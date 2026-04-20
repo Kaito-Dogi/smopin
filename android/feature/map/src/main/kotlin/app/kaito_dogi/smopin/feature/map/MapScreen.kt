@@ -69,9 +69,13 @@ private fun MapScreen(
     onMapLoaded = onMapLoaded,
     contentPadding = innerPadding,
   ) {
-    uiState.smokingAreaList.map { smokingArea ->
+    uiState.smokingAreaList.forEach { smokingArea ->
+      // TODO: key の指定を考える
       Marker(
-        state = rememberMarkerState(position = smokingArea.location.toLatLng()),
+        state = rememberMarkerState(
+          key = smokingArea.name,
+          position = smokingArea.location.toLatLng(),
+        ),
         title = smokingArea.name,
       )
     }

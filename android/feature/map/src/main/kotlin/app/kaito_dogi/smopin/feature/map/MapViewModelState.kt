@@ -10,7 +10,7 @@ data class MapViewModelState(
 ) {
   companion object {
     fun createInitial(): MapViewModelState = MapViewModelState(
-      isMapLoading = false,
+      isMapLoading = true,
       smokingAreaList = emptyList(),
     )
   }

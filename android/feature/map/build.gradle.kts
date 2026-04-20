@@ -44,6 +44,7 @@ dependencies {
 
   implementation(libs.androidxLifecycleViewmodelKtx)
   implementation(libs.googleMapsCompose)
+  implementation(libs.kotlinxSerializationJson)
   implementation(libs.metroAndroid)
   implementation(libs.metroViewModel)
   implementation(libs.metroViewModelCompose)

@@ -14,13 +14,15 @@ data class MapUiState(
   val smokingAreaList: List<SmokingArea>,
 ) {
   companion object {
-    fun createInitial(): MapUiState = MapUiState(
-      isMapLoading = false,
-      currentLocation = Location(
-        latitude = Latitude(value = 35.0),
-        longitude = Longitude(value = 135.0),
-      ),
-      smokingAreaList = emptyList(),
-    )
+    fun createInitial(): MapUiState = MapViewModelState.createInitial().run {
+      MapUiState(
+        isMapLoading = isMapLoading,
+        currentLocation = Location(
+          latitude = Latitude(value = 35.0),
+          longitude = Longitude(value = 135.0),
+        ),
+        smokingAreaList = smokingAreaList,
+      )
+    }
   }
 }
