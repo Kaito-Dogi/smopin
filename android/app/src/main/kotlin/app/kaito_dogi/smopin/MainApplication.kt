@@ -11,7 +11,7 @@ import dev.zacsweers.metrox.android.MetroApplication
 import dev.gitlive.firebase.Firebase as GitLiveFirebase
 
 internal class MainApplication : Application(), MetroApplication {
-  override val appComponentProviders: MetroAppComponentProviders by lazy { createAppGraph() }
+  override val appComponentProviders: MetroAppComponentProviders by lazy { createAppGraph(application = this) }
 
   override fun onCreate() {
     super.onCreate()
