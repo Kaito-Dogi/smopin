@@ -6,7 +6,7 @@ import kotlin.time.Duration.Companion.seconds
 
 // TODO: interface にデフォルト引数を渡せるかどうか確認する
 interface LocationDataSource {
-  fun getCurrentLocation(
+  fun getCurrentLocationStream(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration = 5.seconds,
   ): Flow<LocationDataModel>

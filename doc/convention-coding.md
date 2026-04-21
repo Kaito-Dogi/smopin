@@ -13,6 +13,12 @@
 - OK：`getSmokingAreaList`
 - NG：`getSmokingAreas`
 
+### 返り値が `Flow` の場合、メソッド名に接尾辞 `Stream` をつける
+
+- 理由：オブザーバルな読み取りであることを命名から判断できるようにするため
+- OK：`getCurrentLocationStream`
+- NG：`getCurrentLocation`
+
 ## 文法
 
 ### メソッドの返り値を式で表現できる場合は `=` を使用する（Expression body）

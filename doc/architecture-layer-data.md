@@ -65,7 +65,7 @@ data class UserDataModel(
 interface UserRepository {
   suspend fun getUserList(): List<User>
   suspend fun createUser(user: User)
-  fun getUser(userId: UserId): Flow<User>
+  fun getUserStream(userId: UserId): Flow<User>
   suspend fun updateUser(user: User)
   suspend fun deleteUser(userId: UserId)
 }
@@ -74,6 +74,7 @@ interface UserRepository {
 - CRUD 処理は `create`, `get`, `update`, `delete` と命名する
 - ワンショットな読み取り処理は `suspend fun` で定義する
 - オブザーバルな読み取り処理は `suspend fun` を使用せず、返り値に `Flow` を使用する
+- 返り値が `Flow` の場合、メソッド名に接尾辞 `Stream` をつける
 - 返り値が `List`, `Map`, `Set` の場合、メソッド名に接尾辞 `List`, `Map`, `Set` をつける
 
 #### 実装例
@@ -87,7 +88,7 @@ internal class DefaultUserRepository(
   override suspend fun getUserList(): List<User> = userNetworkDataSource.getUserList()
     .map(transform = UserMapper::toDomainModel)
 
-  override fun getUser(userId: UserId): Flow<User> = userDiskDataSource.getUser(userId = userId)
+  override fun getUserStream(userId: UserId): Flow<User> = userDiskDataSource.getUserStream(userId = userId)
     .map(transform = UserMapper::toDomainModel)
 
   // override suspend fun createUser(user: User)
@@ -125,12 +126,14 @@ internal class DefaultUserRepository(
 ```kt
 interface UserNetworkDataSource {
   suspend fun getUserList(): List<UserDataModel>
+  fun getUserStream(userId: UserId): Flow<UserDataModel>
 }
 ```
 
 - CRUD 処理は `create`, `get`, `update`, `delete` と命名する
 - ワンショットな読み取り処理は `suspend fun` で定義する
 - オブザーバルな読み取り処理は `suspend fun` を使用せず、返り値に `Flow` を使用する
+- 返り値が `Flow` の場合、メソッド名に接尾辞 `Stream` をつける
 - 返り値が List の場合、メソッド名に接尾辞 `List` をつける
 
 #### 実装例

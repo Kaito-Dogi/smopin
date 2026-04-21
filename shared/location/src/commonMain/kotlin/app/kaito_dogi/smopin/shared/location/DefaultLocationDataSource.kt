@@ -6,12 +6,8 @@ import app.kaito_dogi.smopin.shared.data.location.LocationDataModel
 import app.kaito_dogi.smopin.shared.data.location.LocationDataSource
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.isActive
 import kotlin.time.Duration
 
 @Inject
@@ -19,15 +15,13 @@ internal class DefaultLocationDataSource(
   private val platformLocationClient: PlatformLocationClient,
   @param:AppDispatcher(dispatcher = AppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : LocationDataSource {
-  override fun getCurrentLocation(
+  override fun getCurrentLocationStream(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel> = flow {
-    while (currentCoroutineContext().isActive) {
-      emit(value = platformLocationClient.getLocation(isPreciseEnabled = isPreciseEnabled))
-      delay(duration = intervalDuration)
-    }
-  }.flowOn(
+  ): Flow<LocationDataModel> = platformLocationClient.getLocationStream(
+    isPreciseEnabled = isPreciseEnabled,
+    intervalDuration = intervalDuration,
+  ).flowOn(
     context = ioDispatcher,
   )
 }
