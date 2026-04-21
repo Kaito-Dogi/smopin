@@ -9,7 +9,7 @@ import dev.zacsweers.metro.Provides
 object PlatformLocationClientBindingContainer {
 
   @Provides
-  internal fun providePlatformLocationClient(
+  private fun providePlatformLocationClient(
     application: Application
   ): PlatformLocationClient = PlatformLocationClient(
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(application),
