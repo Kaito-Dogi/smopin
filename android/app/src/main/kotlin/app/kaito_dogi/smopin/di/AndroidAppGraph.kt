@@ -28,7 +28,7 @@ internal interface AndroidAppGraph : MetroAppComponentProviders, ViewModelGraph 
   @DependencyGraph.Factory
   fun interface Factory {
     fun create(
-      @Provides application: Application
+      @Provides application: Application,
     ): AndroidAppGraph
   }
 }
