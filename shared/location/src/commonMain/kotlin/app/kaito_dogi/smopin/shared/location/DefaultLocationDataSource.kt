@@ -22,7 +22,7 @@ internal class DefaultLocationDataSource(
   override fun getCurrentLocation(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel> = flow {
+  ): Flow<LocationDataModel?> = flow {
     while (currentCoroutineContext().isActive) {
       emit(value = platformLocationClient.getLocation(isPreciseEnabled = isPreciseEnabled))
       delay(duration = intervalDuration)

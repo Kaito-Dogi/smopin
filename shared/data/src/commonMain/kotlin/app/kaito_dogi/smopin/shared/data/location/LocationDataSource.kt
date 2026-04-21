@@ -9,5 +9,5 @@ interface LocationDataSource {
   fun getCurrentLocation(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration = 5.seconds,
-  ): Flow<LocationDataModel>
+  ): Flow<LocationDataModel?>
 }

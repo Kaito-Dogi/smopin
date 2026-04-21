@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 internal actual class PlatformLocationClient(
   private val fusedLocationClient: FusedLocationProviderClient,
 ) {
-  actual suspend fun getLocation(isPreciseEnabled: Boolean): LocationDataModel = fusedLocationClient.getCurrentLocation(
+  actual suspend fun getLocation(isPreciseEnabled: Boolean): LocationDataModel? = fusedLocationClient.getCurrentLocation(
     if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
     CancellationTokenSource().token,
   ).await().let(block = LocationMapper::toDataModel)
