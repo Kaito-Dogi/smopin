@@ -117,11 +117,11 @@ object AppDispatcherBindingContainer {
 
   @Provides
   @AppDispatcher(dispatcher = AppDispatchers.Default)
-  fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+  private fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 
   @Provides
   @AppDispatcher(dispatcher = AppDispatchers.IO)
-  fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+  private fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 }
 ```
 

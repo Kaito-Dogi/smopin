@@ -4,6 +4,7 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import kotlinx.serialization.Serializable
 
+// TODO: パーミッションを取得しているかどうかの表現を考える
 @Serializable
 data class MapUiState(
   val isMapLoading: Boolean,

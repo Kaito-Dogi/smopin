@@ -26,7 +26,9 @@ class MapViewModel(
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
-  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocation()
+
+  // TODO: isPreciseEnabled を正確な位置情報のパーミッションが付与されているかどうかで切り替える
+  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocation(isPreciseEnabled = false)
 
   val uiState: StateFlow<MapUiState> = viewModelState.combine(
     flow = currentLocation,

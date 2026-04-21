@@ -21,6 +21,7 @@ kotlin = "2.3.0"
 androidxLifecycleViewmodelKtx = "2.10.0"
 firebaseBom = "34.11.0"
 gitliveFirebase = "2.4.0"
+gmsPlayServicesLocation = "21.3.0"
 googleMaps = "6.1.0"
 googleServices = "4.4.4"
 kotlinxCoroutines = "1.10.2"
@@ -46,7 +47,9 @@ firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "fire
 firebaseFirestore = { module = "com.google.firebase:firebase-firestore" }
 gitliveFirebaseFirestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitliveFirebase" }
 googleMapsCompose = { module = "com.google.maps.android:maps-compose", version.ref = "googleMaps" }
+gmsPlayServicesLocation = { module = "com.google.android.gms:play-services-location", version.ref = "gmsPlayServicesLocation" }
 kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinxCoroutinesPlayServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
 kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 metroAndroid = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
