@@ -24,7 +24,9 @@ internal class DefaultLocationDataSource(
     intervalDuration: Duration,
   ): Flow<LocationDataModel?> = flow {
     while (currentCoroutineContext().isActive) {
-      emit(value = platformLocationClient.getLocation(isPreciseEnabled = isPreciseEnabled))
+      platformLocationClient.getLocation(isPreciseEnabled = isPreciseEnabled)?.let {
+        emit(value = it)
+      }
       delay(duration = intervalDuration)
     }
   }.flowOn(
