@@ -35,6 +35,7 @@ internal fun MapScreen(
     viewModel.onCreate()
   }
 
+  // FIXME: 現在位置を初めて取得したときにカメラのポジションを設定するように修正する
   uiState.currentLocation?.let { currentLocation ->
     LaunchedEffect(key1 = currentLocation) {
       cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 17f)
