@@ -21,7 +21,12 @@ internal actual class PlatformLocationClient(
   private val fusedLocationClient: FusedLocationProviderClient,
   private val application: Application,
 ) {
-  @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+  @RequiresPermission(
+    anyOf = [
+      Manifest.permission.ACCESS_FINE_LOCATION,
+      Manifest.permission.ACCESS_COARSE_LOCATION,
+    ],
+  )
   actual fun getLocation(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
@@ -34,9 +39,7 @@ internal actual class PlatformLocationClient(
       }
     }
 
-    val locationRequest = LocationRequest.Builder(intervalDuration.toLong(unit = DurationUnit.MILLISECONDS))
-      .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
-      .build()
+    val locationRequest = LocationRequest.Builder(intervalDuration.toLong(unit = DurationUnit.MILLISECONDS)).setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY).build()
 
     val looper = Looper.getMainLooper()
 
