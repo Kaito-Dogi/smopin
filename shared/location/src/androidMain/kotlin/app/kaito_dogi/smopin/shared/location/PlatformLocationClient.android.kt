@@ -1,7 +1,6 @@
 package app.kaito_dogi.smopin.shared.location
 
 import android.Manifest
-import android.app.Application
 import android.os.Looper
 import androidx.annotation.RequiresPermission
 import app.kaito_dogi.smopin.shared.data.location.LocationDataModel
@@ -19,14 +18,8 @@ import kotlin.time.DurationUnit
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal actual class PlatformLocationClient(
   private val fusedLocationClient: FusedLocationProviderClient,
-  private val application: Application,
 ) {
-  @RequiresPermission(
-    anyOf = [
-      Manifest.permission.ACCESS_FINE_LOCATION,
-      Manifest.permission.ACCESS_COARSE_LOCATION,
-    ],
-  )
+  @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
   actual fun getLocation(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
@@ -39,9 +32,10 @@ internal actual class PlatformLocationClient(
       }
     }
 
-    val locationRequest = LocationRequest.Builder(intervalDuration.toLong(unit = DurationUnit.MILLISECONDS)).setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY).build()
-
     val looper = Looper.getMainLooper()
+    val locationRequest = LocationRequest.Builder(intervalDuration.toLong(unit = DurationUnit.MILLISECONDS))
+      .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+      .build()
 
     fusedLocationClient.requestLocationUpdates(
       locationRequest,
