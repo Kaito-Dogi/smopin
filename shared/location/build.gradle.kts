@@ -27,6 +27,7 @@ kotlin {
     commonMain.dependencies {
       implementation(projects.shared.common)
       implementation(projects.shared.data)
+      implementation(projects.shared.domain)
 
       implementation(libs.kotlinxCoroutinesCore)
     }
@@ -36,6 +37,7 @@ kotlin {
     }
 
     androidMain.dependencies {
+      implementation(libs.androidxDataStorePreferences)
       implementation(libs.gmsPlayServicesLocation)
       implementation(libs.kotlinxCoroutinesPlayServices)
     }

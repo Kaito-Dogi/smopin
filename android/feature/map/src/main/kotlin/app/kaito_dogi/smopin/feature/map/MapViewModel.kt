@@ -2,6 +2,7 @@ package app.kaito_dogi.smopin.feature.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.kaito_dogi.smopin.shared.domain.smokingArea.location.LocationPreferencesDataSource
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.LocationRepository
 import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingAreaRepository
@@ -14,6 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,21 +25,30 @@ import kotlinx.coroutines.launch
 @ViewModelKey(value = MapViewModel::class)
 @ContributesIntoMap(scope = AppScope::class)
 class MapViewModel(
-  locationRepository: LocationRepository,
+  private val locationRepository: LocationRepository,
+  private val locationPreferencesDataSource: LocationPreferencesDataSource,
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
 
-  // TODO: isPreciseEnabled を正確な位置情報のパーミッションが付与されているかどうかで切り替える
-  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocation(isPreciseEnabled = false)
+  private val currentLocation: Flow<Location?> = viewModelState.flatMapLatest { state ->
+    when (val uiState = state.uiState) {
+      is MapUiState.UiState.PermissionGranted -> locationRepository.getCurrentLocation(isPreciseEnabled = uiState.isPrecise)
+      MapUiState.UiState.PermissionDenied,
+      MapUiState.UiState.PermissionRequested,
+      -> emptyFlow()
+    }
+  }
 
   val uiState: StateFlow<MapUiState> = viewModelState.combine(
     flow = currentLocation,
-  ) { viewModelState, currentLocation ->
+  ) { state, currentLocation ->
     MapUiState(
-      isMapLoading = viewModelState.isMapLoading,
+      isMapLoading = state.isMapLoading,
+      uiState = state.uiState,
+      shouldRequestPermission = state.shouldRequestPermission,
       currentLocation = currentLocation,
-      smokingAreaList = viewModelState.smokingAreaList,
+      smokingAreaList = state.smokingAreaList,
     )
   }.stateIn(
     scope = viewModelScope,
@@ -57,6 +69,34 @@ class MapViewModel(
       }.onFailure {
         // TODO: エラーハンドリング
       }
+    }
+
+    viewModelScope.launch {
+      locationPreferencesDataSource.getShouldRequestPermission().collect { shouldRequestPermission ->
+        viewModelState.update {
+          it.copy(
+            shouldRequestPermission = shouldRequestPermission,
+          )
+        }
+      }
+    }
+  }
+
+  fun onPermissionRequested() {
+    viewModelScope.launch {
+      locationPreferencesDataSource.updateShouldRequestPermission(shouldRequestPermission = false)
+    }
+  }
+
+  fun onPermissionResult(isGranted: Boolean, isPrecise: Boolean) {
+    viewModelState.update {
+      it.copy(
+        uiState = if (isGranted) {
+          MapUiState.UiState.PermissionGranted(isPrecise = isPrecise)
+        } else {
+          MapUiState.UiState.PermissionDenied
+        },
+      )
     }
   }
 

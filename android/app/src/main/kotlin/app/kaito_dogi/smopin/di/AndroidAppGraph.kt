@@ -5,6 +5,7 @@ import app.kaito_dogi.smopin.shared.common.AppDispatcherBindingContainer
 import app.kaito_dogi.smopin.shared.data.DataBindingContainer
 import app.kaito_dogi.smopin.shared.database.firestore.DatabaseFirestoreBindingContainer
 import app.kaito_dogi.smopin.shared.location.LocationBindingContainer
+import app.kaito_dogi.smopin.shared.location.LocationPreferencesBindingContainer
 import app.kaito_dogi.smopin.shared.location.PlatformLocationClientBindingContainer
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
@@ -20,6 +21,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelGraph
     DataBindingContainer::class,
     DatabaseFirestoreBindingContainer::class,
     LocationBindingContainer::class,
+    LocationPreferencesBindingContainer::class,
     PlatformLocationClientBindingContainer::class,
   ],
 )

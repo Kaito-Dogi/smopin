@@ -1,12 +1,18 @@
 package app.kaito_dogi.smopin.feature.map
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kaito_dogi.smopin.feature.map.ext.toLatLng
 import com.google.android.gms.maps.model.CameraPosition
@@ -28,14 +34,60 @@ internal fun MapScreen(
   modifier: Modifier = Modifier,
   viewModel: MapViewModel = metroViewModel(),
 ) {
+  val context = LocalContext.current
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val cameraPositionState = rememberCameraPositionState()
+  val locationPermissionLauncher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.RequestMultiplePermissions(),
+  ) { grantResultMap ->
+    val isPreciseGranted: Boolean = grantResultMap[Manifest.permission.ACCESS_FINE_LOCATION] == true
+    val isCoarseGranted: Boolean = grantResultMap[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    viewModel.onPermissionResult(
+      isGranted = isPreciseGranted || isCoarseGranted,
+      isPrecise = isPreciseGranted,
+    )
+  }
 
   LaunchedEffect(key1 = Unit) {
     viewModel.onCreate()
   }
 
-  // FIXME: 現在位置を初めて取得したときにカメラのポジションを設定するように修正する
+  LaunchedEffect(key1 = uiState.uiState, key2 = uiState.shouldRequestPermission) {
+    if (uiState.uiState !is MapUiState.UiState.PermissionRequested) return@LaunchedEffect
+
+    val isPreciseGranted: Boolean = ContextCompat.checkSelfPermission(
+      context,
+      Manifest.permission.ACCESS_FINE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED
+    val isCoarseGranted: Boolean = ContextCompat.checkSelfPermission(
+      context,
+      Manifest.permission.ACCESS_COARSE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED
+
+    if (isPreciseGranted || isCoarseGranted) {
+      viewModel.onPermissionResult(
+        isGranted = true,
+        isPrecise = isPreciseGranted,
+      )
+      return@LaunchedEffect
+    }
+
+    if (uiState.shouldRequestPermission) {
+      viewModel.onPermissionRequested()
+      locationPermissionLauncher.launch(
+        arrayOf(
+          Manifest.permission.ACCESS_FINE_LOCATION,
+          Manifest.permission.ACCESS_COARSE_LOCATION,
+        ),
+      )
+    } else {
+      viewModel.onPermissionResult(
+        isGranted = false,
+        isPrecise = false,
+      )
+    }
+  }
+
   uiState.currentLocation?.let { currentLocation ->
     LaunchedEffect(key1 = currentLocation) {
       cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 17f)
@@ -59,15 +111,15 @@ private fun MapScreen(
 ) = Scaffold(
   modifier = modifier,
 ) { innerPadding ->
-  // TODO: 位置情報の許可状況に応じて MapProperties の isMyLocationEnabled を切り替える
+  if (!uiState.uiState.isMapShown) return@Scaffold
+
   GoogleMap(
     cameraPositionState = cameraPositionState,
-    properties = MapProperties(isMyLocationEnabled = true),
+    properties = MapProperties(isMyLocationEnabled = uiState.uiState is MapUiState.UiState.PermissionGranted),
     onMapLoaded = onMapLoaded,
     contentPadding = innerPadding,
   ) {
     uiState.smokingAreaList.forEach { smokingArea ->
-      // TODO: key の指定を考える
       Marker(
         state = rememberMarkerState(
           key = smokingArea.name,
