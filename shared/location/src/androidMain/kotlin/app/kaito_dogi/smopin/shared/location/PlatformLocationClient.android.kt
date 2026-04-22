@@ -32,7 +32,6 @@ internal actual class PlatformLocationClient(
       }
     }
 
-    val looper = Looper.getMainLooper()
     val locationRequest = LocationRequest.Builder(intervalDuration.toLong(unit = DurationUnit.MILLISECONDS))
       .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
       .build()
@@ -40,14 +39,11 @@ internal actual class PlatformLocationClient(
     fusedLocationClient.requestLocationUpdates(
       locationRequest,
       locationCallback,
-      looper,
+      Looper.getMainLooper(),
     )
 
     awaitClose {
       fusedLocationClient.removeLocationUpdates(locationCallback)
-
-      // TODO: Looper の扱いを調べる
-      looper.quitSafely()
     }
   }
 }
