@@ -13,5 +13,6 @@ object PlatformLocationClientBindingContainer {
     application: Application,
   ): PlatformLocationClient = PlatformLocationClient(
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(application),
+    application = application,
   )
 }

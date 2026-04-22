@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 @Inject
 @ViewModelKey(value = MapViewModel::class)
@@ -28,7 +29,10 @@ class MapViewModel(
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
 
   // TODO: isPreciseEnabled を正確な位置情報のパーミッションが付与されているかどうかで切り替える
-  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocation(isPreciseEnabled = false)
+  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocation(
+    isPreciseEnabled = false,
+    intervalDuration = 5.seconds,
+  )
 
   val uiState: StateFlow<MapUiState> = viewModelState.combine(
     flow = currentLocation,
