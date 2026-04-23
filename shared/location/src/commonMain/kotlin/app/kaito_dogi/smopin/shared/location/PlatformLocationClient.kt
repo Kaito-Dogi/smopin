@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
 
 internal expect class PlatformLocationClient {
-  fun getLocation(
+  fun getCurrentLocationStream(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel?>

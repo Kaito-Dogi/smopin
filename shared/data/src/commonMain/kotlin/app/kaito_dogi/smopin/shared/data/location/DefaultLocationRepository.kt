@@ -11,10 +11,10 @@ import kotlin.time.Duration
 internal class DefaultLocationRepository(
   private val locationDataSource: LocationDataSource,
 ) : LocationRepository {
-  override fun getCurrentLocation(
+  override fun getCurrentLocationStream(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
-  ): Flow<Location?> = locationDataSource.getCurrentLocation(
+  ): Flow<Location?> = locationDataSource.getCurrentLocationStream(
     isPreciseEnabled = isPreciseEnabled,
     intervalDuration = intervalDuration,
   )

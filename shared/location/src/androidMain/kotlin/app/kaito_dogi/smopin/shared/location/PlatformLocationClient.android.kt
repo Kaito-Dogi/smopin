@@ -20,7 +20,7 @@ internal actual class PlatformLocationClient(
   private val fusedLocationClient: FusedLocationProviderClient,
 ) {
   @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-  actual fun getLocation(
+  actual fun getCurrentLocationStream(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel?> = callbackFlow {
