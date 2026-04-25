@@ -12,6 +12,7 @@ import com.google.android.gms.location.Priority
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
@@ -51,10 +52,13 @@ internal actual class PlatformLocationClient(
       locationRequest,
       locationCallback,
       Looper.getMainLooper(),
-    )
+    ).addOnFailureListener { e: Exception ->
+      // TODO: エラーハンドリング
+      throw e
+    }
 
     awaitClose {
       fusedLocationClient.removeLocationUpdates(locationCallback)
     }
-  }
+  }.conflate()
 }
