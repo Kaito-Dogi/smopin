@@ -38,7 +38,11 @@ internal actual class PlatformLocationClient(
     val locationCallback = object : LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
         for (currentLocation in locationResult.locations) {
-          trySend(element = currentLocation.let(block = LocationMapper::toDataModel))
+          val channelResult = trySend(element = currentLocation.let(block = LocationMapper::toDataModel))
+          if (channelResult.isFailure) {
+            close(cause = channelResult.exceptionOrNull())
+            return
+          }
         }
       }
     }
@@ -52,9 +56,9 @@ internal actual class PlatformLocationClient(
       locationRequest,
       locationCallback,
       Looper.getMainLooper(),
-    ).addOnFailureListener { e: Exception ->
+    ).addOnFailureListener { cause: Exception ->
       // TODO: エラーハンドリング
-      throw e
+      close(cause = cause)
     }
 
     awaitClose {
