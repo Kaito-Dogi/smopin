@@ -16,10 +16,10 @@ internal class DefaultLocationDataSource(
   @param:AppDispatcher(dispatcher = AppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : LocationDataSource {
   override fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel?> = platformLocationClient.getCurrentLocationStream(
-    isPreciseEnabled = isPreciseEnabled,
+    isPrecise = isPrecise,
     intervalDuration = intervalDuration,
   ).flowOn(
     context = ioDispatcher,

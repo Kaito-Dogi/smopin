@@ -12,10 +12,10 @@ internal class DefaultLocationRepository(
   private val locationDataSource: LocationDataSource,
 ) : LocationRepository {
   override fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
   ): Flow<Location?> = locationDataSource.getCurrentLocationStream(
-    isPreciseEnabled = isPreciseEnabled,
+    isPrecise = isPrecise,
     intervalDuration = intervalDuration,
   )
     .map(transform = LocationMapper::toDomainModel)

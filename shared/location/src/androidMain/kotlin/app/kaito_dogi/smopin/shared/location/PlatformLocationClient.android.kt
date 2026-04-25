@@ -22,7 +22,7 @@ internal actual class PlatformLocationClient(
 ) {
   @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
   actual fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel?> = callbackFlow {
     require(value = intervalDuration.isFinite() && intervalDuration > Duration.ZERO) {
@@ -48,7 +48,7 @@ internal actual class PlatformLocationClient(
     }
 
     val locationRequest = LocationRequest.Builder(intervalMillis)
-      .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+      .setPriority(if (isPrecise) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
       .setMinUpdateIntervalMillis(intervalMillis)
       .build()
 

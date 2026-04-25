@@ -28,7 +28,7 @@ internal class LocationRepositoryTest {
     }
 
     val actualLocation = locationRepository.getCurrentLocationStream(
-      isPreciseEnabled = IS_PRECISE_ENABLED,
+      isPrecise = IS_PRECISE_ENABLED,
       intervalDuration = INTERVAL_DURATION,
     ).first()
 
@@ -45,7 +45,7 @@ internal class LocationRepositoryTest {
 
     assertFails {
       locationRepository.getCurrentLocationStream(
-        isPreciseEnabled = IS_PRECISE_ENABLED,
+        isPrecise = IS_PRECISE_ENABLED,
         intervalDuration = INTERVAL_DURATION,
       ).first()
     }
@@ -62,7 +62,7 @@ private class FakeLocationDataSource(
   private val shouldFailGetCurrentLocationStream: Boolean = false,
 ) : LocationDataSource {
   override fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel?> = flow {
     if (!shouldFailGetCurrentLocationStream) {

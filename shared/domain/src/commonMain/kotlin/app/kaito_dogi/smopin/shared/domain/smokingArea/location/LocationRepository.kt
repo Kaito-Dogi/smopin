@@ -5,7 +5,7 @@ import kotlin.time.Duration
 
 interface LocationRepository {
   fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
   ): Flow<Location?>
 }
