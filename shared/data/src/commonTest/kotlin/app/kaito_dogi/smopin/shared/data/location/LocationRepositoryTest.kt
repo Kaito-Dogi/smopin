@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertFails
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 internal class LocationRepositoryTest {
   @Test
-  fun getSmokingAreaListSuccess() = runTest {
+  fun getCurrentLocationStreamSuccess() = runTest {
     val locationRepository = DefaultLocationRepository(
       locationDataSource = FakeLocationDataSource(),
     )
@@ -23,7 +23,7 @@ internal class LocationRepositoryTest {
     val expectedLocation = fakeLocation.let {
       Location(
         latitude = Latitude(value = it.latitude),
-        longitude = Longitude(value = it.latitude),
+        longitude = Longitude(value = it.longitude),
       )
     }
 
@@ -36,21 +36,18 @@ internal class LocationRepositoryTest {
   }
 
   @Test
-  fun getSmokingAreaListError() = runTest {
+  fun getCurrentLocationStreamError() = runTest {
     val locationRepository = DefaultLocationRepository(
       locationDataSource = FakeLocationDataSource(
         shouldFailGetCurrentLocationStream = true,
       ),
     )
 
-    // TODO: Exception をテストできるようにする
-    try {
+    assertFails {
       locationRepository.getCurrentLocationStream(
         isPreciseEnabled = IS_PRECISE_ENABLED,
         intervalDuration = INTERVAL_DURATION,
       ).first()
-    } catch (e: Exception) {
-      assertTrue { true }
     }
   }
 

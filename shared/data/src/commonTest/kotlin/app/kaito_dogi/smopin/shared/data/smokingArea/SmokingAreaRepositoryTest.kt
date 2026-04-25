@@ -7,7 +7,7 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertFails
 
 internal class SmokingAreaRepositoryTest {
   @Test
@@ -39,11 +39,8 @@ internal class SmokingAreaRepositoryTest {
       ),
     )
 
-    // TODO: Exception をテストできるようにする
-    try {
+    assertFails {
       smokingAreaRepository.getSmokingAreaList()
-    } catch (e: Exception) {
-      assertTrue { true }
     }
   }
 }
