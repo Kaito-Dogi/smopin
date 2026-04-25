@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kaito_dogi.smopin.feature.map.ext.toLatLng
+import app.kaito_dogi.smopin.feature.map.permission.RequestLocationPermissionEffect
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -43,8 +44,13 @@ internal fun MapScreen(
     viewModel.onCreate()
   }
 
+  RequestLocationPermissionEffect(
+    locationPermissionState = uiState.locationPermissionState,
+    onLocationPermissionStateChange = viewModel::onLocationPermissionStateChange,
+  )
+
   val currentUiState = uiState
-  if (currentUiState is MapUiState2.MapSuccess && currentUiState.currentLocation != null && !currentUiState.isCameraPositionInitialized) {
+  if (currentUiState is MapUiState.MapSuccess && currentUiState.currentLocation != null && !currentUiState.isCameraPositionInitialized) {
     LaunchedEffect(key1 = Unit) {
       cameraPositionState.position = CameraPosition.fromLatLngZoom(
         currentUiState.currentLocation.toLatLng(),
@@ -65,7 +71,7 @@ internal fun MapScreen(
 
 @Composable
 private fun MapScreen(
-  uiState: MapUiState2,
+  uiState: MapUiState,
   cameraPositionState: CameraPositionState,
   onMapLoad: () -> Unit,
   modifier: Modifier = Modifier,
@@ -78,7 +84,7 @@ private fun MapScreen(
     onMapLoaded = onMapLoad,
     contentPadding = innerPadding,
   ) {
-    if (uiState is MapUiState2.MapSuccess) {
+    if (uiState is MapUiState.MapSuccess) {
       uiState.smokingAreaList.forEach { smokingArea ->
         // TODO: key の指定を考える
         Marker(
@@ -92,7 +98,7 @@ private fun MapScreen(
     }
   }
 
-  if (uiState is MapUiState2.MapLoading) {
+  if (uiState is MapUiState.MapLoading) {
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center,
@@ -107,7 +113,7 @@ private fun MapScreen(
 private fun MapScreenPreview() {
   MaterialTheme {
     MapScreen(
-      uiState = MapUiState2.createInitial(),
+      uiState = MapUiState.createInitial(),
       cameraPositionState = rememberCameraPositionState(),
       onMapLoad = {},
     )

@@ -30,7 +30,7 @@ class MapViewModel(
   locationRepository: LocationRepository,
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
-  private val viewModelState: MutableStateFlow<MapViewModelState2> = MutableStateFlow(value = MapViewModelState2.createInitial())
+  private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
   private val locationPermissionState: MutableStateFlow<LocationPermissionState> = MutableStateFlow(value = LocationPermissionState.NotRequested)
 
   private val currentLocation: Flow<Location?> = locationPermissionState
@@ -45,27 +45,27 @@ class MapViewModel(
       }
     }
 
-  val uiState: StateFlow<MapUiState2> = combine(
+  val uiState: StateFlow<MapUiState> = combine(
     viewModelState,
     locationPermissionState,
     currentLocation,
   ) { viewModelState, locationPermissionState, currentLocation ->
     if (viewModelState.isMapLoaded) {
-      MapUiState2.MapSuccess(
+      MapUiState.MapSuccess(
         locationPermissionState = locationPermissionState,
         isCameraPositionInitialized = viewModelState.isCameraPositionInitialized,
         smokingAreaList = viewModelState.smokingAreaList,
         currentLocation = currentLocation,
       )
     } else {
-      MapUiState2.MapLoading(
+      MapUiState.MapLoading(
         locationPermissionState = locationPermissionState,
       )
     }
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
-    initialValue = MapUiState2.createInitial(),
+    initialValue = MapUiState.createInitial(),
   )
 
   fun onCreate() {
@@ -100,17 +100,9 @@ class MapViewModel(
     }
   }
 
-  fun onLocationPermissionGranted(isPrecise: Boolean) {
+  fun onLocationPermissionStateChange(newLocationPermissionState: LocationPermissionState) {
     locationPermissionState.update {
-      LocationPermissionState.Granted(
-        isPrecise = isPrecise,
-      )
-    }
-  }
-
-  fun onLocationPermissionDenied() {
-    locationPermissionState.update {
-      LocationPermissionState.Denied
+      newLocationPermissionState
     }
   }
 }
