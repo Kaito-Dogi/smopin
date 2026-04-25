@@ -9,11 +9,14 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,30 +25,47 @@ import kotlin.time.Duration.Companion.seconds
 @Inject
 @ViewModelKey(value = MapViewModel::class)
 @ContributesIntoMap(scope = AppScope::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 class MapViewModel(
   locationRepository: LocationRepository,
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
-  private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
+  private val viewModelState: MutableStateFlow<MapViewModelState2> = MutableStateFlow(value = MapViewModelState2.createInitial())
+  private val locationPermissionState: MutableStateFlow<LocationPermissionState> = MutableStateFlow(value = LocationPermissionState.NotRequested)
 
-  // TODO: isPreciseEnabled を正確な位置情報のパーミッションが付与されているかどうかで切り替える
-  private val currentLocation: Flow<Location?> = locationRepository.getCurrentLocationStream(
-    isPreciseEnabled = false,
-    intervalDuration = 5.seconds,
-  )
+  private val currentLocation: Flow<Location?> = locationPermissionState
+    .flatMapLatest { locationPermissionState: LocationPermissionState ->
+      when (locationPermissionState) {
+        is LocationPermissionState.Granted -> locationRepository.getCurrentLocationStream(
+          isPrecise = locationPermissionState.isPrecise,
+          intervalDuration = 5.seconds,
+        )
 
-  val uiState: StateFlow<MapUiState> = viewModelState.combine(
-    flow = currentLocation,
-  ) { viewModelState, currentLocation ->
-    MapUiState(
-      isMapLoading = viewModelState.isMapLoading,
-      currentLocation = currentLocation,
-      smokingAreaList = viewModelState.smokingAreaList,
-    )
+        LocationPermissionState.Denied, LocationPermissionState.NotRequested -> flowOf(value = null)
+      }
+    }
+
+  val uiState: StateFlow<MapUiState2> = combine(
+    viewModelState,
+    locationPermissionState,
+    currentLocation,
+  ) { viewModelState, locationPermissionState, currentLocation ->
+    if (viewModelState.isMapLoaded) {
+      MapUiState2.MapSuccess(
+        locationPermissionState = locationPermissionState,
+        isCameraPositionInitialized = viewModelState.isCameraPositionInitialized,
+        smokingAreaList = viewModelState.smokingAreaList,
+        currentLocation = currentLocation,
+      )
+    } else {
+      MapUiState2.MapLoading(
+        locationPermissionState = locationPermissionState,
+      )
+    }
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
-    initialValue = MapUiState.createInitial(),
+    initialValue = MapUiState2.createInitial(),
   )
 
   fun onCreate() {
@@ -64,11 +84,33 @@ class MapViewModel(
     }
   }
 
-  fun onMapLoaded() {
+  fun onCameraPositionInitialize() {
     viewModelState.update {
       it.copy(
-        isMapLoading = false,
+        isCameraPositionInitialized = true,
       )
+    }
+  }
+
+  fun onMapLoad() {
+    viewModelState.update {
+      it.copy(
+        isMapLoaded = true,
+      )
+    }
+  }
+
+  fun onLocationPermissionGranted(isPrecise: Boolean) {
+    locationPermissionState.update {
+      LocationPermissionState.Granted(
+        isPrecise = isPrecise,
+      )
+    }
+  }
+
+  fun onLocationPermissionDenied() {
+    locationPermissionState.update {
+      LocationPermissionState.Denied
     }
   }
 }
