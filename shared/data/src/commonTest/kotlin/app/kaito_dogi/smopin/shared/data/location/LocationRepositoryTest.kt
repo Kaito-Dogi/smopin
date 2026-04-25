@@ -63,7 +63,7 @@ private class FakeLocationDataSource(
 ) : LocationDataSource {
   override fun getCurrentLocationStream(
     isPreciseEnabled: Boolean,
-    intervalDuration: Duration
+    intervalDuration: Duration,
   ): Flow<LocationDataModel?> = flow {
     if (!shouldFailGetCurrentLocationStream) {
       emit(value = location)
