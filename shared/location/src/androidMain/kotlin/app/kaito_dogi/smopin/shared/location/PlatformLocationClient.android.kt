@@ -44,6 +44,7 @@ internal actual class PlatformLocationClient(
 
     val locationRequest = LocationRequest.Builder(intervalMillis)
       .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+      .setMinUpdateIntervalMillis(intervalMillis)
       .build()
 
     fusedLocationClient.requestLocationUpdates(
