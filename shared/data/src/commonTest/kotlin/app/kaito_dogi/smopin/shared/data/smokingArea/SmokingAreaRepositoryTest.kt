@@ -7,16 +7,16 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertFails
 
 internal class SmokingAreaRepositoryTest {
   @Test
-  fun `getSmokingAreaList_Success`() = runTest {
+  fun getSmokingAreaListSuccess() = runTest {
     val smokingAreaRepository = DefaultSmokingAreaRepository(
       smokingAreaNetworkDataSource = FakeSmokingAreaNetworkDataSource(),
     )
 
-    val expect = fakeSmokingAreaDataModelList.map {
+    val expectedSmokingAreaList = fakeSmokingAreaDataModelList.map {
       SmokingArea(
         name = it.name,
         location = Location(
@@ -26,33 +26,30 @@ internal class SmokingAreaRepositoryTest {
       )
     }
 
-    val actual = smokingAreaRepository.getSmokingAreaList()
+    val actualSmokingAreaList = smokingAreaRepository.getSmokingAreaList()
 
-    assertEquals(expected = expect, actual = actual)
+    assertEquals(expected = expectedSmokingAreaList, actual = actualSmokingAreaList)
   }
 
   @Test
-  fun `getSmokingAreaList_Error`() = runTest {
+  fun getSmokingAreaListError() = runTest {
     val smokingAreaRepository = DefaultSmokingAreaRepository(
       smokingAreaNetworkDataSource = FakeSmokingAreaNetworkDataSource(
-        shouldThrow = true,
+        shouldFailGetSmokingAreaList = true,
       ),
     )
 
-    // TODO: Exception をテストできるようにする
-    try {
+    assertFails {
       smokingAreaRepository.getSmokingAreaList()
-    } catch (e: Exception) {
-      assertTrue { true }
     }
   }
 }
 
 private class FakeSmokingAreaNetworkDataSource(
   private val smokingAreaList: List<SmokingAreaDataModel> = fakeSmokingAreaDataModelList,
-  private val shouldThrow: Boolean = false,
+  private val shouldFailGetSmokingAreaList: Boolean = false,
 ) : SmokingAreaNetworkDataSource {
-  override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = if (!shouldThrow) {
+  override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = if (!shouldFailGetSmokingAreaList) {
     smokingAreaList
   } else {
     throw Exception()

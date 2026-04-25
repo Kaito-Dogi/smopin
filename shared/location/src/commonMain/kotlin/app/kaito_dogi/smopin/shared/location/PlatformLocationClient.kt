@@ -1,7 +1,12 @@
 package app.kaito_dogi.smopin.shared.location
 
 import app.kaito_dogi.smopin.shared.data.location.LocationDataModel
+import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration
 
 internal expect class PlatformLocationClient {
-  suspend fun getLocation(isPreciseEnabled: Boolean): LocationDataModel?
+  fun getCurrentLocationStream(
+    isPreciseEnabled: Boolean,
+    intervalDuration: Duration,
+  ): Flow<LocationDataModel?>
 }

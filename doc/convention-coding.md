@@ -9,9 +9,16 @@
 
 ### 返り値が `List`, `Map`, `Set` の場合、メソッド名に接尾辞 `List`, `Map`, `Set` をつける
 
-- 理由：命名で何の型か判断できるようにするため
+- 理由：命名で Collection の型を判断できるようにするため
 - OK：`getSmokingAreaList`
 - NG：`getSmokingAreas`
+
+### 返り値が `Flow` の場合、メソッド名に接尾辞 `Stream` をつける
+
+- 理由：命名でオブザーバルな値（ストリーム）を判断できるようにするため
+- OK：`getSmokingAreaListStream`
+- NG：`getSmokingAreaListFlow`
+- NG：`getSmokingAreaList`（接尾辞 `Stream` をつけない）
 
 ## 文法
 

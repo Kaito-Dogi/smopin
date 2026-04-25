@@ -5,11 +5,18 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.location.LocationReposito
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration
 
 @Inject
 internal class DefaultLocationRepository(
   private val locationDataSource: LocationDataSource,
 ) : LocationRepository {
-  override fun getCurrentLocation(isPreciseEnabled: Boolean): Flow<Location?> = locationDataSource.getCurrentLocation(isPreciseEnabled = isPreciseEnabled)
+  override fun getCurrentLocationStream(
+    isPreciseEnabled: Boolean,
+    intervalDuration: Duration,
+  ): Flow<Location?> = locationDataSource.getCurrentLocationStream(
+    isPreciseEnabled = isPreciseEnabled,
+    intervalDuration = intervalDuration,
+  )
     .map(transform = LocationMapper::toDomainModel)
 }
