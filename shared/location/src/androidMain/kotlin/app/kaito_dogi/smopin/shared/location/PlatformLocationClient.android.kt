@@ -24,6 +24,16 @@ internal actual class PlatformLocationClient(
     isPreciseEnabled: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel?> = callbackFlow {
+    require(value = intervalDuration.isFinite() && intervalDuration > Duration.ZERO) {
+      "intervalDuration must be finite and greater than zero: $intervalDuration"
+    }
+
+    val intervalMillis = intervalDuration.toLong(unit = DurationUnit.MILLISECONDS).apply {
+      require(value = this >= 1.0) {
+        "intervalDuration must be at least 1 millisecond when converted to milliseconds: $intervalDuration"
+      }
+    }
+
     val locationCallback = object : LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
         for (currentLocation in locationResult.locations) {
@@ -32,7 +42,7 @@ internal actual class PlatformLocationClient(
       }
     }
 
-    val locationRequest = LocationRequest.Builder(intervalDuration.toLong(unit = DurationUnit.MILLISECONDS))
+    val locationRequest = LocationRequest.Builder(intervalMillis)
       .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
       .build()
 
