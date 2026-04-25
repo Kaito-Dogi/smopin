@@ -30,7 +30,7 @@ internal actual class PlatformLocationClient(
     }
 
     val intervalMillis = intervalDuration.toLong(unit = DurationUnit.MILLISECONDS).apply {
-      require(value = this >= 1.0) {
+      require(value = this >= 1L) {
         "intervalDuration must be at least 1 millisecond when converted to milliseconds: $intervalDuration"
       }
     }
