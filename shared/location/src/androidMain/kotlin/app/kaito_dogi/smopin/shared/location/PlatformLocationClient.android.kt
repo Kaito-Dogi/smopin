@@ -24,7 +24,7 @@ internal actual class PlatformLocationClient(
   actual fun getCurrentLocationStream(
     isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel?> = callbackFlow {
+  ): Flow<LocationDataModel> = callbackFlow {
     require(value = intervalDuration.isFinite() && intervalDuration > Duration.ZERO) {
       "intervalDuration must be finite and greater than zero: $intervalDuration"
     }
@@ -38,10 +38,13 @@ internal actual class PlatformLocationClient(
     val locationCallback = object : LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
         for (currentLocation in locationResult.locations) {
-          val channelResult = trySend(element = currentLocation.let(block = LocationMapper::toDataModel))
-          if (channelResult.isFailure) {
-            close(cause = channelResult.exceptionOrNull())
-            return
+          currentLocation?.let {
+            val channelResult = trySend(element = it.let(block = LocationMapper::toDataModel))
+            if (channelResult.isFailure) {
+              // TODO: エラーハンドリング
+              close(cause = channelResult.exceptionOrNull())
+              return
+            }
           }
         }
       }

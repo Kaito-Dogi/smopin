@@ -8,5 +8,5 @@ interface LocationRepository {
   fun getCurrentLocationStream(
     isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<Location?>
+  ): Flow<Location>
 }

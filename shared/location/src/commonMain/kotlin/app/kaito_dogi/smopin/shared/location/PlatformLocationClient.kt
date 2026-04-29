@@ -8,5 +8,5 @@ internal expect class PlatformLocationClient {
   fun getCurrentLocationStream(
     isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel?>
+  ): Flow<LocationDataModel>
 }

@@ -18,7 +18,7 @@ internal class DefaultLocationDataSource(
   override fun getCurrentLocationStream(
     isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel?> = platformLocationClient.getCurrentLocationStream(
+  ): Flow<LocationDataModel> = platformLocationClient.getCurrentLocationStream(
     isPrecise = isPrecise,
     intervalDuration = intervalDuration,
   ).flowOn(
