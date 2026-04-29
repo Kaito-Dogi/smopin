@@ -1,15 +1,22 @@
 package app.kaito_dogi.smopin.feature.map
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.kaito_dogi.smopin.feature.map.effect.AdjustCameraPositionEffect
+import app.kaito_dogi.smopin.feature.map.effect.RequestLocationPermissionEffect
 import app.kaito_dogi.smopin.feature.map.ext.toLatLng
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -18,10 +25,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-@Composable
-fun MapEntry() {
-  MapScreen()
-}
+private val DEFAULT_CAMERA_POSITION_TARGET = LatLng(35.6905, 139.6995)
+private const val DEFAULT_CAMERA_POSITION_ZOOM = 17f
 
 @Composable
 internal fun MapScreen(
@@ -29,23 +34,36 @@ internal fun MapScreen(
   viewModel: MapViewModel = metroViewModel(),
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val cameraPositionState = rememberCameraPositionState()
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(
+      DEFAULT_CAMERA_POSITION_TARGET,
+      DEFAULT_CAMERA_POSITION_ZOOM,
+    )
+  }
 
   LaunchedEffect(key1 = Unit) {
     viewModel.onCreate()
   }
 
-  // FIXME: 現在位置を初めて取得したときにカメラのポジションを設定するように修正する
-  uiState.currentLocation?.let { currentLocation ->
-    LaunchedEffect(key1 = currentLocation) {
-      cameraPositionState.position = CameraPosition.fromLatLngZoom(currentLocation.toLatLng(), 17f)
-    }
+  RequestLocationPermissionEffect(
+    onLocationPermissionGranted = viewModel::onLocationPermissionGranted,
+    onLocationPermissionDenied = viewModel::onLocationPermissionDenied,
+  )
+
+  val currentUiState = uiState
+  if (currentUiState is MapUiState.PermissionGranted.LocationSuccess) {
+    AdjustCameraPositionEffect(
+      uiState = currentUiState,
+      cameraPositionState = cameraPositionState,
+      cameraPositionZoom = DEFAULT_CAMERA_POSITION_ZOOM,
+      onCameraPositionAdjust = viewModel::onCameraPositionAdjust,
+    )
   }
 
   MapScreen(
     uiState = uiState,
     cameraPositionState = cameraPositionState,
-    onMapLoaded = viewModel::onMapLoaded,
+    onMapLoad = viewModel::onMapLoad,
     modifier = modifier,
   )
 }
@@ -54,16 +72,15 @@ internal fun MapScreen(
 private fun MapScreen(
   uiState: MapUiState,
   cameraPositionState: CameraPositionState,
-  onMapLoaded: () -> Unit,
+  onMapLoad: () -> Unit,
   modifier: Modifier = Modifier,
 ) = Scaffold(
-  modifier = modifier,
+  modifier = modifier.fillMaxSize(),
 ) { innerPadding ->
-  // TODO: 位置情報の許可状況に応じて MapProperties の isMyLocationEnabled を切り替える
   GoogleMap(
     cameraPositionState = cameraPositionState,
-    properties = MapProperties(isMyLocationEnabled = true),
-    onMapLoaded = onMapLoaded,
+    properties = MapProperties(isMyLocationEnabled = uiState is MapUiState.PermissionGranted),
+    onMapLoaded = onMapLoad,
     contentPadding = innerPadding,
   ) {
     uiState.smokingAreaList.forEach { smokingArea ->
@@ -77,6 +94,15 @@ private fun MapScreen(
       )
     }
   }
+
+  if (!uiState.isMapLoaded) {
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center,
+    ) {
+      CircularProgressIndicator()
+    }
+  }
 }
 
 @Preview
@@ -86,7 +112,7 @@ private fun MapScreenPreview() {
     MapScreen(
       uiState = MapUiState.createInitial(),
       cameraPositionState = rememberCameraPositionState(),
-      onMapLoaded = {},
+      onMapLoad = {},
     )
   }
 }

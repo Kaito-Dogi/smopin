@@ -25,6 +25,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      implementation(projects.shared.common)
       implementation(projects.shared.domain)
 
       implementation(libs.kotlinxCoroutinesCore)
@@ -39,7 +40,7 @@ kotlin {
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.shared.data"
+  namespace = "app.kaito_dogi.smopin.data"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {

@@ -5,10 +5,8 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Longitude
 
 internal object LocationMapper {
-  fun toDomainModel(locationDataModel: LocationDataModel?) = locationDataModel?.let {
-    Location(
-      latitude = Latitude(value = it.latitude),
-      longitude = Longitude(value = it.longitude),
-    )
-  }
+  fun toDomainModel(dataModel: LocationDataModel) = Location(
+    latitude = Latitude(value = dataModel.latitude),
+    longitude = Longitude(value = dataModel.longitude),
+  )
 }

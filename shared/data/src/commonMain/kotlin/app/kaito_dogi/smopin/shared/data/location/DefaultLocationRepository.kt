@@ -9,13 +9,13 @@ import kotlin.time.Duration
 
 @Inject
 internal class DefaultLocationRepository(
-  private val locationDataSource: LocationDataSource,
+  private val locationPlatformDataSource: LocationPlatformDataSource,
 ) : LocationRepository {
   override fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<Location?> = locationDataSource.getCurrentLocationStream(
-    isPreciseEnabled = isPreciseEnabled,
+  ): Flow<Location> = locationPlatformDataSource.getCurrentLocationStream(
+    isPrecise = isPrecise,
     intervalDuration = intervalDuration,
   )
     .map(transform = LocationMapper::toDomainModel)

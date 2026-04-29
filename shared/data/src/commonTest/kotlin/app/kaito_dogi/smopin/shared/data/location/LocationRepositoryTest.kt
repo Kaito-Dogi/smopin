@@ -1,5 +1,6 @@
 package app.kaito_dogi.smopin.shared.data.location
 
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Latitude
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Longitude
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -17,7 +18,7 @@ internal class LocationRepositoryTest {
   @Test
   fun getCurrentLocationStreamSuccess() = runTest {
     val locationRepository = DefaultLocationRepository(
-      locationDataSource = FakeLocationDataSource(),
+      locationPlatformDataSource = FakeLocationPlatformDataSource(),
     )
 
     val expectedLocation = fakeLocation.let {
@@ -28,7 +29,7 @@ internal class LocationRepositoryTest {
     }
 
     val actualLocation = locationRepository.getCurrentLocationStream(
-      isPreciseEnabled = IS_PRECISE_ENABLED,
+      isPrecise = IS_PRECISE_ENABLED,
       intervalDuration = INTERVAL_DURATION,
     ).first()
 
@@ -38,14 +39,14 @@ internal class LocationRepositoryTest {
   @Test
   fun getCurrentLocationStreamError() = runTest {
     val locationRepository = DefaultLocationRepository(
-      locationDataSource = FakeLocationDataSource(
+      locationPlatformDataSource = FakeLocationPlatformDataSource(
         shouldFailGetCurrentLocationStream = true,
       ),
     )
 
-    assertFails {
+    assertFailsWith(exceptionClass = AppException.Unknown::class) {
       locationRepository.getCurrentLocationStream(
-        isPreciseEnabled = IS_PRECISE_ENABLED,
+        isPrecise = IS_PRECISE_ENABLED,
         intervalDuration = INTERVAL_DURATION,
       ).first()
     }
@@ -57,18 +58,18 @@ internal class LocationRepositoryTest {
   }
 }
 
-private class FakeLocationDataSource(
+private class FakeLocationPlatformDataSource(
   private val location: LocationDataModel = fakeLocation,
   private val shouldFailGetCurrentLocationStream: Boolean = false,
-) : LocationDataSource {
+) : LocationPlatformDataSource {
   override fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel?> = flow {
+  ): Flow<LocationDataModel> = flow {
     if (!shouldFailGetCurrentLocationStream) {
       emit(value = location)
     } else {
-      throw Exception()
+      throw AppException.Unknown()
     }
   }
 }

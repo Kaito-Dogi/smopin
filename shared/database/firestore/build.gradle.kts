@@ -39,7 +39,7 @@ kotlin {
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.shared.database.firestore"
+  namespace = "app.kaito_dogi.smopin.database.firestore"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {

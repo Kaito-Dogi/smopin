@@ -26,12 +26,13 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.kotlinxCoroutinesCore)
+      implementation(libs.kotlinxSerializationJson)
     }
   }
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.shared.common"
+  namespace = "app.kaito_dogi.smopin.common"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {

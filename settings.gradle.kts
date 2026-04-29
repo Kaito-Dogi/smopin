@@ -29,6 +29,7 @@ dependencyResolutionManagement {
 }
 
 include(":android:app")
+include(":android:ui")
 include(":android:feature:map")
 include(":shared:common")
 include(":shared:data")

@@ -3,6 +3,7 @@ package app.kaito_dogi.smopin.shared.location
 import android.Manifest
 import android.os.Looper
 import androidx.annotation.RequiresPermission
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.data.location.LocationDataModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -22,9 +23,9 @@ internal actual class PlatformLocationClient(
 ) {
   @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
   actual fun getCurrentLocationStream(
-    isPreciseEnabled: Boolean,
+    isPrecise: Boolean,
     intervalDuration: Duration,
-  ): Flow<LocationDataModel?> = callbackFlow {
+  ): Flow<LocationDataModel> = callbackFlow {
     require(value = intervalDuration.isFinite() && intervalDuration > Duration.ZERO) {
       "intervalDuration must be finite and greater than zero: $intervalDuration"
     }
@@ -38,17 +39,21 @@ internal actual class PlatformLocationClient(
     val locationCallback = object : LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
         for (currentLocation in locationResult.locations) {
-          val channelResult = trySend(element = currentLocation.let(block = LocationMapper::toDataModel))
-          if (channelResult.isFailure) {
-            close(cause = channelResult.exceptionOrNull())
-            return
+          currentLocation?.let {
+            // conflate で最新の値のみを send するため、isFailure や isClosed で close しない
+            val channelResult = trySend(element = it.let(block = LocationMapper::toDataModel))
+
+            // isFailure の場合は後続の Location を send できないため、for ループを抜ける
+            if (channelResult.isFailure) {
+              break
+            }
           }
         }
       }
     }
 
     val locationRequest = LocationRequest.Builder(intervalMillis)
-      .setPriority(if (isPreciseEnabled) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+      .setPriority(if (isPrecise) Priority.PRIORITY_HIGH_ACCURACY else Priority.PRIORITY_BALANCED_POWER_ACCURACY)
       .setMinUpdateIntervalMillis(intervalMillis)
       .build()
 
@@ -58,7 +63,7 @@ internal actual class PlatformLocationClient(
       Looper.getMainLooper(),
     ).addOnFailureListener { cause: Exception ->
       // TODO: エラーハンドリング
-      close(cause = cause)
+      close(cause = AppException.Unknown(cause = cause))
     }
 
     awaitClose {
