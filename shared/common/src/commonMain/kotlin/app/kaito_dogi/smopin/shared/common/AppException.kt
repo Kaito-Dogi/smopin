@@ -1,6 +1,7 @@
 package app.kaito_dogi.smopin.shared.common
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * アプリ固有のエラー
@@ -8,6 +9,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class AppException : Exception() {
   abstract override val message: String?
+
+  @Transient
   abstract override val cause: Throwable?
 
   /**
@@ -16,6 +19,6 @@ sealed class AppException : Exception() {
   @Serializable
   data class Unknown(
     override val message: String? = null,
-    override val cause: Throwable? = null,
+    @Transient override val cause: Throwable? = null,
   ) : AppException()
 }
