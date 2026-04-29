@@ -3,6 +3,7 @@ package app.kaito_dogi.smopin.shared.location
 import android.Manifest
 import android.os.Looper
 import androidx.annotation.RequiresPermission
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.data.location.LocationDataModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -42,7 +43,7 @@ internal actual class PlatformLocationClient(
             val channelResult = trySend(element = it.let(block = LocationMapper::toDataModel))
             if (channelResult.isFailure) {
               // TODO: エラーハンドリング
-              close(cause = channelResult.exceptionOrNull())
+              close(cause = AppException.Unknown(cause = channelResult.exceptionOrNull()))
               return
             }
           }
@@ -61,7 +62,7 @@ internal actual class PlatformLocationClient(
       Looper.getMainLooper(),
     ).addOnFailureListener { cause: Exception ->
       // TODO: エラーハンドリング
-      close(cause = cause)
+      close(cause = AppException.Unknown(cause = cause))
     }
 
     awaitClose {
