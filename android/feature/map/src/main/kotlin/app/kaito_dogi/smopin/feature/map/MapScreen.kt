@@ -52,6 +52,7 @@ internal fun MapScreen(
 
   val currentUiState = uiState
   if (currentUiState is MapUiState.PermissionGranted && !currentUiState.hasCameraPositionAdjustedToCurrentLocation) {
+    // 一度だけ実行するため、key に Unit を渡す
     LaunchedEffect(key1 = Unit) {
       cameraPositionState.position = CameraPosition.fromLatLngZoom(
         currentUiState.currentLocation.toLatLng(),
