@@ -36,10 +36,10 @@ class MapViewModel(
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
 
   private val currentLocation: Flow<Location?> = viewModelState.map { it.locationPermission }
-    .flatMapLatest {
-      when (it) {
+    .flatMapLatest { locationPermission ->
+      when (locationPermission) {
         is MapViewModelState.LocationPermission.Granted -> locationRepository.getCurrentLocationStream(
-          isPrecise = it.isPrecise,
+          isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
         )
 
@@ -50,8 +50,6 @@ class MapViewModel(
       viewModelState.update {
         it.copy(error = AppException.Unknown(cause = cause))
       }
-
-      emit(value = null)
     }
 
   val uiState: StateFlow<MapUiState> = combine(
