@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -43,6 +44,9 @@ class MapViewModel(
 
       LocationPermissionState.Denied, LocationPermissionState.NotRequested -> flowOf(value = null)
     }
+  }.catch {
+    // TODO: エラーハンドリング
+    emit(value = null)
   }
 
   val uiState: StateFlow<MapUiState> = combine(
