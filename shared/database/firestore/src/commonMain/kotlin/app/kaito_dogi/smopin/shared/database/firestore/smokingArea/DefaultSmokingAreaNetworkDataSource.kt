@@ -17,10 +17,31 @@ internal class DefaultSmokingAreaNetworkDataSource(
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = withContext(context = ioDispatcher) {
     Firebase.firestore.collection(collectionPath = SMOKING_AREA_COLLECTION).get()
       .documents
-      .map(transform = SmokingAreaMapper::toDataModel)
+      .map { documentSnapshot ->
+        SmokingAreaRawDocument(
+          name = documentSnapshot.get(field = "name"),
+          latitude = documentSnapshot.get(field = "latitude"),
+          longitude = documentSnapshot.get(field = "longitude"),
+        )
+      }
+      .map(transform = SmokingAreaRawDocumentMapper::toDataModel)
   }
 
   companion object {
     private const val SMOKING_AREA_COLLECTION = "smoking_area"
   }
+}
+
+internal data class SmokingAreaRawDocument(
+  val name: String,
+  val latitude: Double,
+  val longitude: Double,
+)
+
+internal object SmokingAreaRawDocumentMapper {
+  fun toDataModel(smokingAreaRawDocument: SmokingAreaRawDocument) = SmokingAreaDataModel(
+    name = smokingAreaRawDocument.name,
+    latitude = smokingAreaRawDocument.latitude,
+    longitude = smokingAreaRawDocument.longitude,
+  )
 }
