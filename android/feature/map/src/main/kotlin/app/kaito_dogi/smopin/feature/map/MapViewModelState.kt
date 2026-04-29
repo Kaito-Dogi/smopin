@@ -1,5 +1,6 @@
 package app.kaito_dogi.smopin.feature.map
 
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ data class MapViewModelState(
   val isMapLoaded: Boolean,
   val isCameraPositionInitialized: Boolean,
   val smokingAreaList: List<SmokingArea>,
-  val error: Exception?,
+  val error: AppException?,
 ) {
   companion object {
     fun createInitial(): MapViewModelState = MapViewModelState(

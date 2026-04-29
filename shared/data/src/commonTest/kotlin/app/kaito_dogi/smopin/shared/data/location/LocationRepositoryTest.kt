@@ -1,5 +1,6 @@
 package app.kaito_dogi.smopin.shared.data.location
 
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Latitude
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Longitude
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -43,7 +44,7 @@ internal class LocationRepositoryTest {
       ),
     )
 
-    assertFails {
+    assertFailsWith(exceptionClass = AppException.Unknown::class) {
       locationRepository.getCurrentLocationStream(
         isPrecise = IS_PRECISE_ENABLED,
         intervalDuration = INTERVAL_DURATION,
@@ -68,7 +69,7 @@ private class FakeLocationPlatformDataSource(
     if (!shouldFailGetCurrentLocationStream) {
       emit(value = location)
     } else {
-      throw Exception()
+      throw AppException.Unknown()
     }
   }
 }

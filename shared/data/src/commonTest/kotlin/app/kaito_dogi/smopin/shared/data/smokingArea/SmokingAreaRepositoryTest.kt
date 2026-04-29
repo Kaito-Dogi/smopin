@@ -1,5 +1,6 @@
 package app.kaito_dogi.smopin.shared.data.smokingArea
 
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Latitude
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Longitude
@@ -7,7 +8,7 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
+import kotlin.test.assertFailsWith
 
 internal class SmokingAreaRepositoryTest {
   @Test
@@ -39,7 +40,7 @@ internal class SmokingAreaRepositoryTest {
       ),
     )
 
-    assertFails {
+    assertFailsWith(exceptionClass = AppException.Unknown::class) {
       smokingAreaRepository.getSmokingAreaList()
     }
   }
@@ -52,7 +53,7 @@ private class FakeSmokingAreaNetworkDataSource(
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = if (!shouldFailGetSmokingAreaList) {
     smokingAreaList
   } else {
-    throw Exception()
+    throw AppException.Unknown()
   }
 }
 

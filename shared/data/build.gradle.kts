@@ -25,6 +25,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      implementation(projects.shared.common)
       implementation(projects.shared.domain)
 
       implementation(libs.kotlinxCoroutinesCore)
