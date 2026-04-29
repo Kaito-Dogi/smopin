@@ -66,7 +66,7 @@ internal fun MapScreen(
   MapScreen(
     uiState = uiState,
     cameraPositionState = cameraPositionState,
-    onMapLoad = viewModel::onMapLoad,
+    onMapLoaded = viewModel::onMapLoaded,
     modifier = modifier,
   )
 }
@@ -75,7 +75,7 @@ internal fun MapScreen(
 private fun MapScreen(
   uiState: MapUiState,
   cameraPositionState: CameraPositionState,
-  onMapLoad: () -> Unit,
+  onMapLoaded: () -> Unit,
   modifier: Modifier = Modifier,
 ) = Scaffold(
   modifier = modifier.fillMaxSize(),
@@ -83,7 +83,7 @@ private fun MapScreen(
   GoogleMap(
     cameraPositionState = cameraPositionState,
     properties = MapProperties(isMyLocationEnabled = uiState is MapUiState.PermissionGranted),
-    onMapLoaded = onMapLoad,
+    onMapLoaded = onMapLoaded,
     contentPadding = innerPadding,
   ) {
     uiState.smokingAreaList.forEach { smokingArea ->
@@ -115,7 +115,7 @@ private fun MapScreenPreview() {
     MapScreen(
       uiState = MapUiState.createInitial(),
       cameraPositionState = rememberCameraPositionState(),
-      onMapLoad = {},
+      onMapLoaded = {},
     )
   }
 }

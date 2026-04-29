@@ -122,7 +122,7 @@ class MapViewModel(
     }
   }
 
-  fun onMapLoad() {
+  fun onMapLoaded() {
     viewModelState.update {
       it.copy(isMapLoaded = true)
     }
