@@ -41,10 +41,13 @@ internal actual class PlatformLocationClient(
         for (currentLocation in locationResult.locations) {
           currentLocation?.let {
             val channelResult = trySend(element = it.let(block = LocationMapper::toDataModel))
-            if (channelResult.isFailure) {
+
+            if (channelResult.isClosed) {
               // TODO: エラーハンドリング
-              close(cause = AppException.Unknown(cause = channelResult.exceptionOrNull()))
-              return
+              channelResult.exceptionOrNull()?.let {
+                close(cause = AppException.Unknown(cause = it))
+                return
+              }
             }
           }
         }
