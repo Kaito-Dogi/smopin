@@ -14,7 +14,7 @@ sealed interface MapUiState {
   data class PermissionNotRequested(
     override val smokingAreaList: List<SmokingArea>,
     override val isSmokingAreaListLoading: Boolean,
-    override val isMapLoaded: Boolean
+    override val isMapLoaded: Boolean,
   ) : MapUiState
 
   @Serializable
@@ -30,7 +30,7 @@ sealed interface MapUiState {
   data class PermissionDenied(
     override val smokingAreaList: List<SmokingArea>,
     override val isSmokingAreaListLoading: Boolean,
-    override val isMapLoaded: Boolean
+    override val isMapLoaded: Boolean,
   ) : MapUiState
 
   companion object {
