@@ -50,14 +50,12 @@ internal fun MapScreen(
       onLocationPermissionDenied = viewModel::onLocationPermissionDenied,
     )
 
-  val currentUiState = uiState
-  if (currentUiState is MapUiState.PermissionGranted.LocationSuccess && !currentUiState.hasCameraPositionAdjustedToCurrentLocation) {
-    // 一度だけ実行するため、key に Unit を渡す
-    LaunchedEffect(key1 = Unit) {
-      cameraPositionState.position = CameraPosition.fromLatLngZoom(
-        currentUiState.currentLocation.toLatLng(),
-        DEFAULT_CAMERA_POSITION_ZOOM,
-      )
+    is MapUiState.PermissionGranted.LocationSuccess -> AdjustCameraPositonEffect(
+      uiState = currentUiState,
+      cameraPositionState = cameraPositionState,
+      cameraPositionZoom = DEFAULT_CAMERA_POSITION_ZOOM,
+      onCameraPositionAdjust = viewModel::onCameraPositionAdjust,
+    )
 
     else -> Unit
   }

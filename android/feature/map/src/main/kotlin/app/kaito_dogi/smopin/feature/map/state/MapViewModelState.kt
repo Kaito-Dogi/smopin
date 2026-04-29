@@ -9,7 +9,7 @@ internal data class MapViewModelState(
   val smokingAreaList: List<SmokingArea>,
   val isSmokingAreaListLoading: Boolean,
   val isMapLoaded: Boolean,
-  val hasCameraPositionAdjustedToCurrentLocation: Boolean,
+  val isCameraPositionAdjusted: Boolean,
   val error: AppException?,
 ) {
   companion object {
@@ -17,7 +17,7 @@ internal data class MapViewModelState(
       smokingAreaList = emptyList(),
       isSmokingAreaListLoading = false,
       isMapLoaded = false,
-      hasCameraPositionAdjustedToCurrentLocation = false,
+      isCameraPositionAdjusted = false,
       error = null,
     )
   }

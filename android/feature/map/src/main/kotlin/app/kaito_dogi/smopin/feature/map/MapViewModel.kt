@@ -87,9 +87,9 @@ class MapViewModel(
     }
   }
 
-  fun onCameraPositionAdjustedToCurrentLocation() {
+  fun onCameraPositionAdjust() {
     viewModelState.update {
-      it.copy(hasCameraPositionAdjustedToCurrentLocation = true)
+      it.copy(isCameraPositionAdjusted = true)
     }
   }
 
