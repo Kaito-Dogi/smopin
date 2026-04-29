@@ -6,24 +6,38 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface MapUiState {
-  val locationPermissionState: LocationPermissionState
+  val smokingAreaList: List<SmokingArea>
+  val isSmokingAreaListLoading: Boolean
+  val isMapLoaded: Boolean
 
   @Serializable
-  data class MapLoading(
-    override val locationPermissionState: LocationPermissionState,
+  data class PermissionNotRequested(
+    override val smokingAreaList: List<SmokingArea>,
+    override val isSmokingAreaListLoading: Boolean,
+    override val isMapLoaded: Boolean
   ) : MapUiState
 
   @Serializable
-  data class MapSuccess(
-    override val locationPermissionState: LocationPermissionState,
-    val isCameraPositionInitialized: Boolean,
-    val smokingAreaList: List<SmokingArea>,
-    val currentLocation: Location?,
+  data class PermissionGranted(
+    override val smokingAreaList: List<SmokingArea>,
+    override val isSmokingAreaListLoading: Boolean,
+    override val isMapLoaded: Boolean,
+    val currentLocation: Location,
+    val hasCameraPositionAdjustedToCurrentLocation: Boolean,
+  ) : MapUiState
+
+  @Serializable
+  data class PermissionDenied(
+    override val smokingAreaList: List<SmokingArea>,
+    override val isSmokingAreaListLoading: Boolean,
+    override val isMapLoaded: Boolean
   ) : MapUiState
 
   companion object {
-    fun createInitial(): MapUiState = MapLoading(
-      locationPermissionState = LocationPermissionState.NotRequested,
+    fun createInitial(): MapUiState = PermissionNotRequested(
+      smokingAreaList = emptyList(),
+      isSmokingAreaListLoading = false,
+      isMapLoaded = false,
     )
   }
 }

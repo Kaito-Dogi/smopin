@@ -7,10 +7,6 @@ import androidx.core.content.ContextCompat
 import app.kaito_dogi.smopin.feature.map.LocationPermissionState
 
 // FIXME: リファクタする
-internal val LOCATION_PERMISSION_LIST = arrayOf(
-  Manifest.permission.ACCESS_FINE_LOCATION,
-  Manifest.permission.ACCESS_COARSE_LOCATION,
-)
 
 internal fun Context.toLocationPermissionState(): LocationPermissionState {
   val hasFineLocationPermission = hasPermission(permission = Manifest.permission.ACCESS_FINE_LOCATION)

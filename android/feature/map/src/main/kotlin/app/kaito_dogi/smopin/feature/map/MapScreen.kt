@@ -45,19 +45,20 @@ internal fun MapScreen(
   }
 
   RequestLocationPermissionEffect(
-    locationPermissionState = uiState.locationPermissionState,
-    onLocationPermissionStateChange = viewModel::onLocationPermissionStateChange,
+    uiState = uiState,
+    onLocationPermissionGranted = viewModel::onLocationPermissionGranted,
+    onLocationPermissionDenied = viewModel::onLocationPermissionDenied,
   )
 
   val currentUiState = uiState
-  if (currentUiState is MapUiState.MapSuccess && currentUiState.currentLocation != null && !currentUiState.isCameraPositionInitialized) {
+  if (currentUiState is MapUiState.PermissionGranted && !currentUiState.hasCameraPositionAdjustedToCurrentLocation) {
     LaunchedEffect(key1 = Unit) {
       cameraPositionState.position = CameraPosition.fromLatLngZoom(
         currentUiState.currentLocation.toLatLng(),
         DEFAULT_CAMERA_POSITION_ZOOM,
       )
 
-      viewModel.onCameraPositionInitialize()
+      viewModel.onCameraPositionAdjustedToCurrentLocation()
     }
   }
 
@@ -80,25 +81,23 @@ private fun MapScreen(
 ) { innerPadding ->
   GoogleMap(
     cameraPositionState = cameraPositionState,
-    properties = MapProperties(isMyLocationEnabled = uiState.locationPermissionState is LocationPermissionState.Granted),
+    properties = MapProperties(isMyLocationEnabled = uiState is MapUiState.PermissionGranted),
     onMapLoaded = onMapLoad,
     contentPadding = innerPadding,
   ) {
-    if (uiState is MapUiState.MapSuccess) {
-      uiState.smokingAreaList.forEach { smokingArea ->
-        // TODO: key の指定を考える
-        Marker(
-          state = rememberMarkerState(
-            key = smokingArea.name,
-            position = smokingArea.location.toLatLng(),
-          ),
-          title = smokingArea.name,
-        )
-      }
+    uiState.smokingAreaList.forEach { smokingArea ->
+      // TODO: key の指定を考える
+      Marker(
+        state = rememberMarkerState(
+          key = smokingArea.name,
+          position = smokingArea.location.toLatLng(),
+        ),
+        title = smokingArea.name,
+      )
     }
   }
 
-  if (uiState is MapUiState.MapLoading) {
+  if (!uiState.isMapLoaded) {
     Box(
       modifier = Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center,

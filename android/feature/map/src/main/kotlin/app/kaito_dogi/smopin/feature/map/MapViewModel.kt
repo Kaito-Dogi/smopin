@@ -2,6 +2,7 @@ package app.kaito_dogi.smopin.feature.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.kaito_dogi.smopin.shared.common.AppException
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.LocationRepository
 import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingAreaRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -50,17 +52,37 @@ class MapViewModel(
     locationPermissionState,
     currentLocation,
   ) { viewModelState, locationPermissionState, currentLocation ->
-    if (viewModelState.isMapLoaded) {
-      MapUiState.MapSuccess(
-        locationPermissionState = locationPermissionState,
-        isCameraPositionInitialized = viewModelState.isCameraPositionInitialized,
+    when (locationPermissionState) {
+      LocationPermissionState.NotRequested -> MapUiState.PermissionNotRequested(
         smokingAreaList = viewModelState.smokingAreaList,
-        currentLocation = currentLocation,
+        isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
+        isMapLoaded = viewModelState.isMapLoaded,
       )
-    } else {
-      MapUiState.MapLoading(
-        locationPermissionState = locationPermissionState,
+
+      is LocationPermissionState.Granted -> {
+        requireNotNull(value = currentLocation) {
+          "currentLocation must not be null if access to location is permitted"
+        }
+
+        MapUiState.PermissionGranted(
+          smokingAreaList = viewModelState.smokingAreaList,
+          isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
+          isMapLoaded = viewModelState.isMapLoaded,
+          currentLocation = currentLocation,
+          hasCameraPositionAdjustedToCurrentLocation = viewModelState.hasCameraPositionAdjustedToCurrentLocation,
+        )
+      }
+
+      LocationPermissionState.Denied -> MapUiState.PermissionDenied(
+        smokingAreaList = viewModelState.smokingAreaList,
+        isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
+        isMapLoaded = viewModelState.isMapLoaded,
       )
+    }
+  }.catch { cause ->
+    println("あああ: catch")
+    viewModelState.update {
+      it.copy(error = AppException.Unknown(cause = cause))
     }
   }.stateIn(
     scope = viewModelScope,
@@ -70,39 +92,53 @@ class MapViewModel(
 
   fun onCreate() {
     viewModelScope.launch {
+      viewModelState.update {
+        it.copy(isSmokingAreaListLoading = true)
+      }
+
       runCatching {
         smokingAreaRepository.getSmokingAreaList()
       }.onSuccess { smokingAreaList ->
         viewModelState.update {
           it.copy(
             smokingAreaList = smokingAreaList,
+            isSmokingAreaListLoading = false,
           )
         }
-      }.onFailure {
+      }.onFailure { exception ->
         // TODO: エラーハンドリング
+        viewModelState.update {
+          it.copy(
+            isSmokingAreaListLoading = false,
+            error = AppException.Unknown(cause = exception),
+          )
+        }
       }
     }
   }
 
-  fun onCameraPositionInitialize() {
+  fun onCameraPositionAdjustedToCurrentLocation() {
     viewModelState.update {
-      it.copy(
-        isCameraPositionInitialized = true,
-      )
+      it.copy(hasCameraPositionAdjustedToCurrentLocation = true)
     }
   }
 
   fun onMapLoad() {
+    println("あああ: onMapLoad")
     viewModelState.update {
-      it.copy(
-        isMapLoaded = true,
-      )
+      it.copy(isMapLoaded = true)
     }
   }
 
-  fun onLocationPermissionStateChange(newLocationPermissionState: LocationPermissionState) {
+  fun onLocationPermissionGranted(isPrecise: Boolean) {
     locationPermissionState.update {
-      newLocationPermissionState
+      LocationPermissionState.Granted(isPrecise = isPrecise)
+    }
+  }
+
+  fun onLocationPermissionDenied() {
+    locationPermissionState.update {
+      LocationPermissionState.Denied
     }
   }
 }

@@ -5,17 +5,19 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MapViewModelState(
-  val isMapLoaded: Boolean,
-  val isCameraPositionInitialized: Boolean,
+internal data class MapViewModelState(
   val smokingAreaList: List<SmokingArea>,
+  val isSmokingAreaListLoading: Boolean,
+  val isMapLoaded: Boolean,
+  val hasCameraPositionAdjustedToCurrentLocation: Boolean,
   val error: AppException?,
 ) {
   companion object {
     fun createInitial(): MapViewModelState = MapViewModelState(
-      isMapLoaded = false,
-      isCameraPositionInitialized = false,
       smokingAreaList = emptyList(),
+      isSmokingAreaListLoading = false,
+      isMapLoaded = false,
+      hasCameraPositionAdjustedToCurrentLocation = false,
       error = null,
     )
   }

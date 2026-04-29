@@ -3,7 +3,7 @@ package app.kaito_dogi.smopin.feature.map
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface LocationPermissionState {
+internal sealed interface LocationPermissionState {
   @Serializable
   data object NotRequested : LocationPermissionState
 
