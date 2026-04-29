@@ -12,7 +12,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 @Composable
 internal fun RequestLocationPermissionEffect(
   onLocationPermissionGranted: (Boolean) -> Unit,
-  onLocationPermissionDenied: () -> Unit,
+  onLocationPermissionDenied: () -> Unit
 ) {
   val context = LocalContext.current
   val locationPermissionLauncher = rememberLauncherForActivityResult(
