@@ -37,7 +37,7 @@ kotlin {
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.shared.domain"
+  namespace = "app.kaito_dogi.smopin.domain"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {

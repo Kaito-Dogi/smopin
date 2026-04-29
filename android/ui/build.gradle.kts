@@ -5,11 +5,10 @@ plugins {
   alias(libs.plugins.androidLibrary)
   alias(libs.plugins.compose)
   alias(libs.plugins.composeCompiler)
-  alias(libs.plugins.metro)
 }
 
 android {
-  namespace = "app.kaito_dogi.smopin.feature.map"
+  namespace = "app.kaito_dogi.smopin.ui"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
 
   compileOptions {
@@ -31,7 +30,6 @@ android {
 dependencies {
   implementation(projects.shared.common)
   implementation(projects.shared.domain)
-  implementation(projects.android.ui)
 
   implementation(compose.runtime)
   implementation(compose.foundation)
@@ -43,11 +41,4 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.lifecycle.runtimeCompose)
-
-  implementation(libs.androidxLifecycleViewmodelKtx)
-  implementation(libs.googleMapsCompose)
-  implementation(libs.kotlinxSerializationJson)
-  implementation(libs.metroAndroid)
-  implementation(libs.metroViewModel)
-  implementation(libs.metroViewModelCompose)
 }
