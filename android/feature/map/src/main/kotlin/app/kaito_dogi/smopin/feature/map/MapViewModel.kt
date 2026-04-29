@@ -80,7 +80,6 @@ class MapViewModel(
       )
     }
   }.catch { cause ->
-    println("あああ: catch")
     viewModelState.update {
       it.copy(error = AppException.Unknown(cause = cause))
     }
@@ -124,7 +123,6 @@ class MapViewModel(
   }
 
   fun onMapLoad() {
-    println("あああ: onMapLoad")
     viewModelState.update {
       it.copy(isMapLoaded = true)
     }
