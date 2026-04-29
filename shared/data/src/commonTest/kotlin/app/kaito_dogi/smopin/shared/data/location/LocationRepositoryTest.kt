@@ -17,7 +17,7 @@ internal class LocationRepositoryTest {
   @Test
   fun getCurrentLocationStreamSuccess() = runTest {
     val locationRepository = DefaultLocationRepository(
-      locationDataSource = FakeLocationDataSource(),
+      locationPlatformDataSource = FakeLocationPlatformDataSource(),
     )
 
     val expectedLocation = fakeLocation.let {
@@ -38,7 +38,7 @@ internal class LocationRepositoryTest {
   @Test
   fun getCurrentLocationStreamError() = runTest {
     val locationRepository = DefaultLocationRepository(
-      locationDataSource = FakeLocationDataSource(
+      locationPlatformDataSource = FakeLocationPlatformDataSource(
         shouldFailGetCurrentLocationStream = true,
       ),
     )
@@ -57,10 +57,10 @@ internal class LocationRepositoryTest {
   }
 }
 
-private class FakeLocationDataSource(
+private class FakeLocationPlatformDataSource(
   private val location: LocationDataModel = fakeLocation,
   private val shouldFailGetCurrentLocationStream: Boolean = false,
-) : LocationDataSource {
+) : LocationPlatformDataSource {
   override fun getCurrentLocationStream(
     isPrecise: Boolean,
     intervalDuration: Duration,
