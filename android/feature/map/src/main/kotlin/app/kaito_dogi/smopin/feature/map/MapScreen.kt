@@ -45,20 +45,19 @@ internal fun MapScreen(
     viewModel.onCreate()
   }
 
-  when (val currentUiState = uiState) {
-    is MapUiState.PermissionNotRequested -> RequestLocationPermissionEffect(
-      onLocationPermissionGranted = viewModel::onLocationPermissionGranted,
-      onLocationPermissionDenied = viewModel::onLocationPermissionDenied,
-    )
+  RequestLocationPermissionEffect(
+    onLocationPermissionGranted = viewModel::onLocationPermissionGranted,
+    onLocationPermissionDenied = viewModel::onLocationPermissionDenied,
+  )
 
-    is MapUiState.PermissionGranted.LocationSuccess -> AdjustCameraPositionEffect(
+  val currentUiState = uiState
+  if (currentUiState is MapUiState.PermissionGranted.LocationSuccess) {
+    AdjustCameraPositionEffect(
       uiState = currentUiState,
       cameraPositionState = cameraPositionState,
       cameraPositionZoom = DEFAULT_CAMERA_POSITION_ZOOM,
       onCameraPositionAdjust = viewModel::onCameraPositionAdjust,
     )
-
-    else -> Unit
   }
 
   MapScreen(

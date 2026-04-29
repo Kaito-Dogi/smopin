@@ -5,9 +5,9 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LifecycleResumeEffect
 
 @Composable
 internal fun RequestLocationPermissionEffect(
@@ -26,7 +26,7 @@ internal fun RequestLocationPermissionEffect(
     },
   )
 
-  LaunchedEffect(key1 = context) {
+  LifecycleResumeEffect(key1 = context) {
     val isAccessFineLocationPermissionGranted = ContextCompat.checkSelfPermission(
       context,
       PERMISSION_ACCESS_FINE_LOCATION,
@@ -41,6 +41,10 @@ internal fun RequestLocationPermissionEffect(
       isAccessFineLocationPermissionGranted -> onLocationPermissionGranted(true)
       isAccessCoarseLocationPermissionGranted -> onLocationPermissionGranted(false)
       else -> locationPermissionLauncher.launch(input = PERMISSION_LIST.toTypedArray())
+    }
+
+    onPauseOrDispose {
+      // do nothing
     }
   }
 }
