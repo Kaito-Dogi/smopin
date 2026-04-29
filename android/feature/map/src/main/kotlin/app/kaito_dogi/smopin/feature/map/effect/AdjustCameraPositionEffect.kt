@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.CameraPositionState
 
 @Composable
-internal fun AdjustCameraPositonEffect(
+internal fun AdjustCameraPositionEffect(
   uiState: MapUiState.PermissionGranted.LocationSuccess,
   cameraPositionState: CameraPositionState,
   cameraPositionZoom: Float,

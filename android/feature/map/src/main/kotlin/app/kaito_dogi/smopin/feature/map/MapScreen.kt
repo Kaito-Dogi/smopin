@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.kaito_dogi.smopin.feature.map.effect.AdjustCameraPositonEffect
+import app.kaito_dogi.smopin.feature.map.effect.AdjustCameraPositionEffect
 import app.kaito_dogi.smopin.feature.map.effect.RequestLocationPermissionEffect
 import app.kaito_dogi.smopin.feature.map.ext.toLatLng
 import com.google.android.gms.maps.model.CameraPosition
@@ -51,7 +51,7 @@ internal fun MapScreen(
       onLocationPermissionDenied = viewModel::onLocationPermissionDenied,
     )
 
-    is MapUiState.PermissionGranted.LocationSuccess -> AdjustCameraPositonEffect(
+    is MapUiState.PermissionGranted.LocationSuccess -> AdjustCameraPositionEffect(
       uiState = currentUiState,
       cameraPositionState = cameraPositionState,
       cameraPositionZoom = DEFAULT_CAMERA_POSITION_ZOOM,
