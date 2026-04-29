@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -35,55 +34,23 @@ class MapViewModel(
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
   private val locationPermissionState: MutableStateFlow<LocationPermissionState> = MutableStateFlow(value = LocationPermissionState.NotRequested)
 
-  private val currentLocation: Flow<Location?> = locationPermissionState
-    .flatMapLatest { locationPermissionState: LocationPermissionState ->
-      when (locationPermissionState) {
-        is LocationPermissionState.Granted -> locationRepository.getCurrentLocationStream(
-          isPrecise = locationPermissionState.isPrecise,
-          intervalDuration = 5.seconds,
-        )
+  private val currentLocation: Flow<Location?> = locationPermissionState.flatMapLatest {
+    when (it) {
+      is LocationPermissionState.Granted -> locationRepository.getCurrentLocationStream(
+        isPrecise = it.isPrecise,
+        intervalDuration = 1.seconds,
+      )
 
-        LocationPermissionState.Denied, LocationPermissionState.NotRequested -> flowOf(value = null)
-      }
+      LocationPermissionState.Denied, LocationPermissionState.NotRequested -> flowOf(value = null)
     }
+  }
 
   val uiState: StateFlow<MapUiState> = combine(
-    viewModelState,
-    locationPermissionState,
-    currentLocation,
-  ) { viewModelState, locationPermissionState, currentLocation ->
-    when (locationPermissionState) {
-      LocationPermissionState.NotRequested -> MapUiState.PermissionNotRequested(
-        smokingAreaList = viewModelState.smokingAreaList,
-        isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
-        isMapLoaded = viewModelState.isMapLoaded,
-      )
-
-      is LocationPermissionState.Granted -> {
-        requireNotNull(value = currentLocation) {
-          "currentLocation must not be null if access to location is permitted"
-        }
-
-        MapUiState.PermissionGranted(
-          smokingAreaList = viewModelState.smokingAreaList,
-          isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
-          isMapLoaded = viewModelState.isMapLoaded,
-          currentLocation = currentLocation,
-          hasCameraPositionAdjustedToCurrentLocation = viewModelState.hasCameraPositionAdjustedToCurrentLocation,
-        )
-      }
-
-      LocationPermissionState.Denied -> MapUiState.PermissionDenied(
-        smokingAreaList = viewModelState.smokingAreaList,
-        isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
-        isMapLoaded = viewModelState.isMapLoaded,
-      )
-    }
-  }.catch { cause ->
-    viewModelState.update {
-      it.copy(error = AppException.Unknown(cause = cause))
-    }
-  }.stateIn(
+    flow = viewModelState,
+    flow2 = locationPermissionState,
+    flow3 = currentLocation,
+    transform = MapUiStateMapper::toUiState,
+  ).stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
     initialValue = MapUiState.createInitial(),

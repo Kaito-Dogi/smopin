@@ -18,13 +18,25 @@ sealed interface MapUiState {
   ) : MapUiState
 
   @Serializable
-  data class PermissionGranted(
-    override val smokingAreaList: List<SmokingArea>,
-    override val isSmokingAreaListLoading: Boolean,
-    override val isMapLoaded: Boolean,
-    val currentLocation: Location,
-    val hasCameraPositionAdjustedToCurrentLocation: Boolean,
-  ) : MapUiState
+  sealed interface PermissionGranted : MapUiState {
+    override val smokingAreaList: List<SmokingArea>
+    override val isSmokingAreaListLoading: Boolean
+    override val isMapLoaded: Boolean
+
+    data class LocationLoading(
+      override val smokingAreaList: List<SmokingArea>,
+      override val isSmokingAreaListLoading: Boolean,
+      override val isMapLoaded: Boolean,
+    ) : PermissionGranted
+
+    data class LocationSuccess(
+      override val smokingAreaList: List<SmokingArea>,
+      override val isSmokingAreaListLoading: Boolean,
+      override val isMapLoaded: Boolean,
+      val currentLocation: Location,
+      val hasCameraPositionAdjustedToCurrentLocation: Boolean,
+    ) : PermissionGranted
+  }
 
   @Serializable
   data class PermissionDenied(
