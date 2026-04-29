@@ -20,6 +20,7 @@ android {
     targetSdk = libs.versions.android.targetSdk.get().toInt()
     versionCode = 1
     versionName = "1.0"
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
   packaging {
@@ -96,6 +97,12 @@ dependencies {
   implementation(libs.androidx.core.ktx)
 
   debugImplementation(compose.uiTooling)
+  debugImplementation(libs.androidx.ui.testManifest)
+
+  androidTestImplementation(compose.uiTest)
+  androidTestImplementation(libs.androidx.testExt.junit)
+  androidTestImplementation(libs.androidx.ui.testJunit4)
+  androidTestImplementation(libs.androidx.uiautomator)
 
   implementation(platform(libs.firebaseBom))
   implementation(libs.firebaseFirestore)
