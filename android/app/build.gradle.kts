@@ -78,6 +78,7 @@ android {
 
 dependencies {
   implementation(projects.android.feature.map)
+  implementation(projects.android.feature.counter)
   implementation(projects.shared.common)
   implementation(projects.shared.data)
   implementation(projects.shared.database.firestore)
@@ -94,6 +95,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodelCompose)
   implementation(libs.androidx.lifecycle.runtimeCompose)
   implementation(libs.androidx.core.ktx)
+  implementation(libs.androidxNavigation3Runtime)
+  implementation(libs.androidxNavigation3Ui)
 
   debugImplementation(compose.uiTooling)
 
