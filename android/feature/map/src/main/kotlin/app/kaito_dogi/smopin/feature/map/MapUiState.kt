@@ -23,12 +23,14 @@ sealed interface MapUiState {
     override val isSmokingAreaListLoading: Boolean
     override val isMapLoaded: Boolean
 
+    @Serializable
     data class LocationLoading(
       override val smokingAreaList: List<SmokingArea>,
       override val isSmokingAreaListLoading: Boolean,
       override val isMapLoaded: Boolean,
     ) : PermissionGranted
 
+    @Serializable
     data class LocationSuccess(
       override val smokingAreaList: List<SmokingArea>,
       override val isSmokingAreaListLoading: Boolean,
