@@ -97,6 +97,14 @@ dependencies {
 
   debugImplementation(compose.uiTooling)
 
+
+  androidTestImplementation(compose.uiTestJunit4)
+  androidTestImplementation(libs.androidx-testExt-junit)
+  androidTestImplementation(libs.androidx-espresso-core)
+  androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
+
+  debugImplementation(compose.uiTestManifest)
+
   implementation(platform(libs.firebaseBom))
   implementation(libs.firebaseFirestore)
   implementation(libs.gitliveFirebaseFirestore)
