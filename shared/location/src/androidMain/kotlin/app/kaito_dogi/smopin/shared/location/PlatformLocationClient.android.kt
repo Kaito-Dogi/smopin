@@ -40,14 +40,12 @@ internal actual class PlatformLocationClient(
       override fun onLocationResult(locationResult: LocationResult) {
         for (currentLocation in locationResult.locations) {
           currentLocation?.let {
+            // conflate で最新の値のみを send するため、isFailure や isClosed で close しない
             val channelResult = trySend(element = it.let(block = LocationMapper::toDataModel))
 
-            if (channelResult.isClosed) {
-              // TODO: エラーハンドリング
-              channelResult.exceptionOrNull()?.let {
-                close(cause = AppException.Unknown(cause = it))
-                return
-              }
+            // isFailure の場合は後続の Location を send できないため、for ループを抜ける
+            if (channelResult.isFailure) {
+              break
             }
           }
         }
