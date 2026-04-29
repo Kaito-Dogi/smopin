@@ -12,8 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.kaito_dogi.smopin.feature.map.effect.AdjustCameraPositonEffect
+import app.kaito_dogi.smopin.feature.map.effect.RequestLocationPermissionEffect
 import app.kaito_dogi.smopin.feature.map.ext.toLatLng
-import app.kaito_dogi.smopin.feature.map.permission.RequestLocationPermissionEffect
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -112,7 +113,7 @@ private fun MapScreenPreview() {
     MapScreen(
       uiState = MapUiState.createInitial(),
       cameraPositionState = rememberCameraPositionState(),
-      onMapLoaded = {},
+      onMapLoad = {},
     )
   }
 }

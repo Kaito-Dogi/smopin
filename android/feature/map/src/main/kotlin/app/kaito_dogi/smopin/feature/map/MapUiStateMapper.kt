@@ -5,16 +5,15 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Location
 internal object MapUiStateMapper {
   fun toUiState(
     viewModelState: MapViewModelState,
-    locationPermissionState: LocationPermissionState,
     currentLocation: Location?,
-  ): MapUiState = when (locationPermissionState) {
-    LocationPermissionState.NotRequested -> MapUiState.PermissionNotRequested(
+  ): MapUiState = when (viewModelState.locationPermission) {
+    MapViewModelState.LocationPermission.NotRequested -> MapUiState.PermissionNotRequested(
       smokingAreaList = viewModelState.smokingAreaList,
       isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
       isMapLoaded = viewModelState.isMapLoaded,
     )
 
-    is LocationPermissionState.Granted -> {
+    is MapViewModelState.LocationPermission.Granted -> {
       if (currentLocation == null) {
         MapUiState.PermissionGranted.LocationLoading(
           smokingAreaList = viewModelState.smokingAreaList,
@@ -27,12 +26,12 @@ internal object MapUiStateMapper {
           isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
           isMapLoaded = viewModelState.isMapLoaded,
           currentLocation = currentLocation,
-          hasCameraPositionAdjustedToCurrentLocation = viewModelState.hasCameraPositionAdjustedToCurrentLocation,
+          isCameraPositionAdjusted = viewModelState.isCameraPositionAdjusted,
         )
       }
     }
 
-    LocationPermissionState.Denied -> MapUiState.PermissionDenied(
+    MapViewModelState.LocationPermission.Denied -> MapUiState.PermissionDenied(
       smokingAreaList = viewModelState.smokingAreaList,
       isSmokingAreaListLoading = viewModelState.isSmokingAreaListLoading,
       isMapLoaded = viewModelState.isMapLoaded,

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,26 +34,29 @@ class MapViewModel(
   private val smokingAreaRepository: SmokingAreaRepository,
 ) : ViewModel() {
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
-  private val locationPermissionState: MutableStateFlow<LocationPermissionState> = MutableStateFlow(value = LocationPermissionState.NotRequested)
 
-  private val currentLocation: Flow<Location?> = locationPermissionState.flatMapLatest {
-    when (it) {
-      is LocationPermissionState.Granted -> locationRepository.getCurrentLocationStream(
-        isPrecise = it.isPrecise,
-        intervalDuration = 1.seconds,
-      )
+  private val currentLocation: Flow<Location?> = viewModelState.map { it.locationPermission }
+    .flatMapLatest {
+      when (it) {
+        is MapViewModelState.LocationPermission.Granted -> locationRepository.getCurrentLocationStream(
+          isPrecise = it.isPrecise,
+          intervalDuration = 1.seconds,
+        )
 
-      LocationPermissionState.Denied, LocationPermissionState.NotRequested -> flowOf(value = null)
+        MapViewModelState.LocationPermission.Denied, MapViewModelState.LocationPermission.NotRequested -> flowOf(value = null)
+      }
+    }.catch { cause ->
+      // TODO: エラーハンドリング
+      viewModelState.update {
+        it.copy(error = AppException.Unknown(cause = cause))
+      }
+
+      emit(value = null)
     }
-  }.catch {
-    // TODO: エラーハンドリング
-    emit(value = null)
-  }
 
   val uiState: StateFlow<MapUiState> = combine(
     flow = viewModelState,
-    flow2 = locationPermissionState,
-    flow3 = currentLocation,
+    flow2 = currentLocation,
     transform = MapUiStateMapper::toUiState,
   ).stateIn(
     scope = viewModelScope,
@@ -100,14 +104,14 @@ class MapViewModel(
   }
 
   fun onLocationPermissionGranted(isPrecise: Boolean) {
-    locationPermissionState.update {
-      LocationPermissionState.Granted(isPrecise = isPrecise)
+    viewModelState.update {
+      it.copy(locationPermission = MapViewModelState.LocationPermission.Granted(isPrecise = isPrecise))
     }
   }
 
   fun onLocationPermissionDenied() {
-    locationPermissionState.update {
-      LocationPermissionState.Denied
+    viewModelState.update {
+      it.copy(locationPermission = MapViewModelState.LocationPermission.Denied)
     }
   }
 }
