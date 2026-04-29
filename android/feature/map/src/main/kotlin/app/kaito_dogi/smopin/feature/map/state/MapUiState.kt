@@ -34,7 +34,7 @@ sealed interface MapUiState {
       override val isSmokingAreaListLoading: Boolean,
       override val isMapLoaded: Boolean,
       val currentLocation: Location,
-      val hasCameraPositionAdjustedToCurrentLocation: Boolean,
+      val isCameraPositionAdjusted: Boolean,
     ) : PermissionGranted
   }
 

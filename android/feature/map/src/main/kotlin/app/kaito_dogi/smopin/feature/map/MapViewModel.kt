@@ -93,7 +93,7 @@ class MapViewModel(
     }
   }
 
-  fun onMapLoaded() {
+  fun onMapLoad() {
     viewModelState.update {
       it.copy(isMapLoaded = true)
     }
