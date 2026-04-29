@@ -12,7 +12,7 @@ internal fun AdjustCameraPositionEffect(
   uiState: MapUiState.PermissionGranted.LocationSuccess,
   cameraPositionState: CameraPositionState,
   cameraPositionZoom: Float,
-  onCameraPositionAdjust: () -> Unit,
+  onCameraPositionAdjust: () -> Unit
 ) {
   if (uiState.isCameraPositionAdjusted) return
 
