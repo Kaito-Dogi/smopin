@@ -1,0 +1,4 @@
+interface:
+  display_name: "Address Review Comment"
+  short_description: "PRレビューコメント対応とGemini再レビュー依頼を自動化するSkill"
+  default_prompt: "Use $address-review-comment to address review comments on this pull request."
