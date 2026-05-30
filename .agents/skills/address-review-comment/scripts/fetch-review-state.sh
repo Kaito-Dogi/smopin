@@ -34,8 +34,8 @@ if [[ -z "$owner" || "$owner" == "null" || -z "$repo" || "$repo" == "null" || ! 
 fi
 
 threads_json=$(gh api graphql \
-  -F owner="$owner" \
-  -F name="$repo" \
+  -f owner="$owner" \
+  -f name="$repo" \
   -F number="$number" \
   -f query='
 query($owner: String!, $name: String!, $number: Int!) {

@@ -99,11 +99,12 @@ KMP プロジェクトの修正では、次の境界を守る。
 
 返信後、`references/github-cli.md` の GraphQL mutation を使って review thread を resolve する。
 
-### 6. コミットして Gemini Code Assist に再レビューを依頼する
+### 6. コミット・プッシュして Gemini Code Assist に再レビューを依頼する
 
-コードや Skill ファイルを変更した場合は、リポジトリの通常の手順で現在のブランチにコミットする。その後、PR に `/gemini review` を投稿する。
+コードや Skill ファイルを変更した場合は、リポジトリの通常の手順で現在のブランチにコミットし、リモートリポジトリにプッシュする。プッシュしないと GitHub 上の PR が更新されず、Gemini Code Assist が古いコードに対して再レビューしてしまう。その後、PR に `/gemini review` を投稿する。
 
 ```bash
+git push origin HEAD
 gh pr comment <pr-number-or-url> --body "/gemini review"
 ```
 

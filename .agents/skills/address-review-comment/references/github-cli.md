@@ -16,8 +16,8 @@ GitHub の review conversation を resolve するには GraphQL の node ID が�
 
 ```bash
 gh api graphql \
-  -F owner='<owner>' \
-  -F name='<repo>' \
+  -f owner='<owner>' \
+  -f name='<repo>' \
   -F number=<pr-number> \
   -f query='\
 query($owner: String!, $name: String!, $number: Int!) {\
