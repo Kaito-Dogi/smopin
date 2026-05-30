@@ -41,7 +41,7 @@ gh pr view --json number,url,headRefName,baseRefName,title,state
 補助スクリプトでレビュー状態を取得する。
 
 ```bash
-.agents/skills/address-review-comment/scripts/fetch-review-state.sh <pr-number-or-url>
+.agents/skills/address-review-comment/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
 確認対象は次の順に優先する。
@@ -133,7 +133,7 @@ gh issue create \
 push 後に Gemini Code Assist へ再レビューを依頼する。
 
 ```bash
-gh pr comment <pr-number-or-url> --body "/gemini review"
+gh pr comment <pull-request-number-or-url> --body "/gemini review"
 ```
 
 ### 9. 追加コメントを確認する
@@ -141,7 +141,8 @@ gh pr comment <pr-number-or-url> --body "/gemini review"
 再レビュー依頼後は 1 分程度待ってからレビュー状態を再取得する。
 
 ```bash
-.agents/skills/address-review-comment/scripts/fetch-review-state.sh <pr-number-or-url>
+sleep 60
+.agents/skills/address-review-comment/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
 新しい未解決コメントがあれば、同じ手順で対応する。次のいずれかに到達したら停止する。

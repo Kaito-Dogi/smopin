@@ -5,7 +5,7 @@
 ## プルリクエスト番号または URL を解決する
 
 ```bash
-gh pr view <pr-number-or-url> --json number,url,headRefName,baseRefName,title,state
+gh pr view <pull-request-number-or-url> --json number,url,headRefName,baseRefName,title,state
 ```
 
 引数を省略すると、`gh pr view --json number,url,headRefName,baseRefName,title,state` は現在のブランチに紐づくプルリクエストを探す。
@@ -18,7 +18,7 @@ GitHub の review conversation を resolve するには GraphQL の node ID が�
 gh api graphql \
   -f owner='<owner>' \
   -f name='<repo>' \
-  -F number=<pr-number> \
+  -F number=<pull-request-number> \
   -f query='\
 query($owner: String!, $name: String!, $number: Int!) {\
   repository(owner: $owner, name: $name) {\
@@ -83,7 +83,7 @@ GraphQL node ID しか手元にない場合は、返信前に GraphQL で REST A
 通常のプルリクエストコメントへ返信する場合は、次を使う。
 
 ```bash
-gh pr comment <pr-number-or-url> --body '<reply body>'
+gh pr comment <pull-request-number-or-url> --body '<reply body>'
 ```
 
 ## review thread を解決する
@@ -99,7 +99,7 @@ gh api graphql \
 ## Gemini Code Assist に再レビューを依頼する
 
 ```bash
-gh pr comment <pr-number-or-url> --body "/gemini review"
+gh pr comment <pull-request-number-or-url> --body "/gemini review"
 ```
 
 ## ポーリング方針

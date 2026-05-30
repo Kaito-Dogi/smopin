@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat >&2 <<'USAGE'
-使い方: fetch-review-state.sh [<pr-number-or-url>]
+使い方: fetch-review-state.sh [<pull-request-number-or-url>]
 
 プルリクエストのメタデータ、review thread、プルリクエストコメント、review summary を
 1 つの JSON として出力します。プルリクエスト引数を省略した場合は、gh が現在の
@@ -16,6 +16,13 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   exit 0
 fi
 
+for cmd in gh jq; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "エラー: $cmd がインストールされていないか、PATH に通っていません。" >&2
+    exit 1
+  fi
+done
+
 pr_arg="${1:-}"
 
 if [[ -n "$pr_arg" ]]; then
@@ -24,9 +31,14 @@ else
   pr_json=$(gh pr view --json number,url,headRefName,baseRefName,title,state)
 fi
 
-owner=$(jq -r 'try (.url | split("/")[3]) catch null' <<<"$pr_json")
-repo=$(jq -r 'try (.url | split("/")[4]) catch null' <<<"$pr_json")
-number=$(jq -r '.number' <<<"$pr_json")
+if [[ -z "$pr_json" ]] || ! jq -e . <<<"$pr_json" >/dev/null 2>&1; then
+  echo "エラー: プルリクエスト情報を取得できませんでした、または無効な JSON が返されました。" >&2
+  exit 1
+fi
+
+owner=$(jq -r '.url | if type == "string" then split("/")[3] else empty end' <<<"$pr_json")
+repo=$(jq -r '.url | if type == "string" then split("/")[4] else empty end' <<<"$pr_json")
+number=$(jq -r '.number // empty' <<<"$pr_json")
 
 if [[ -z "$owner" || "$owner" == "null" || -z "$repo" || "$repo" == "null" || ! "$number" =~ ^[0-9]+$ ]]; then
   echo "エラー: プルリクエストのメタデータ（owner, repo, number）を正しく取得できませんでした。" >&2
@@ -84,6 +96,16 @@ query($owner: String!, $name: String!, $number: Int!) {
   }
 }')
 
+if [[ -z "$threads_json" ]]; then
+  echo "エラー: GitHub API から空のレスポンスが返されました。" >&2
+  exit 1
+fi
+
+if ! jq -e . <<<"$threads_json" >/dev/null 2>&1; then
+  echo "エラー: GitHub API から無効な JSON レスポンスが返されました。" >&2
+  exit 1
+fi
+
 if jq -e '.errors' <<<"$threads_json" >/dev/null; then
   echo "GraphQL エラー:" >&2
   jq '.errors' <<<"$threads_json" >&2
@@ -93,4 +115,4 @@ fi
 jq -n \
   --argjson pr "$pr_json" \
   --argjson reviewState "$threads_json" \
-  '{ pullRequest: $pr, reviewState: (try $reviewState.data.repository.pullRequest catch null) }'
+  '{ pullRequest: $pr, reviewState: ($reviewState | .data?.repository?.pullRequest // null) }'
