@@ -32,7 +32,9 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 
 ## プルリクエスト作成
 
-利用可能な GitHub ツールを使用する。GitHub 用の skill または connector が適している場合は優先し、それ以外では `gh pr create` を使用する。
+プルリクエストは `gh pr create` で作成する。
+
+このリポジトリでは、開発者が Fine-grained personal access tokens で `gh` 認証済みであることを前提とする。GitHub connector や MCP tool でプルリクエストを作成しない。
 
 ### ベースブランチ
 
@@ -48,24 +50,36 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 ### 本文
 
 - `.github/pull_request_template.md` が存在する場合は、そのテンプレートに従う。
-- テンプレートが存在しない場合でも、概要、検証、関連 Issue を最低限記載する。
+- テンプレートが存在しない場合は、下記のフォールバック本文を使用する。
 - 実行した検証コマンドと結果を記載する。
 - 環境制約で検証できない場合は、黙って省略せず制約を記載する。
 
 フォールバック本文:
 
 ```markdown
-## Summary
+## 関連チケット
 
-- [変更概要]
+- close: #TBD
 
-## Testing
+## 背景
 
-- [検証コマンドと結果]
+## 対応したこと
 
-## Related Issue
+## 対応していないこと
 
-- Closes #<Issue Number>
+## UI 差分
+
+|            Before            |            After             |
+|:----------------------------:|:----------------------------:|
+| <img src="" width="300px" /> | <img src="" width="300px" /> |
+
+## 動作確認手順
+
+- [ ] TBD
+
+## 参照資料
+
+- TBD
 ```
 
 作成例:
