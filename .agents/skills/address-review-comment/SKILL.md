@@ -1,153 +1,130 @@
 ---
 name: address-review-comment
-description: Pull Request のレビューコメント対応を支援する Skill。gh で PR の review thread を取得し、必要なコード修正、会話の解決、Gemini Code Assist への再レビュー依頼、追加コメントのポーリングまでを行う。ユーザーが「レビューコメントの修正」「レビューコメントへの対応」「Gemini Code Assist のコメント対応」「レビュー後に /gemini review を再実行」などを依頼したときに使用する。
+description: Pull Request のレビューコメント対応を行う Skill。GitHub の review thread と PR コメントを取得し、指摘を修正または説明し、commit・push して、Gemini Code Assist などへ再レビューを依頼する。ユーザーが「レビューコメントに対応して」「Gemini Code Assist の指摘を直して」「PR の未解決レビューを処理して」「修正後に /gemini review して」などを依頼したときに使用する。
 ---
 
 # Address Review Comment
 
 ## 概要
 
-この Skill は、Pull Request のレビュー対応を「未解決コメントの取得 → トリアージ → 修正または説明 → 会話の解決 → `/gemini review` 依頼 → 追加コメントのポーリング」という一連のループとして扱う。
+Pull Request のレビューコメント対応を、次のループとして実行する。
 
-目的は、人間のレビュー担当者に戻す前に、AI やツールからの指摘を一貫した品質ゲートで処理すること。単にコメントを消化するのではなく、プロジェクトの `docs/` に書かれた Android / KMP / iOS の設計方針を守りながら対応する。
+1. 対象 PR を特定する。
+2. 未解決の review thread と PR コメントを取得する。
+3. コメントを確認し、修正するか説明で返すか判断する。
+4. 必要なファイルを修正し、検証する。
+5. 変更を commit して push する。
+6. コメントへ返信し、解決できる thread を resolve する。
+7. `/gemini review` で再レビューを依頼し、追加コメントを確認する。
 
-## なぜこの設計なのか
+この Skill は GitHub レビュー対応の運用手順だけを扱う。個別プロジェクトのアーキテクチャ判断、設計方針、コーディング規約は、対象リポジトリの通常の指示やドキュメントに従う。
 
-本リポジトリは、`docs/strategy-modularization.md` で再利用性を最優先し、シンプルさを少し犠牲にしてでもマルチモジュール化や依存性逆転を採用している。レビューコメント対応でも同じ判断基準を維持する必要がある。
+## リソース
 
-そのため、この Skill は次の設計原則に従う。
+- `scripts/fetch-review-state.sh`: PR メタデータ、review thread、PR コメント、review summary を JSON で取得する。
+- `references/github-cli.md`: スクリプトだけでは足りない場合の `gh` コマンド例を確認する。
 
-- **単一責任**: レビューコメント対応の手順を Skill に集約し、Android 画面・shared ロジック・iOS 側の実装判断とは分離する。
-- **依存性逆転**: UI / feature は domain 抽象に依存し、data 実装や Firestore の詳細を漏らさない。
-- **情報隠蔽**: DataSource 実装や DI の具象は、`docs/strategy-dependency-injection.md` に従って必要最小限の公開範囲に留める。
-- **再利用性優先**: レビュー取得や解決の GitHub 操作を毎回手作業で組み立てず、補助スクリプトと参照ドキュメントに分離する。
-
-たとえば Android の地図画面で喫煙所一覧を表示するレビューコメントを処理するとき、`android:feature:map` が Firestore 実装へ直接依存する修正は避ける。画面は `shared:domain` の Repository インターフェースに依存し、Firestore からの取得は `shared:database:firestore` の DataSource 実装に閉じ込める。この分割はコード量を増やすが、Android / iOS の再利用性、差し替えテスト、影響範囲を限定したビルドに寄与する。
-
-## 必ず参照するプロジェクト文脈
-
-コードを編集する前に、対象に応じて次の `docs/` を読む。
-
-- `docs/strategy-modularization.md`: KMP のモジュール境界、依存方向、shared / android / ios の責務。
-- `docs/architecture-layer-data.md`: Repository、DataSource、DataModel、Mapper の責務。
-- `docs/strategy-dependency-injection.md`: Metro の BindingContainer、DependencyGraph、可視性、DI の所有者。
-- `docs/convention-coding.md`: 命名、Expression body、モデル KDoc、`Default` 実装名、`internal` 可視性、DataSource の dispatcher 規約。
-- `docs/convention-version-catalog.md`: 依存関係や Gradle Version Catalog を変更する場合の規約。
-
-レビューコメントと `docs/` の方針が衝突する場合は、`docs/` を優先する。そのうえで、会話を解決する前に「なぜコード変更しないのか」を返信する。
+まずはスクリプトを使い、失敗した場合や thread 返信・resolve などの個別操作が必要な場合だけリファレンスを読む。
 
 ## ワークフロー
 
 ### 1. 対象 PR を特定する
 
-ユーザーが PR を指定している場合は、その PR を使う。指定がない場合は、このセッションで作成した PR を使う。どちらも不明な場合は、現在のブランチから PR を特定する。
+ユーザーが PR 番号または URL を指定している場合は、それを使う。指定がない場合は現在のブランチに紐づく PR を確認する。
 
 ```bash
-gh pr view --json number,url,headRefName,baseRefName,title
+gh pr view --json number,url,headRefName,baseRefName,title,state
 ```
 
-PR を 1 つに特定できない場合は、ユーザーに PR URL または PR 番号を確認する。
+PR を 1 つに特定できない場合は、作業を進める前にユーザーへ PR 番号または URL を確認する。
 
-### 2. 未解決レビューコメントを取得する
+### 2. レビュー状態を取得する
 
-まず補助スクリプトを使う。PR メタデータ、review thread、PR コメント、review summary を 1 つの JSON として取得できる。
+補助スクリプトでレビュー状態を取得する。
 
 ```bash
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh <pr-number-or-url>
 ```
 
-スクリプトが失敗する、またはより細かい操作が必要な場合は、`references/github-cli.md` を読んで、同等の `gh pr view`、`gh api graphql`、`gh pr comment` を直接実行する。
+確認対象は次の順に優先する。
 
-優先順位は未解決の review thread が最も高い。Gemini Code Assist、他の AI エージェント、人間のレビュー担当者による PR コメントや review summary も、具体的な修正要求であれば対象に含める。
+1. 未解決の review thread
+2. 具体的な修正要求を含む PR コメント
+3. review summary に含まれる具体的な修正要求
 
-### 3. コメントをトリアージする
+解決済み thread、単なる要約、対応不要な通知は作業対象にしない。
 
-各未解決会話を次のいずれかに分類する。
+### 3. コメントを分類する
 
-- **今すぐ修正**: 正しさ、アーキテクチャ、保守性、テスト、命名、ドキュメントに関する妥当な指摘。
-- **コード変更なし**: 現在のコードが正しい、指摘が `docs/` と衝突する、または適用できない指摘。
-- **延期**: 指摘は妥当だが、優先度が低い、今回の PR 範囲外、ブロック要因がある、または対応規模が大きい。
+各コメントを次のどれかに分類する。
 
-正しさやアーキテクチャに関わる指摘は原則として修正する。延期は、理由を具体的に説明できる場合だけ選ぶ。
+- **修正する**: 指摘が妥当で、今回の PR で直せる。
+- **説明する**: 現在の内容が正しい、または指摘の前提が誤っている。
+- **延期する**: 指摘は妥当だが、今回の PR 範囲外または対応規模が大きい。
+
+延期する場合は、なぜ今やらないのかを具体的に返信する。
 
 ### 4. 修正して検証する
 
-**今すぐ修正** に分類したコメントでは、次の順で対応する。
+修正するコメントでは、指摘されたファイルと周辺を読んでから最小限の変更を入れる。
 
-1. 指摘されたファイルと周辺コードを読む。
-2. `docs/` の設計方針を守る最小の修正を入れる。
-3. まず対象範囲の狭いチェックを実行し、必要に応じて広いチェックを実行する。
-4. チェックが成功するか、環境制約が明確になるまで繰り返す。
-
-KMP プロジェクトの修正では、次の境界を守る。
-
-- Android の feature / UI は domain 抽象に依存し、data 実装を直接参照しない。
-- `shared:data` は Repository 実装、DataModel、DataSource インターフェースを持つ。
-- `shared:database:firestore` などの具象モジュールは外部 SDK 依存を閉じ込める。
-- DataSource 実装は I/O dispatcher の注入と `withContext` に責務を持つ。
-- DI の組み立ては app / platform graph または BindingContainer に閉じ込める。
-
-この分割は、単一モジュール構成より理解する要素が増える。しかし、喫煙所一覧取得ロジックを Android 画面と iOS 画面で再利用できること、Repository / DataSource を fake に差し替えてテストできること、feature 単位で変更の影響を狭められること、Gradle の差分ビルドを活かしやすいことがメリットになる。
-
-### 5. 返信して会話を解決する
-
-会話を解決する前に必ず返信する。
-
-- **今すぐ修正**: どのように修正したか、どの検証を実行したかを説明する。
-- **コード変更なし**: なぜ変更しないかを説明し、必要に応じて根拠となる `docs/` を示す。
-- **延期**: なぜ今回対応しないかを説明し、必要であれば follow-up issue を参照または作成する。
-
-返信後、`references/github-cli.md` の GraphQL mutation を使って review thread を resolve する。
-
-### 6. コミット・プッシュして Gemini Code Assist に再レビューを依頼する
-
-コードや Skill ファイルを変更した場合は、リポジトリの通常の手順で現在のブランチにコミットし、リモートリポジトリにプッシュする。プッシュしないと GitHub 上の PR が更新されず、Gemini Code Assist が古いコードに対して再レビューしてしまう。その後、PR に `/gemini review` を投稿する。
+修正後は、変更内容に合う検証を実行する。例:
 
 ```bash
+bash -n <script>
+git diff --check
+```
+
+プロジェクト固有のテストやビルドが必要な場合は、それも実行する。検証できなかった場合は、理由を返信や最終報告に明記する。
+
+### 5. commit して push する
+
+変更を commit し、PR ブランチへ push する。push 前に再レビューを依頼してはならない。
+
+```bash
+git status --short
+git add <changed-files>
+git commit -m "<type>: <summary>"
 git push origin HEAD
+```
+
+コミットメッセージは対象リポジトリの規約に従う。
+
+### 6. コメントへ返信して resolve する
+
+review thread を resolve する前に必ず返信する。
+
+- 修正した場合: 何を直したか、どの検証を実行したかを書く。
+- 説明する場合: なぜ変更しないかを書く。
+- 延期する場合: なぜ今回扱わないかを書く。
+
+返信後、解決できる review thread を resolve する。詳細な `gh` 操作が必要な場合は `references/github-cli.md` を読む。
+
+### 7. 再レビューを依頼する
+
+push 後に Gemini Code Assist へ再レビューを依頼する。
+
+```bash
 gh pr comment <pr-number-or-url> --body "/gemini review"
 ```
 
-### 7. 追加コメントをポーリングする
+### 8. 追加コメントを確認する
 
-`/gemini review` 投稿後は、1 分ごとにレビュー状態を確認する。
+再レビュー依頼後は 1 分程度待ってからレビュー状態を再取得する。
 
 ```bash
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh <pr-number-or-url>
 ```
 
-新しい対応可能コメントがあれば、同じトリアージ、修正、返信、resolve のループで処理する。
+新しい未解決コメントがあれば、同じ手順で対応する。次のいずれかに到達したら停止する。
 
-次のいずれかに到達したら停止する。
-
-- Gemini Code Assist の未解決かつ対応可能なコメントがなくなった。
-- 低優先度のコメントだけが残り、それぞれに延期またはコード変更なしの理由を返信済みである。
+- 未解決かつ対応可能なコメントがなくなった。
+- 残ったコメントすべてに「説明する」または「延期する」理由を返信済みである。
 - レビュー対応サイクルを 5 回完了した。
-
-停止時はユーザーに通知し、最終メッセージに `@Kaito-Dogi` を含める。
-
-## 採用しなかった代替案
-
-### 代替案 1: `SKILL.md` に GitHub 操作をすべて直書きする
-
-概要: GraphQL クエリ、返信、resolve、ポーリングの詳細をすべて `SKILL.md` に書く。
-
-採用しなかった理由: 人間が読むべき判断フローと、機械的な GitHub 操作が混ざり、レビュー対応時の認知負荷が上がるため。Skill 本体は「何をどう判断するか」に集中させ、詳細コマンドは `references/` と `scripts/` に分離した。
-
-有効になり得る条件: 1 回限りの検証、短期開発、GitHub 操作のバリエーションがほぼない小規模チーム。
-
-### 代替案 2: GitHub Actions などで完全自動化する
-
-概要: コメント取得、修正、resolve、Gemini 再レビュー依頼を CI 上で自動実行する。
-
-採用しなかった理由: レビューコメントが `docs/` の設計方針と衝突する場合や、Android feature と KMP shared のどちらを修正すべきか判断する場合に、文脈を読んだ設計判断が必要になるため。完全自動化すると、誤ったレイヤに修正を入れるリスクが高い。
-
-有効になり得る条件: 指摘内容がフォーマット修正や機械的な lint 修正に限定される場合、またはチーム規模が大きく、レビュー対応ポリシーが十分に定型化されている場合。
 
 ## ガードレール
 
-- 会話を無言で resolve しない。必ず理由を返信してから resolve する。
-- 実質的な未解決コメントは、修正をコミットするか、明確な「コード変更なし / 延期」の理由を返信するまで resolve しない。
-- `/gemini review` をローカル検証の代替にしない。再レビュー依頼前に関連するテストやチェックを実行する。
-- 速さとアーキテクチャが衝突する場合は、アーキテクチャを優先し、トレードオフを説明する。
+- コメントへ返信せずに review thread を resolve しない。
+- commit と push を行う前に `/gemini review` を投稿しない。
+- `/gemini review` をローカル検証の代替にしない。
 - ユーザーが明示的に依頼しない限り、5 回を超えてレビュー対応サイクルを続けない。

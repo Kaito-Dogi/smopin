@@ -1,4 +1,4 @@
 interface:
   display_name: "レビューコメント対応"
-  short_description: "PRレビューコメント対応とGemini再レビュー依頼を自動化するSkill"
-  default_prompt: "Use $address-review-comment: この Pull Request のレビューコメントに対応してください。"
+  short_description: "PRレビューコメントの取得、修正、push、再レビュー依頼を支援するSkill"
+  default_prompt: "Use $address-review-comment: この Pull Request の未解決レビューコメントに対応してください。"
