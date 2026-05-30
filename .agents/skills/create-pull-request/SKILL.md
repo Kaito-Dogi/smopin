@@ -1,78 +1,78 @@
 ---
 name: create-pull-request
-description: Create a GitHub pull request for this repository by following the documented Git workflow. Use when the user asks to create a PR, open a pull request, finish work with a PR, or perform the branch, commit, and PR sequence for repository changes.
+description: このリポジトリの Git 運用ドキュメントに従って GitHub プルリクエストを作成する。ユーザーが PR 作成、プルリクエスト作成、作業完了時の PR 化、またはブランチ作成・コミット・PR 作成の一連の手順を依頼したときに使用する。
 ---
 
 # Create Pull Request
 
-Use this skill to finish repository work with the project-defined Git workflow.
+このスキルは、リポジトリの作業をプロジェクト定義の Git 運用に沿って完了するために使用する。
 
-## Required reading
+## 必ず読むドキュメント
 
-Before changing files or running Git workflow commands, read:
+ファイル変更や Git 運用コマンドを実行する前に、必ず次のドキュメントを読む。
 
 1. `AGENTS.md`
 2. `doc/strategy-branch.md`
 3. `doc/convention-commit.md`
-4. Any `doc/` files relevant to the code or documentation being changed
+4. 変更対象のコードまたはドキュメントに関連する `doc/` 配下のドキュメント
 
-These documents are the source of truth for branch names, commit messages, pull request titles, and pull request body expectations.
+これらのドキュメントを、ブランチ名、コミットメッセージ、プルリクエストタイトル、プルリクエスト本文の正とする。
 
-## Workflow
+## 作業手順
 
-1. Inspect the current state.
-   - Run `git status --short --branch`.
-   - Confirm whether the current branch already matches `feature/ISSUE-{Issue Number}_{Subject}`.
-2. Create a branch when needed.
-   - Use `git switch`.
-   - Default branch name: `feature/ISSUE-{Issue Number}_{Subject}`.
-   - Do not include AI agent names such as `codex` or `claude` in the branch name.
-3. Make the requested change.
-   - Keep the pull request near 200 changed lines when the change can be split naturally.
-   - It is acceptable to exceed 200 lines for documentation, generated code, large rename, mechanical refactor, or changes that would become semantically unnatural if split.
-4. Validate the change.
-   - Run the smallest useful command first, then broader checks if practical.
-   - Document any environment limitation instead of silently skipping validation.
-5. Commit the change.
-   - Use Conventional Commits.
-   - Put the summary in the subject.
-   - Put the intent and design reason in the body when the subject alone is insufficient.
-6. Create the pull request without waiting for another human instruction.
-   - Use `gh pr create`.
-   - Use `.github/pull_request_template.md` if it exists.
-   - Use a Conventional Commit style title.
-   - Set the base branch to `main` unless `doc/strategy-branch.md` allows a feature branch base for the current work.
+1. 現在の状態を確認する。
+   - `git status --short --branch` を実行する。
+   - 現在のブランチが `feature/ISSUE-{Issue Number}_{Subject}` の形式に一致しているか確認する。
+2. 必要に応じてブランチを作成する。
+   - `git switch` を使用する。
+   - ブランチ名の基本形は `feature/ISSUE-{Issue Number}_{Subject}` とする。
+   - `codex` や `claude` などの AI エージェント名をブランチ名に含めてはならない。
+3. 依頼された変更を行う。
+   - 自然に分割できる変更であれば、プルリクエストの差分は 200 行前後に収める。
+   - ドキュメント、生成コード、大規模リネーム、機械的リファクタリング、または分割すると意味的に不自然になる変更では、200 行を超えてもよい。
+4. 変更を検証する。
+   - まず最小限で有効な検証コマンドを実行し、必要に応じてより広い検証を実行する。
+   - 環境制約で検証できない場合は、黙って省略せず、その制約を明記する。
+5. 変更をコミットする。
+   - Conventional Commits に従う。
+   - subject には差分の概要を書く。
+   - subject だけでは意図が伝わらない場合は、body に変更意図と設計理由を書く。
+6. 追加の人間の指示を待たずにプルリクエストを作成する。
+   - `gh pr create` を使用する。
+   - `.github/pull_request_template.md` が存在する場合は、そのテンプレートに従う。
+   - プルリクエストタイトルは Conventional Commits の形式にする。
+   - ベースブランチは原則 `main` とする。ただし、`doc/strategy-branch.md` が許可する場合は feature ブランチをベースにしてよい。
 
-## Commit template
+## コミットメッセージのテンプレート
 
 ```text
 <type>: <subject>
 
-<why this change is needed>
-<why this design was selected over alternatives>
+<なぜこの変更が必要なのか>
+<なぜ代替案ではなくこの設計を選んだのか>
 ```
 
-## Pull request body fallback
+## プルリクエスト本文のフォールバック
 
-If `.github/pull_request_template.md` does not exist, use this structure:
+`.github/pull_request_template.md` が存在しない場合は、次の構成を使用する。
 
 ```markdown
 ## Summary
 
-- [change summary]
+- [変更概要]
 
 ## Testing
 
-- [test command and result]
+- [検証コマンドと結果]
 
 ## Related Issue
 
 - Closes #<Issue Number>
 ```
 
-## Gotchas
+## 注意点
 
-- Do not create `release` or `hotfix` branches while the product is unreleased.
-- Do not use `git checkout -b`; use `git switch -c`.
-- Do not omit the pull request step after committing unless the user explicitly says not to create a pull request.
-- Do not treat commits as only a diff log; record intent in the commit body when design context matters.
+- プロダクトが未リリースの間は、`release` ブランチや `hotfix` ブランチを作成しない。
+- `git checkout -b` ではなく、`git switch -c` を使用する。
+- ユーザーが明示的にプルリクエストを作成しないよう指示していない限り、コミット後にプルリクエスト作成を省略しない。
+- コミットを単なる差分ログとして扱わない。設計背景が重要な変更では、コミット body に意図を残す。
