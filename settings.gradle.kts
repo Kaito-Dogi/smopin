@@ -31,6 +31,7 @@ dependencyResolutionManagement {
 include(":android:app")
 include(":android:ui")
 include(":android:feature:map")
+include(":android:feature:counter")
 include(":shared:common")
 include(":shared:data")
 include(":shared:database:firestore")
