@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -27,6 +28,16 @@ internal fun App(
     val topLevelBackStack = rememberSaveable(saver = TopLevelBackStack.Saver) {
       TopLevelBackStack(startRoute = ScreenRoute.Map)
     }
+    val screenEntryProvider = remember {
+      entryProvider {
+        entry<ScreenRoute> { screenRoute ->
+          when (screenRoute) {
+            ScreenRoute.Map -> MapEntry()
+            ScreenRoute.Counter -> CounterEntry()
+          }
+        }
+      }
+    }
 
     Scaffold(
       bottomBar = {
@@ -43,19 +54,20 @@ internal fun App(
         }
       },
     ) { innerPadding ->
-      NavDisplay(
-        modifier = Modifier.padding(innerPadding),
-        backStack = topLevelBackStack.backStack,
-        onBack = { topLevelBackStack.removeLast() },
-        entryProvider = entryProvider {
-          entry<ScreenRoute> { screenRoute ->
-            when (screenRoute) {
-              ScreenRoute.Map -> MapEntry()
-              ScreenRoute.Counter -> CounterEntry()
-            }
-          }
-        },
-      )
+      if (topLevelBackStack.backStack.size > 1) {
+        NavDisplay(
+          modifier = Modifier.padding(innerPadding),
+          backStack = topLevelBackStack.backStack,
+          onBack = { topLevelBackStack.removeLast() },
+          entryProvider = screenEntryProvider,
+        )
+      } else {
+        NavDisplay(
+          modifier = Modifier.padding(innerPadding),
+          backStack = topLevelBackStack.backStack,
+          entryProvider = screenEntryProvider,
+        )
+      }
     }
   }
 }
@@ -98,7 +110,9 @@ private class TopLevelBackStack(
       restore = { routeNameList ->
         TopLevelBackStack(
           startRoute = ScreenRoute.Map,
-          routeHistory = routeNameList.map(transform = ScreenRoute::valueOf),
+          routeHistory = routeNameList.mapNotNull { routeName ->
+            runCatching { ScreenRoute.valueOf(routeName) }.getOrNull()
+          },
         )
       },
     )
