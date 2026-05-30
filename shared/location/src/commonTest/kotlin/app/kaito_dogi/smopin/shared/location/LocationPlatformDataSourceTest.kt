@@ -1,10 +1,10 @@
 package app.kaito_dogi.smopin.shared.location
 
 import app.kaito_dogi.smopin.shared.data.location.LocationDataModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,7 +17,7 @@ internal class LocationPlatformDataSourceTest {
     val fakePlatformLocationClient = FakePlatformLocationClient()
     val locationPlatformDataSource = DefaultLocationPlatformDataSource(
       platformLocationClient = fakePlatformLocationClient,
-      ioDispatcher = Dispatchers.Default,
+      ioDispatcher = UnconfinedTestDispatcher(),
     )
 
     val actual = locationPlatformDataSource.getCurrentLocationStream(

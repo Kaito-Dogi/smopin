@@ -18,13 +18,13 @@ internal class DefaultSmokingAreaNetworkDataSource(
     Firebase.firestore.collection(collectionPath = SMOKING_AREA_COLLECTION).get()
       .documents
       .map { documentSnapshot ->
-        SmokingAreaRawDocument(
+        val rawDocument = SmokingAreaRawDocument(
           name = documentSnapshot.get(field = "name"),
           latitude = documentSnapshot.get(field = "latitude"),
           longitude = documentSnapshot.get(field = "longitude"),
         )
+        SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
       }
-      .map(transform = SmokingAreaRawDocumentMapper::toDataModel)
   }
 
   companion object {
