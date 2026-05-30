@@ -44,7 +44,7 @@ gh pr view --json number,url,headRefName,baseRefName,title,state
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
-未解決のレビュー会話だけを確認する場合は、次を使う。
+GitHub 上で解決済みになっていないレビュー会話だけを確認する場合は、次を使う。
 
 ```bash
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh --unresolved <pull-request-number-or-url>
@@ -57,6 +57,14 @@ gh pr view --json number,url,headRefName,baseRefName,title,state
 3. レビュー要約に含まれる具体的な修正要求
 
 解決済みのレビュー会話、単なる要約、対応不要な通知は作業対象にしない。
+
+この Skill では、次のいずれにも該当しないコメントを未解決として扱う。
+
+- 修正済み: 指摘に対応する変更を commit・push 済みで、コメントへ修正内容と検証結果を返信済みである。
+- 説明済み: コード変更しない理由をコメントへ返信済みである。
+- Issue 作成済み: 延期用 Issue を作成し、Issue URL と今回扱わない理由をコメントへ返信済みである。
+
+GitHub 上のレビュー会話が解決済みでも、上記のいずれにも該当しない場合は作業上は未解決として扱う。逆に上記のいずれかに該当する場合は、返信後に GitHub 上でも解決済みにする。
 
 ### 3. コメントを分類する
 
@@ -104,7 +112,7 @@ git push origin HEAD
 
 返信後、解決できるレビュー会話を解決済みにする。詳細な `gh` 操作が必要な場合は `references/github-cli.md` を読む。
 
-解決操作後は、未解決のレビュー会話が残っていないことを確認する。
+解決操作後は、GitHub 上で解決済みになっていないレビュー会話が残っていないことを確認する。
 
 ```bash
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh --unresolved <pull-request-number-or-url>
