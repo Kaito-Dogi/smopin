@@ -8,7 +8,7 @@
 
 本プロジェクトのコミット規約は Conventional Commits をベースとする。
 
-参考: [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
+参考：[Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 
 ## 形式
 

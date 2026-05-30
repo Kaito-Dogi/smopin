@@ -128,7 +128,7 @@ object AppDispatcherBindingContainer {
 #### 理由
 
 1. Metro の仕様上、インターフェースや抽象クラス `abstract class` では、`@Provides` を付与したメソッドを定義できないため
-2. 1の場合でも、`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではないため。
+2. 1の場合でも、`companion object` 内に定義すれば解決できるが、ライブラリの仕様に合わせた定義となり、直感的ではないため
 
 ### BindingContainer の分割基準
 
