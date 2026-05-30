@@ -10,8 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CounterEntry() = Box(
-  modifier = Modifier
+fun CounterEntry(
+  modifier: Modifier = Modifier,
+) = Box(
+  modifier = modifier
     .fillMaxSize()
     .background(color = MaterialTheme.colorScheme.surface),
   contentAlignment = Alignment.Center,
