@@ -14,6 +14,6 @@
 
 ## libraries で `module` を使用する
 
-- 理由： `group`, `name` を使用して書くよりも簡潔に書けるため
-- OK： `kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }`
-- NG： `kotlinxCoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }`
+- 理由：`group`, `name` を使用して書くよりも簡潔に書けるため
+- OK：`kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }`
+- NG：`kotlinxCoroutinesCore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }`
