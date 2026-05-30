@@ -17,4 +17,5 @@ AI エージェントは作業開始前に、作業内容に関わらず次の�
 
 - ブランチ戦略は `docs/strategy-branch.md` に従う
 - コミット規約は `docs/convention-commit.md` に従う
+- コミットメッセージ、プルリクエストタイトル、プルリクエスト本文、ドキュメント本文、Skill 本文は日本語で書く
 - ユーザーからプルリクエスト作成を依頼された場合は、`.agents/skills/create-pull-request/SKILL.md` を読んでから作業する
