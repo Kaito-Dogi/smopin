@@ -5,7 +5,6 @@ plugins {
   alias(libs.plugins.androidLibrary)
   alias(libs.plugins.compose)
   alias(libs.plugins.composeCompiler)
-  alias(libs.plugins.metro)
 }
 
 android {
@@ -29,24 +28,8 @@ android {
 }
 
 dependencies {
-  implementation(projects.shared.common)
-  implementation(projects.shared.domain)
-  implementation(projects.android.ui)
-
   implementation(compose.runtime)
   implementation(compose.foundation)
   implementation(compose.material3)
   implementation(compose.ui)
-  implementation(compose.components.resources)
-  implementation(compose.components.uiToolingPreview)
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.lifecycle.viewmodelCompose)
-  implementation(libs.androidx.lifecycle.runtimeCompose)
-
-  implementation(libs.androidxLifecycleViewmodelKtx)
-  implementation(libs.kotlinxSerializationJson)
-  implementation(libs.metroAndroid)
-  implementation(libs.metroViewModel)
-  implementation(libs.metroViewModelCompose)
 }
