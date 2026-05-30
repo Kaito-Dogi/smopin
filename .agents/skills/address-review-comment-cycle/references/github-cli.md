@@ -1,6 +1,6 @@
 # レビューコメント対応のための GitHub CLI リファレンス
 
-補助スクリプトだけでは足りない場合、またはより細かく GitHub API を操作したい場合に参照する。
+補助スクリプトだけでは足りない場合、またはより細かく GitHub API を操作したい場合に参照する。Codex アプリでは GitHub connector も同格のデフォルト選択肢なので、このファイルは `gh` を選ぶときの具体例として扱う。
 
 ## プルリクエスト番号または URL を解決する
 
@@ -96,13 +96,15 @@ gh api graphql \
   -f query='mutation($threadId: ID!) { resolveReviewThread(input: { threadId: $threadId }) { thread { id isResolved } } }'
 ```
 
-`gh api graphql` が認証や権限で失敗する場合は、`references/github-connector.md` を確認する。
+`gh api graphql` が認証や権限で失敗する場合や、Codex アプリから安定して操作したい場合は、`references/github-connector.md` を確認する。
 
 ## Gemini Code Assist に再レビューを依頼する
 
 ```bash
 gh pr comment <pull-request-number-or-url> --body "/gemini review"
 ```
+
+GitHub connector を使う場合は、`mcp__codex_apps__github._add_comment_to_issue` で同じ本文を投稿する。
 
 ## ポーリング方針
 
