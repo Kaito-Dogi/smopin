@@ -1,0 +1,113 @@
+# レビューコメント対応のための GitHub CLI リファレンス
+
+補助スクリプトだけでは足りない場合、またはより細かく GitHub API を操作したい場合に参照する。
+
+## プルリクエスト番号または URL を解決する
+
+```bash
+gh pr view <pull-request-number-or-url> --json number,url,headRefName,baseRefName,title,state
+```
+
+引数を省略すると、`gh pr view --json number,url,headRefName,baseRefName,title,state` は現在のブランチに紐づくプルリクエストを探す。
+
+## レビュー会話とコメントを取得する
+
+GitHub のレビュー会話を解決済みにするには GraphQL の node ID が必要になる。レビュー会話は次のように取得する。
+
+```bash
+gh api graphql \
+  -f owner='<owner>' \
+  -f name='<repo>' \
+  -F number=<pull-request-number> \
+  -f query='\
+query($owner: String!, $name: String!, $number: Int!) {\
+  repository(owner: $owner, name: $name) {\
+    pullRequest(number: $number) {\
+      number\
+      url\
+      reviewThreads(first: 100) {\
+        nodes {\
+          id\
+          isResolved\
+          isOutdated\
+          path\
+          line\
+          startLine\
+          comments(first: 50) {\
+            nodes {\
+              id\
+              databaseId\
+              author { login }\
+              body\
+              createdAt\
+              url\
+            }\
+          }\
+        }\
+      }\
+      comments(first: 100) {\
+        nodes {\
+          id\
+          author { login }\
+          body\
+          createdAt\
+          url\
+        }\
+      }\
+      reviews(first: 100) {\
+        nodes {\
+          id\
+          author { login }\
+          body\
+          state\
+          submittedAt\
+          url\
+        }\
+      }\
+    }\
+  }\
+}'
+```
+
+## レビューコメントに返信する
+
+インラインレビュー会話には、対象会話の最新の関連レビューコメント ID に返信する。
+
+```bash
+gh api repos/<owner>/<repo>/pulls/comments/<review-comment-database-id>/replies \
+  -f body='<reply body>'
+```
+
+GraphQL node ID しか手元にない場合は、返信前に GraphQL で REST API 用の `databaseId` を取得する。
+
+通常のプルリクエストコメントへ返信する場合は、次を使う。
+
+```bash
+gh pr comment <pull-request-number-or-url> --body '<reply body>'
+```
+
+## レビュー会話を解決済みにする
+
+必ず返信してから解決済みにする。
+
+```bash
+gh api graphql \
+  -F threadId='<review-thread-node-id>' \
+  -f query='mutation($threadId: ID!) { resolveReviewThread(input: { threadId: $threadId }) { thread { id isResolved } } }'
+```
+
+`gh api graphql` が認証や権限で失敗する場合は、`references/github-connector.md` を確認する。
+
+## Gemini Code Assist に再レビューを依頼する
+
+```bash
+gh pr comment <pull-request-number-or-url> --body "/gemini review"
+```
+
+## ポーリング方針
+
+Gemini Code Assist に再レビューを依頼した後は、1分間隔でレビュー状態を確認する。次のいずれかに到達したら停止する。
+
+- 対応可能なレビューコメントが残っていない
+- 低優先度のレビューコメントだけが残り、それぞれに延期またはコード変更なしの理由を返信済みである
+- レビュー対応サイクルを5回完了した
