@@ -47,6 +47,8 @@ class MapPermissionFlowTest {
       By.res(permissionPackage, "permission_allow_button"),
     )
 
-    candidates.firstNotNullOfOrNull { selector -> device.findObject(selector) }?.click()
+    candidates.firstNotNullOfOrNull { selector ->
+      device.wait(Until.findObject(selector), 2_000)
+    }?.click()
   }
 }
