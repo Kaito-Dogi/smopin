@@ -17,12 +17,11 @@ import kotlinx.coroutines.flow.conflate
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-internal actual class PlatformLocationClient(
+internal class DefaultPlatformLocationClient(
   private val fusedLocationClient: FusedLocationProviderClient,
-) {
+) : PlatformLocationClient {
   @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
-  actual fun getCurrentLocationStream(
+  override fun getCurrentLocationStream(
     isPrecise: Boolean,
     intervalDuration: Duration,
   ): Flow<LocationDataModel> = callbackFlow {

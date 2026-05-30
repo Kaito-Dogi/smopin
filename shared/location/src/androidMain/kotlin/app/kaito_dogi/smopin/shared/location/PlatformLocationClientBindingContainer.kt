@@ -11,7 +11,7 @@ object PlatformLocationClientBindingContainer {
   @Provides
   private fun providePlatformLocationClient(
     application: Application,
-  ): PlatformLocationClient = PlatformLocationClient(
+  ): PlatformLocationClient = DefaultPlatformLocationClient(
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(application),
   )
 }
