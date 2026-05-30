@@ -4,6 +4,7 @@
 
 AI エージェントは作業開始前に、作業内容に関わらず次のドキュメントを読むこと。
 
+- `docs/product-requirements-document.md`
 - `docs/architecture-layer-data.md`
 - `docs/convention-coding.md`
 - `docs/convention-commit.md`

@@ -28,7 +28,9 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 6. 最小限で有効な検証を先に実行し、変更範囲に応じてより広い検証を実行する。
 7. `docs/convention-commit.md` に従って Conventional Commits 形式でコミットする。
 8. ブランチを push する。
-9. ユーザーが明示的に止めていない限り、追加の指示を待たずにプルリクエストを作成する。
+9. `mkdir -p /tmp/pr-body` を実行する。
+10. プルリクエスト本文を作成し、`/tmp/pr-body/ISSUE-{issue-number}.md` に保存する。
+11. ユーザーが明示的に止めていない限り、追加の指示を待たずにプルリクエストを作成する。
 
 ## プルリクエスト作成
 
@@ -85,7 +87,7 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 作成例:
 
 ```bash
-gh pr create --base main --head feature/ISSUE-89_create-pull-request-skill --title "docs: add git workflow documents" --body-file /tmp/pr-body.md
+gh pr create --base main --head feature/ISSUE-89_create-pull-request-skill --title "docs: add git workflow documents" --body-file /tmp/pr-body/ISSUE-89.md
 ```
 
 ## コミットメッセージ
