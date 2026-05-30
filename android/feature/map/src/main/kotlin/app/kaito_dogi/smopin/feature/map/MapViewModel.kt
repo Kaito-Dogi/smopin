@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -45,6 +46,12 @@ class MapViewModel(
           isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
         ).onStart<Location?> { emit(value = null) }
+          .retryWhen { cause, _ ->
+            viewModelState.update {
+              it.copy(error = AppException.Unknown(cause = cause))
+            }
+            true
+          }
           .catch { cause ->
             viewModelState.update {
               it.copy(error = AppException.Unknown(cause = cause))

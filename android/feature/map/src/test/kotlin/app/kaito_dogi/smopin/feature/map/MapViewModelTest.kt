@@ -159,7 +159,7 @@ class MapViewModelTest {
   }
 
   @Test
-  fun `location stream error after permission change can recover on next permission grant`() = runTest {
+  fun `location stream error then uiState can recover by retrying location stream`() = runTest {
     val locationRepository = FakeLocationRepository()
     val mapViewModel = MapViewModel(
       locationRepository = locationRepository,
@@ -168,8 +168,6 @@ class MapViewModelTest {
     val uiStateList = collectUiStateList(mapViewModel = mapViewModel)
 
     locationRepository.nextCollectorError = IllegalStateException("error")
-    mapViewModel.onLocationPermissionGranted(isPrecise = true)
-    mapViewModel.onLocationPermissionDenied()
     mapViewModel.onLocationPermissionGranted(isPrecise = true)
     locationRepository.emitCurrentLocation(LOCATION_A)
 
@@ -182,7 +180,7 @@ class MapViewModelTest {
   private fun TestScope.collectUiStateList(mapViewModel: MapViewModel): MutableList<MapUiState> {
     val uiStateList = mutableListOf<MapUiState>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      mapViewModel.uiState.collect(uiStateList::add)
+      mapViewModel.uiState.collect { uiStateList.add(it) }
     }
     return uiStateList
   }
