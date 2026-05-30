@@ -24,9 +24,14 @@ else
   pr_json=$(gh pr view --json number,url,headRefName,baseRefName,title,state)
 fi
 
-owner=$(jq -r '.url | split("/") | .[3]' <<<"$pr_json")
-repo=$(jq -r '.url | split("/") | .[4]' <<<"$pr_json")
+owner=$(jq -r 'try (.url | split("/")[3]) catch null' <<<"$pr_json")
+repo=$(jq -r 'try (.url | split("/")[4]) catch null' <<<"$pr_json")
 number=$(jq -r '.number' <<<"$pr_json")
+
+if [[ -z "$owner" || "$owner" == "null" || -z "$repo" || "$repo" == "null" || ! "$number" =~ ^[0-9]+$ ]]; then
+  echo "エラー: PRのメタデータ（owner, repo, number）を正しく取得できませんでした。" >&2
+  exit 1
+fi
 
 threads_json=$(gh api graphql \
   -F owner="$owner" \
@@ -88,4 +93,4 @@ fi
 jq -n \
   --argjson pr "$pr_json" \
   --argjson reviewState "$threads_json" \
-  '{ pullRequest: $pr, reviewState: $reviewState.data.repository.pullRequest }'
+  '{ pullRequest: $pr, reviewState: (try $reviewState.data.repository.pullRequest catch null) }'
