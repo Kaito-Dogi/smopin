@@ -42,7 +42,7 @@ gh pr view --json number,url,headRefName,baseRefName,title,state
 補助スクリプトでレビュー状態を取得する。
 
 ```bash
-.agents/skills/address-review-comment-cycle/scripts/fetch-review-state.sh <pull-request-number-or-url>
+.agents/android-skills/address-review-comment-cycle/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
 スクリプトの出力では、`unresolvedReviewThreads` に GitHub 上で解決済みになっていないレビュー会話が入る。まずこの配列を確認してから、必要に応じてプルリクエストコメントとレビュー要約も確認する。
@@ -112,7 +112,7 @@ git push origin HEAD
 解決操作後は、GitHub 上で解決済みになっていないレビュー会話が残っていないことを確認する。
 
 ```bash
-.agents/skills/address-review-comment-cycle/scripts/fetch-review-state.sh <pull-request-number-or-url>
+.agents/android-skills/address-review-comment-cycle/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
 出力の `unresolvedReviewThreads` が空配列であれば、GitHub 上で解決済みになっていないレビュー会話は残っていない。
@@ -161,7 +161,7 @@ gh pr comment <pull-request-number-or-url> --body "/gemini review"
 
 ```bash
 sleep 60
-.agents/skills/address-review-comment-cycle/scripts/fetch-review-state.sh <pull-request-number-or-url>
+.agents/android-skills/address-review-comment-cycle/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
 新しい未解決コメントがあれば、同じ手順で対応する。次のいずれかに到達したら停止する。
