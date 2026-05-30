@@ -10,6 +10,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +18,18 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
+
+private const val CURRENT_LOCATION_RETRY_MAX_COUNT = 3L
 
 @Inject
 @ViewModelKey(value = MapViewModel::class)
@@ -35,21 +41,32 @@ class MapViewModel(
 ) : ViewModel() {
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
 
-  // FIXME: viewModelState が変更されるたびに再購読しないようにする。その上で、エラー時にリトライされるようにする
   private val currentLocation: Flow<Location?> = viewModelState.map { it.locationPermission }
+    .distinctUntilChanged()
     .flatMapLatest { locationPermission ->
       when (locationPermission) {
         is MapViewModelState.LocationPermission.Granted -> locationRepository.getCurrentLocationStream(
           isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
-        )
+        ).onStart<Location?> { emit(value = null) }
+          .retryWhen { cause, attempt ->
+            viewModelState.update {
+              it.copy(error = AppException.Unknown(cause = cause))
+            }
+            val shouldRetry = attempt < CURRENT_LOCATION_RETRY_MAX_COUNT
+            if (shouldRetry) {
+              delay(timeMillis = 1000L)
+            }
+            shouldRetry
+          }
+          .catch { cause ->
+            viewModelState.update {
+              it.copy(error = AppException.Unknown(cause = cause))
+            }
+            emit(value = null)
+          }
 
         MapViewModelState.LocationPermission.Denied, MapViewModelState.LocationPermission.NotRequested -> flowOf(value = null)
-      }
-    }.catch { cause ->
-      // TODO: エラーハンドリング
-      viewModelState.update {
-        it.copy(error = AppException.Unknown(cause = cause))
       }
     }
 

@@ -50,4 +50,8 @@ dependencies {
   implementation(libs.metroAndroid)
   implementation(libs.metroViewModel)
   implementation(libs.metroViewModelCompose)
+
+  testImplementation(libs.kotlin.test)
+  testImplementation(libs.kotlin.testJunit)
+  testImplementation(libs.kotlinxCoroutinesTest)
 }
