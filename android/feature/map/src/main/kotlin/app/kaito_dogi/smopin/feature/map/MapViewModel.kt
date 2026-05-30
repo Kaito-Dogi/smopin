@@ -10,6 +10,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
+
+private const val CURRENT_LOCATION_RETRY_MAX_COUNT = 3L
 
 @Inject
 @ViewModelKey(value = MapViewModel::class)
@@ -46,11 +49,15 @@ class MapViewModel(
           isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
         ).onStart<Location?> { emit(value = null) }
-          .retryWhen { cause, _ ->
+          .retryWhen { cause, attempt ->
             viewModelState.update {
               it.copy(error = AppException.Unknown(cause = cause))
             }
-            true
+            val shouldRetry = attempt < CURRENT_LOCATION_RETRY_MAX_COUNT
+            if (shouldRetry) {
+              delay(timeMillis = 1000L)
+            }
+            shouldRetry
           }
           .catch { cause ->
             viewModelState.update {

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -170,11 +171,29 @@ class MapViewModelTest {
     locationRepository.nextCollectorError = IllegalStateException("error")
     mapViewModel.onLocationPermissionGranted(isPrecise = true)
     locationRepository.emitCurrentLocation(LOCATION_A)
+    advanceUntilIdle()
 
     val uiState = uiStateList.last()
     assertIs<MapUiState.PermissionGranted.LocationSuccess>(uiState)
     assertEquals(expected = LOCATION_A, actual = uiState.currentLocation)
     assertEquals(expected = 2, actual = locationRepository.getCurrentLocationStreamCount)
+  }
+
+  @Test
+  fun `location stream persistent error then retry count is limited`() = runTest {
+    val locationRepository = FakeLocationRepository()
+    val mapViewModel = MapViewModel(
+      locationRepository = locationRepository,
+      smokingAreaRepository = FakeSmokingAreaRepository(),
+    )
+    val uiStateList = collectUiStateList(mapViewModel = mapViewModel)
+
+    locationRepository.alwaysThrowError = IllegalStateException("persistent error")
+    mapViewModel.onLocationPermissionGranted(isPrecise = true)
+    advanceUntilIdle()
+
+    assertIs<MapUiState.PermissionGranted.LocationLoading>(uiStateList.last())
+    assertEquals(expected = 4, actual = locationRepository.getCurrentLocationStreamCount)
   }
 
   private fun TestScope.collectUiStateList(mapViewModel: MapViewModel): MutableList<MapUiState> {
@@ -189,6 +208,7 @@ class MapViewModelTest {
     private val currentLocationState = MutableStateFlow<Location?>(null)
     var getCurrentLocationStreamCount = 0
     var nextCollectorError: Throwable? = null
+    var alwaysThrowError: Throwable? = null
 
     fun emitCurrentLocation(location: Location) {
       currentLocationState.value = location
@@ -199,6 +219,9 @@ class MapViewModelTest {
       intervalDuration: Duration,
     ): Flow<Location> = flow {
       getCurrentLocationStreamCount += 1
+      alwaysThrowError?.let { throwable ->
+        throw throwable
+      }
       nextCollectorError?.let { throwable ->
         nextCollectorError = null
         throw throwable
