@@ -1,18 +1,18 @@
-# GitHub CLI reference for review-comment workflows
+# レビューコメント対応のための GitHub CLI リファレンス
 
-Use these commands when the helper script is insufficient or when you need finer control.
+補助スクリプトだけでは足りない場合、またはより細かく GitHub API を操作したい場合に参照する。
 
-## Resolve PR number or URL
+## PR 番号または URL を解決する
 
 ```bash
 gh pr view <pr-number-or-url> --json number,url,headRefName,baseRefName,title,state
 ```
 
-Without an argument, `gh pr view --json number,url,headRefName,baseRefName,title,state` uses the current branch when possible.
+引数を省略すると、`gh pr view --json number,url,headRefName,baseRefName,title,state` は現在のブランチに紐づく PR を探す。
 
-## Fetch review threads and comments
+## review thread とコメントを取得する
 
-GitHub review conversation resolution requires GraphQL node IDs. Fetch review threads with:
+GitHub の review conversation を resolve するには GraphQL の node ID が必要になる。review thread は次のように取得する。
 
 ```bash
 gh api graphql \
@@ -68,9 +68,9 @@ query($owner: String!, $name: String!, $number: Int!) {\
 }'
 ```
 
-## Reply to a review comment
+## review comment に返信する
 
-For an inline review thread, reply to the latest relevant review comment ID:
+inline review thread には、対象 thread の最新の関連 review comment ID に返信する。
 
 ```bash
 gh api repos/<owner>/<repo>/pulls/<pr-number>/comments \
@@ -78,17 +78,17 @@ gh api repos/<owner>/<repo>/pulls/<pr-number>/comments \
   -F in_reply_to='<review-comment-database-id>'
 ```
 
-If only a GraphQL node ID is available, fetch the REST `databaseId` from GraphQL before replying.
+GraphQL node ID しか手元にない場合は、返信前に GraphQL で REST API 用の `databaseId` を取得する。
 
-For general PR comments, use:
+通常の PR コメントへ返信する場合は、次を使う。
 
 ```bash
 gh pr comment <pr-number-or-url> --body '<reply body>'
 ```
 
-## Resolve a review thread
+## review thread を解決する
 
-Resolve only after replying:
+必ず返信してから resolve する。
 
 ```bash
 gh api graphql \
@@ -96,12 +96,16 @@ gh api graphql \
   -f query='mutation($threadId: ID!) { resolveReviewThread(input: { threadId: $threadId }) { thread { id isResolved } } }'
 ```
 
-## Request Gemini Code Assist review
+## Gemini Code Assist に再レビューを依頼する
 
 ```bash
 gh pr comment <pr-number-or-url> --body "/gemini review"
 ```
 
-## Polling policy
+## ポーリング方針
 
-Poll at one-minute intervals after requesting Gemini review. Stop after five response cycles, when no actionable Gemini comments remain, or when only explicitly-deferred low-priority comments remain.
+Gemini Code Assist に再レビューを依頼した後は、1 分間隔で review state を確認する。次のいずれかに到達したら停止する。
+
+- 対応可能な Gemini コメントが残っていない。
+- 低優先度のコメントだけが残り、それぞれに延期またはコード変更なしの理由を返信済みである。
+- レビュー対応サイクルを 5 回完了した。

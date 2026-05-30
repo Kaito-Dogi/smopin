@@ -3,11 +3,11 @@ set -euo pipefail
 
 usage() {
   cat >&2 <<'USAGE'
-Usage: fetch-review-state.sh [<pr-number-or-url>]
+使い方: fetch-review-state.sh [<pr-number-or-url>]
 
-Prints a JSON document containing pull request metadata, review threads,
-issue comments, and review summaries. When no PR argument is supplied, gh
-tries to infer the PR from the current branch.
+Pull Request のメタデータ、review thread、PR コメント、review summary を
+1 つの JSON として出力します。PR 引数を省略した場合は、gh が現在の
+ブランチから PR を推測します。
 USAGE
 }
 
