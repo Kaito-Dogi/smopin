@@ -117,6 +117,11 @@ if jq -e '.errors' <<<"$threads_json" >/dev/null; then
   exit 1
 fi
 
+if jq -e 'try .data.repository.pullRequest catch null | . == null' <<<"$threads_json" >/dev/null; then
+  echo "エラー: プルリクエストデータを取得できませんでした。" >&2
+  exit 1
+fi
+
 jq -n \
   --argjson pr "$pr_json" \
   --argjson reviewState "$threads_json" \
