@@ -7,6 +7,7 @@ import app.kaito_dogi.smopin.shared.data.smokingArea.SmokingAreaNetworkDataSourc
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.firestore.firestore
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
@@ -18,14 +19,17 @@ internal class DefaultSmokingAreaNetworkDataSource(
     Firebase.firestore.collection(collectionPath = SMOKING_AREA_COLLECTION).get()
       .documents
       .mapNotNull { documentSnapshot ->
-        runCatching {
+        try {
           val rawDocument = SmokingAreaRawDocument(
             name = documentSnapshot.get<String?>(field = "name"),
             latitude = documentSnapshot.get<Double?>(field = "latitude"),
             longitude = documentSnapshot.get<Double?>(field = "longitude"),
           )
           rawDocument.toDataModel()
-        }.getOrNull()
+        } catch (exception: Exception) {
+          if (exception is CancellationException) throw exception
+          null
+        }
       }
   }
 
