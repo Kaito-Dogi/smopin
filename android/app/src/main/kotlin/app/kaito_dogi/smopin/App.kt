@@ -81,24 +81,27 @@ private class TopLevelBackStack(
   startRoute: ScreenRoute,
   routeHistory: List<ScreenRoute> = listOf(startRoute),
 ) {
-  val backStack: SnapshotStateList<ScreenRoute> = mutableStateListOf<ScreenRoute>()
+  private val mutableBackStack: SnapshotStateList<ScreenRoute> = mutableStateListOf<ScreenRoute>()
     .apply {
       addAll(elements = routeHistory.ifEmpty { listOf(startRoute) })
     }
 
+  val backStack: List<ScreenRoute>
+    get() = mutableBackStack
+
   val topLevelKey: ScreenRoute
-    get() = backStack.last()
+    get() = mutableBackStack.last()
 
   fun addTopLevel(key: ScreenRoute) {
     if (key == topLevelKey) return
 
-    backStack.remove(element = key)
-    backStack.add(element = key)
+    mutableBackStack.remove(element = key)
+    mutableBackStack.add(element = key)
   }
 
   fun removeLast() {
-    if (backStack.size > 1) {
-      backStack.removeAt(index = backStack.lastIndex)
+    if (mutableBackStack.size > 1) {
+      mutableBackStack.removeAt(index = mutableBackStack.lastIndex)
     }
   }
 
