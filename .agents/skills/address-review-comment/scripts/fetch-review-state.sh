@@ -5,7 +5,7 @@ usage() {
   cat >&2 <<'USAGE'
 使い方: fetch-review-state.sh [<pull-request-number-or-url>]
 
-プルリクエストのメタデータ、review thread、プルリクエストコメント、review summary を
+プルリクエストのメタデータ、レビュー会話、プルリクエストコメント、レビュー要約を
 1 つの JSON として出力します。プルリクエスト引数を省略した場合は、gh が現在の
 ブランチからプルリクエストを推測します。
 USAGE

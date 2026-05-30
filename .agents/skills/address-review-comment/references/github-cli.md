@@ -10,9 +10,9 @@ gh pr view <pull-request-number-or-url> --json number,url,headRefName,baseRefNam
 
 引数を省略すると、`gh pr view --json number,url,headRefName,baseRefName,title,state` は現在のブランチに紐づくプルリクエストを探す。
 
-## review thread とコメントを取得する
+## レビュー会話とコメントを取得する
 
-GitHub の review conversation を resolve するには GraphQL の node ID が必要になる。review thread は次のように取得する。
+GitHub のレビュー会話を解決済みにするには GraphQL の node ID が必要になる。レビュー会話は次のように取得する。
 
 ```bash
 gh api graphql \
@@ -69,9 +69,9 @@ query($owner: String!, $name: String!, $number: Int!) {\
 }'
 ```
 
-## review comment に返信する
+## レビューコメントに返信する
 
-inline review thread には、対象 thread の最新の関連 review comment ID に返信する。
+インラインレビュー会話には、対象会話の最新の関連レビューコメント ID に返信する。
 
 ```bash
 gh api repos/<owner>/<repo>/pulls/comments/<review-comment-database-id>/replies \
@@ -86,9 +86,9 @@ GraphQL node ID しか手元にない場合は、返信前に GraphQL で REST A
 gh pr comment <pull-request-number-or-url> --body '<reply body>'
 ```
 
-## review thread を解決する
+## レビュー会話を解決済みにする
 
-必ず返信してから resolve する。
+必ず返信してから解決済みにする。
 
 ```bash
 gh api graphql \
@@ -104,7 +104,7 @@ gh pr comment <pull-request-number-or-url> --body "/gemini review"
 
 ## ポーリング方針
 
-Gemini Code Assist に再レビューを依頼した後は、1 分間隔で review state を確認する。次のいずれかに到達したら停止する。
+Gemini Code Assist に再レビューを依頼した後は、1 分間隔でレビュー状態を確認する。次のいずれかに到達したら停止する。
 
 - 対応可能な Gemini コメントが残っていない。
 - 低優先度のコメントだけが残り、それぞれに延期またはコード変更なしの理由を返信済みである。
