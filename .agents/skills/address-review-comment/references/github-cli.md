@@ -2,13 +2,13 @@
 
 補助スクリプトだけでは足りない場合、またはより細かく GitHub API を操作したい場合に参照する。
 
-## PR 番号または URL を解決する
+## プルリクエスト番号または URL を解決する
 
 ```bash
 gh pr view <pr-number-or-url> --json number,url,headRefName,baseRefName,title,state
 ```
 
-引数を省略すると、`gh pr view --json number,url,headRefName,baseRefName,title,state` は現在のブランチに紐づく PR を探す。
+引数を省略すると、`gh pr view --json number,url,headRefName,baseRefName,title,state` は現在のブランチに紐づくプルリクエストを探す。
 
 ## review thread とコメントを取得する
 
@@ -80,7 +80,7 @@ gh api repos/<owner>/<repo>/pulls/comments/<review-comment-database-id>/replies 
 
 GraphQL node ID しか手元にない場合は、返信前に GraphQL で REST API 用の `databaseId` を取得する。
 
-通常の PR コメントへ返信する場合は、次を使う。
+通常のプルリクエストコメントへ返信する場合は、次を使う。
 
 ```bash
 gh pr comment <pr-number-or-url> --body '<reply body>'

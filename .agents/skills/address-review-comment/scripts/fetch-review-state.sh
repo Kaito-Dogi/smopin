@@ -5,9 +5,9 @@ usage() {
   cat >&2 <<'USAGE'
 使い方: fetch-review-state.sh [<pr-number-or-url>]
 
-Pull Request のメタデータ、review thread、PR コメント、review summary を
-1 つの JSON として出力します。PR 引数を省略した場合は、gh が現在の
-ブランチから PR を推測します。
+プルリクエストのメタデータ、review thread、プルリクエストコメント、review summary を
+1 つの JSON として出力します。プルリクエスト引数を省略した場合は、gh が現在の
+ブランチからプルリクエストを推測します。
 USAGE
 }
 
@@ -29,7 +29,7 @@ repo=$(jq -r 'try (.url | split("/")[4]) catch null' <<<"$pr_json")
 number=$(jq -r '.number' <<<"$pr_json")
 
 if [[ -z "$owner" || "$owner" == "null" || -z "$repo" || "$repo" == "null" || ! "$number" =~ ^[0-9]+$ ]]; then
-  echo "エラー: PRのメタデータ（owner, repo, number）を正しく取得できませんでした。" >&2
+  echo "エラー: プルリクエストのメタデータ（owner, repo, number）を正しく取得できませんでした。" >&2
   exit 1
 fi
 
