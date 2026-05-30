@@ -31,9 +31,9 @@ fi
 pr_arg="${1:-}"
 
 if [[ -n "$pr_arg" ]]; then
-  pr_json=$(gh pr view "$pr_arg" --json number,url,headRefName,baseRefName,title,state)
+  pr_json=$(gh pr view "$pr_arg" --json number,url,headRefName,baseRefName,title,state 2>/dev/null) || pr_json=""
 else
-  pr_json=$(gh pr view --json number,url,headRefName,baseRefName,title,state)
+  pr_json=$(gh pr view --json number,url,headRefName,baseRefName,title,state 2>/dev/null) || pr_json=""
 fi
 
 if [[ -z "$pr_json" ]] || ! jq -e . <<<"$pr_json" >/dev/null 2>&1; then
@@ -99,7 +99,7 @@ query($owner: String!, $name: String!, $number: Int!) {
       }
     }
   }
-}')
+}' 2>/dev/null) || threads_json=""
 
 if [[ -z "$threads_json" ]]; then
   echo "エラー: GitHub API から空のレスポンスが返されました。" >&2
