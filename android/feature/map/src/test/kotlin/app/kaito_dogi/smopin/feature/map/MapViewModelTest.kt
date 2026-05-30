@@ -11,6 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -142,6 +143,42 @@ class MapViewModelTest {
     assertEquals(expected = true, actual = uiState.isCameraPositionAdjusted)
   }
 
+  @Test
+  fun `onCameraPositionAdjust after location permission granted does not restart location stream`() = runTest {
+    val locationRepository = FakeLocationRepository()
+    val mapViewModel = MapViewModel(
+      locationRepository = locationRepository,
+      smokingAreaRepository = FakeSmokingAreaRepository(),
+    )
+    collectUiStateList(mapViewModel = mapViewModel)
+
+    mapViewModel.onLocationPermissionGranted(isPrecise = true)
+    mapViewModel.onCameraPositionAdjust()
+
+    assertEquals(expected = 1, actual = locationRepository.getCurrentLocationStreamCount)
+  }
+
+  @Test
+  fun `location stream error after permission change can recover on next permission grant`() = runTest {
+    val locationRepository = FakeLocationRepository()
+    val mapViewModel = MapViewModel(
+      locationRepository = locationRepository,
+      smokingAreaRepository = FakeSmokingAreaRepository(),
+    )
+    val uiStateList = collectUiStateList(mapViewModel = mapViewModel)
+
+    locationRepository.nextCollectorError = IllegalStateException("error")
+    mapViewModel.onLocationPermissionGranted(isPrecise = true)
+    mapViewModel.onLocationPermissionDenied()
+    mapViewModel.onLocationPermissionGranted(isPrecise = true)
+    locationRepository.emitCurrentLocation(LOCATION_A)
+
+    val uiState = uiStateList.last()
+    assertIs<MapUiState.PermissionGranted.LocationSuccess>(uiState)
+    assertEquals(expected = LOCATION_A, actual = uiState.currentLocation)
+    assertEquals(expected = 2, actual = locationRepository.getCurrentLocationStreamCount)
+  }
+
   private fun TestScope.collectUiStateList(mapViewModel: MapViewModel): MutableList<MapUiState> {
     val uiStateList = mutableListOf<MapUiState>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -152,6 +189,8 @@ class MapViewModelTest {
 
   private class FakeLocationRepository : LocationRepository {
     private val currentLocationState = MutableStateFlow<Location?>(null)
+    var getCurrentLocationStreamCount = 0
+    var nextCollectorError: Throwable? = null
 
     fun emitCurrentLocation(location: Location) {
       currentLocationState.value = location
@@ -160,7 +199,14 @@ class MapViewModelTest {
     override fun getCurrentLocationStream(
       isPrecise: Boolean,
       intervalDuration: Duration,
-    ): Flow<Location> = currentLocationState.filterNotNull()
+    ): Flow<Location> = flow {
+      getCurrentLocationStreamCount += 1
+      nextCollectorError?.let { throwable ->
+        nextCollectorError = null
+        throw throwable
+      }
+      currentLocationState.filterNotNull().collect { emit(it) }
+    }
   }
 
   private class FakeSmokingAreaRepository(

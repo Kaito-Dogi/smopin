@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -36,21 +37,22 @@ class MapViewModel(
 ) : ViewModel() {
   private val viewModelState: MutableStateFlow<MapViewModelState> = MutableStateFlow(value = MapViewModelState.createInitial())
 
-  // FIXME: viewModelState が変更されるたびに再購読しないようにする。その上で、エラー時にリトライされるようにする
   private val currentLocation: Flow<Location?> = viewModelState.map { it.locationPermission }
+    .distinctUntilChanged()
     .flatMapLatest { locationPermission ->
       when (locationPermission) {
         is MapViewModelState.LocationPermission.Granted -> locationRepository.getCurrentLocationStream(
           isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
         ).onStart<Location?> { emit(value = null) }
+          .catch { cause ->
+            viewModelState.update {
+              it.copy(error = AppException.Unknown(cause = cause))
+            }
+            emit(value = null)
+          }
 
         MapViewModelState.LocationPermission.Denied, MapViewModelState.LocationPermission.NotRequested -> flowOf(value = null)
-      }
-    }.catch { cause ->
-      // TODO: エラーハンドリング
-      viewModelState.update {
-        it.copy(error = AppException.Unknown(cause = cause))
       }
     }
 
