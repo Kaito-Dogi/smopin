@@ -97,13 +97,12 @@ dependencies {
 
   debugImplementation(compose.uiTooling)
 
+  androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+  androidTestImplementation(libs.androidx.test.ext.junit)
+  androidTestImplementation(libs.androidx.espresso.core)
+  androidTestImplementation(libs.androidx.uiautomator)
 
-  androidTestImplementation(libs.androidxComposeUiTestJunit4)
-  androidTestImplementation(libs.androidxTestExtJunit)
-  androidTestImplementation(libs.androidxEspressoCore)
-  androidTestImplementation(libs.androidxTestUiautomator)
-
-  debugImplementation(libs.androidxComposeUiTestManifest)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
 
   implementation(platform(libs.firebaseBom))
   implementation(libs.firebaseFirestore)

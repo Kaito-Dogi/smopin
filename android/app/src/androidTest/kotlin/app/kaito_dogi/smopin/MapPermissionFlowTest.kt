@@ -12,6 +12,7 @@ import androidx.test.uiautomator.Until
 import app.kaito_dogi.smopin.feature.map.MAP_LOADING_INDICATOR_TEST_TAG
 import org.junit.Rule
 import org.junit.Test
+import java.util.regex.Pattern
 
 class MapPermissionFlowTest {
 
@@ -41,14 +42,10 @@ class MapPermissionFlowTest {
 
     if (!device.wait(Until.hasObject(By.pkg(permissionPackage).depth(0)), 5_000)) return
 
-    val candidates = listOf(
-      By.res(permissionPackage, "permission_allow_foreground_only_button"),
-      By.res(permissionPackage, "permission_allow_one_time_button"),
-      By.res(permissionPackage, "permission_allow_button"),
+    val buttonPattern = Pattern.compile(
+      "permission_allow_foreground_only_button|permission_allow_one_time_button|permission_allow_button",
     )
-
-    candidates.firstNotNullOfOrNull { selector ->
-      device.wait(Until.findObject(selector), 2_000)
-    }?.click()
+    val selector = By.res(permissionPackage, buttonPattern)
+    device.wait(Until.findObject(selector), 2_000)?.click()
   }
 }
