@@ -3,7 +3,7 @@ name: create-pull-request
 description: このリポジトリの Git 運用に沿って GitHub プルリクエストを作成する。ユーザーが PR 作成、プルリクエスト作成、作業完了後の PR 化、またはブランチ作成・コミット・push・PR 作成の一連の作業を依頼したときに使用する。
 ---
 
-# Create Pull Request
+# プルリクエスト作成
 
 このスキルは、リポジトリ上の作業をレビュー可能な GitHub プルリクエストとして完了するために使用する。
 
@@ -28,15 +28,17 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 6. 最小限で有効な検証を先に実行し、変更範囲に応じてより広い検証を実行する
 7. `docs/convention-commit.md` に従って Conventional Commits 形式でコミットする
 8. ブランチを push する
-9. `mkdir -p /tmp/pr-body` を実行する
-10. プルリクエスト本文を作成し、`/tmp/pr-body/ISSUE-{issue-number}.md` に保存する
+9. `gh` を使う可能性がある場合は `mkdir -p /tmp/pr-body` を実行する
+10. プルリクエスト本文を作成する。`gh` を使う場合は、`/tmp/pr-body/ISSUE-{issue-number}.md` に保存する
 11. ユーザーが明示的に止めていない限り、追加の指示を待たずにプルリクエストを作成する
 
 ## プルリクエスト作成
 
-プルリクエストは `gh pr create` で作成する。
+プルリクエスト作成には GitHub connector の `_create_pull_request` または `gh pr create` を使用する。
 
-このリポジトリでは、開発者が Fine-grained personal access tokens で `gh` 認証済みであることを前提とする。GitHub connector や MCP tool でプルリクエストを作成しない。
+Codex アプリでは `gh` が不安定なことがあるため、GitHub connector を `gh` と同格のデフォルト選択肢として扱う。特に、Codex アプリからそのまま GitHub へ操作を送る場合は、GitHub connector を優先してよい。
+
+`gh` を使う場合は、開発者が Fine-grained personal access tokens で `gh` 認証済みであることを前提とする。
 
 ### ベースブランチ
 
@@ -85,7 +87,20 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 - TBD
 ```
 
-作成例：
+GitHub connector の作成例：
+
+```text
+mcp__codex_apps__github._create_pull_request
+```
+
+- `repository_full_name`：`owner/name`
+- `base`：ベースブランチ
+- `head`：プルリクエストブランチ
+- `title`：Conventional Commits 形式のタイトル
+- `body`：プルリクエスト本文
+- `draft`：必要に応じて指定する
+
+`gh` の作成例：
 
 ```bash
 gh pr create --base main --head feature/ISSUE-89_create-pull-request-skill --title "docs: add git workflow documents" --body-file /tmp/pr-body/ISSUE-89.md

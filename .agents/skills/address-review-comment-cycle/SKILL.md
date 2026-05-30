@@ -20,10 +20,10 @@ description: プルリクエストのレビューコメント対応サイクル�
 ## リソース
 
 - `scripts/fetch-review-state.sh`：プルリクエストのメタデータ、レビュー会話、プルリクエストコメント、レビュー要約を JSON で取得する
-- `references/github-cli.md`：スクリプトだけでは足りない場合の `gh` コマンド例を確認する
-- `references/github-connector.md`：`gh` の権限で解決できない場合の代替手順を確認する
+- `references/github-connector.md`：Codex アプリで GitHub connector を使う手順と対応する操作を確認する
+- `references/github-cli.md`：`gh` を使う手順と対応する操作を確認する
 
-まずはスクリプトを使い、失敗した場合やレビュー会話への返信・解決などの個別操作が必要な場合だけリファレンスを読む。
+まずはスクリプトを使い、個別操作が必要になったら GitHub connector と `gh` のどちらで実行するかを選ぶ。Codex アプリでは GitHub connector を最初から候補に含め、`gh` の代替ではなく同格の選択肢として扱う。
 
 ## ワークフロー
 
@@ -107,7 +107,7 @@ git push origin HEAD
 - 説明する場合：なぜ変更しないかを書く
 - 延期する場合：作成した Issue URL と、なぜ今回扱わないかを書く
 
-返信後、解決できるレビュー会話を解決済みにする。詳細な `gh` 操作が必要な場合は `references/github-cli.md` を読む。
+返信後、解決できるレビュー会話を解決済みにする。GitHub connector または `gh` の詳細な操作が必要な場合は、対応するリファレンスを読む。
 
 解決操作後は、GitHub 上で解決済みになっていないレビュー会話が残っていないことを確認する。
 
@@ -137,7 +137,17 @@ git push origin HEAD
 - <レビューコメント URL またはプルリクエスト URL>
 ```
 
-Issue 作成例：
+GitHub connector の Issue 作成例：
+
+```text
+mcp__codex_apps__github._create_issue
+```
+
+- `repository_full_name`：`owner/name`
+- `title`：Issue タイトル
+- `body`：Issue 本文
+
+`gh` の Issue 作成例：
 
 ```bash
 gh issue create \
@@ -149,11 +159,13 @@ gh issue create \
 
 ### 8. 再レビューを依頼する
 
-push 後に Gemini Code Assist などの AI エージェントへレビューを依頼または再依頼する。
+push 後に Gemini Code Assist などの AI エージェントへレビューを依頼または再依頼する。GitHub connector と `gh` のどちらを使ってもよい。
 
 ```bash
 gh pr comment <pull-request-number-or-url> --body "/gemini review"
 ```
+
+GitHub connector を使う場合は、プルリクエスト会話へのトップレベルコメントとして `/gemini review` を投稿する。
 
 ### 9. 追加コメントを確認する
 

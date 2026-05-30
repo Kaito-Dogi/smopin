@@ -1,26 +1,69 @@
 # GitHub Connector リファレンス
 
-`gh api graphql` でレビュー会話の解決が `Resource not accessible by personal access token` などの権限エラーになる場合に参照する。
+Codex アプリで GitHub へ操作するときの基本リファレンスとして参照する。`gh` が不安定な場合の代替手段に限定せず、GitHub connector を `gh` と同格のデフォルト選択肢として扱う。
 
 ## 使いどころ
 
-- `gh api graphql` で `resolveReviewThread` が失敗する
-- PAT の権限や SAML 制約で `gh` からは操作できない
+- Codex アプリから GitHub へ直接操作したい
+- `gh` が不安定、または認証や権限で失敗する
+- プルリクエスト作成、Issue 作成、コメント返信、レビュー会話の解決をツール経由で行いたい
 - Codex 環境で GitHub connector が利用できる
 
-## 代替手順
+## 主な操作
 
-GitHub connector の `_resolve_review_thread` を使って、GraphQL の review thread node ID を直接解決する。
+### プルリクエストを作成する
+
+```text
+mcp__codex_apps__github._create_pull_request
+```
+
+- `repository_full_name`：`owner/name`
+- `base`：ベースブランチ
+- `head`：プルリクエストブランチ
+- `title`：プルリクエストタイトル
+- `body`：プルリクエスト本文
+
+### Issue を作成する
+
+```text
+mcp__codex_apps__github._create_issue
+```
+
+- `repository_full_name`：`owner/name`
+- `title`：Issue タイトル
+- `body`：Issue 本文
+
+### インラインレビューコメントに返信する
+
+```text
+mcp__codex_apps__github._reply_to_review_comment
+```
+
+- `repo_full_name`：`owner/name`
+- `pr_number`：プルリクエスト番号
+- `comment_id`：スレッド先頭のレビューコメント ID
+- `comment`：返信本文
+
+### プルリクエスト会話へコメントする
+
+```text
+mcp__codex_apps__github._add_comment_to_issue
+```
+
+- `repo_full_name`：`owner/name`
+- `pr_number`：プルリクエスト番号
+- `comment`：コメント本文
+
+### レビュー会話を解決済みにする
 
 ```text
 mcp__codex_apps__github._resolve_review_thread
 ```
-
-必要なものは次のとおり。
 
 - `thread_id`：`PRRT_...` 形式の review thread node ID
 
 ## 注意
 
 - 返信を先に投稿してから解決する
-- GitHub connector が使えない場合は、GitHub 上で手動解決するか、`gh` の認証スコープを見直す
+- GitHub connector に存在しない操作や、現在のセッションで tool が公開されていない操作だけ `gh` を使う
+- GitHub connector が使えない場合は、GitHub 上で手動対応するか、`gh` の認証スコープを見直す
