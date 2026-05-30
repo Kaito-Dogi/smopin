@@ -44,11 +44,7 @@ gh pr view --json number,url,headRefName,baseRefName,title,state
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
-GitHub 上で解決済みになっていないレビュー会話だけを確認する場合は、次を使う。
-
-```bash
-.agents/skills/address-review-comment/scripts/fetch-review-state.sh --unresolved <pull-request-number-or-url>
-```
+スクリプトの出力では、`unresolvedReviewThreads` に GitHub 上で解決済みになっていないレビュー会話が入る。まずこの配列を確認してから、必要に応じてプルリクエストコメントとレビュー要約も確認する。
 
 確認対象は次の順に優先する。
 
@@ -115,8 +111,10 @@ git push origin HEAD
 解決操作後は、GitHub 上で解決済みになっていないレビュー会話が残っていないことを確認する。
 
 ```bash
-.agents/skills/address-review-comment/scripts/fetch-review-state.sh --unresolved <pull-request-number-or-url>
+.agents/skills/address-review-comment/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
+
+出力の `unresolvedReviewThreads` が空配列であれば、GitHub 上で解決済みになっていないレビュー会話は残っていない。
 
 ### 7. 延期用 Issue を作成する
 
