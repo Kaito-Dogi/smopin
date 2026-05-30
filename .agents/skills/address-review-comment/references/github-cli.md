@@ -74,9 +74,8 @@ query($owner: String!, $name: String!, $number: Int!) {\
 inline review thread には、対象 thread の最新の関連 review comment ID に返信する。
 
 ```bash
-gh api repos/<owner>/<repo>/pulls/<pr-number>/comments \
-  -f body='<reply body>' \
-  -F in_reply_to='<review-comment-database-id>'
+gh api repos/<owner>/<repo>/pulls/comments/<review-comment-database-id>/replies \
+  -f body='<reply body>'
 ```
 
 GraphQL node ID しか手元にない場合は、返信前に GraphQL で REST API 用の `databaseId` を取得する。

@@ -19,13 +19,13 @@ fi
 pr_arg="${1:-}"
 
 if [[ -n "$pr_arg" ]]; then
-  pr_json=$(gh pr view "$pr_arg" --json number,url,headRepositoryOwner,headRepository,baseRepository,headRefName,baseRefName,title,state)
+  pr_json=$(gh pr view "$pr_arg" --json number,url,headRefName,baseRefName,title,state)
 else
-  pr_json=$(gh pr view --json number,url,headRepositoryOwner,headRepository,baseRepository,headRefName,baseRefName,title,state)
+  pr_json=$(gh pr view --json number,url,headRefName,baseRefName,title,state)
 fi
 
-owner=$(jq -r '.baseRepository.owner.login' <<<"$pr_json")
-repo=$(jq -r '.baseRepository.name' <<<"$pr_json")
+owner=$(jq -r '.url | split("/") | .[3]' <<<"$pr_json")
+repo=$(jq -r '.url | split("/") | .[4]' <<<"$pr_json")
 number=$(jq -r '.number' <<<"$pr_json")
 
 threads_json=$(gh api graphql \
