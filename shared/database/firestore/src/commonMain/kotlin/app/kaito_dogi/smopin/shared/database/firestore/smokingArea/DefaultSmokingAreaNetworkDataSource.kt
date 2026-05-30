@@ -17,13 +17,15 @@ internal class DefaultSmokingAreaNetworkDataSource(
   override suspend fun getSmokingAreaList(): List<SmokingAreaDataModel> = withContext(context = ioDispatcher) {
     Firebase.firestore.collection(collectionPath = SMOKING_AREA_COLLECTION).get()
       .documents
-      .map { documentSnapshot ->
-        val rawDocument = SmokingAreaRawDocument(
-          name = documentSnapshot.get(field = "name"),
-          latitude = documentSnapshot.get(field = "latitude"),
-          longitude = documentSnapshot.get(field = "longitude"),
-        )
-        SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+      .mapNotNull { documentSnapshot ->
+        runCatching {
+          val rawDocument = SmokingAreaRawDocument(
+            name = documentSnapshot.get<String?>(field = "name"),
+            latitude = documentSnapshot.get<Double?>(field = "latitude"),
+            longitude = documentSnapshot.get<Double?>(field = "longitude"),
+          )
+          SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+        }.getOrNull()
       }
   }
 
@@ -33,15 +35,20 @@ internal class DefaultSmokingAreaNetworkDataSource(
 }
 
 internal data class SmokingAreaRawDocument(
-  val name: String,
-  val latitude: Double,
-  val longitude: Double,
+  val name: String?,
+  val latitude: Double?,
+  val longitude: Double?,
 )
 
 internal object SmokingAreaRawDocumentMapper {
-  fun toDataModel(smokingAreaRawDocument: SmokingAreaRawDocument) = SmokingAreaDataModel(
-    name = smokingAreaRawDocument.name,
-    latitude = smokingAreaRawDocument.latitude,
-    longitude = smokingAreaRawDocument.longitude,
-  )
+  fun toDataModel(smokingAreaRawDocument: SmokingAreaRawDocument): SmokingAreaDataModel? {
+    val name = smokingAreaRawDocument.name ?: return null
+    val latitude = smokingAreaRawDocument.latitude ?: return null
+    val longitude = smokingAreaRawDocument.longitude ?: return null
+    return SmokingAreaDataModel(
+      name = name,
+      latitude = latitude,
+      longitude = longitude,
+    )
+  }
 }
