@@ -1,0 +1,4 @@
+interface:
+  display_name: "レビューコメント対応サイクル"
+  short_description: "人間とAIのレビューコメント取得、修正、push、再レビュー依頼を支援するSkill"
+  default_prompt: "Use $address-review-comment-cycle: このプルリクエストの未解決レビューコメントに対応し、必要ならAIエージェントへ再レビューを依頼してください。"

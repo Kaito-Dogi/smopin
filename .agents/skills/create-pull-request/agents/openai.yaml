@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Pull Request"
+  short_description: "プロジェクトの Git 運用に沿って PR を作成する"
+  default_prompt: "$create-pull-request を使って、現在の変更からプルリクエストを作成してください。"
