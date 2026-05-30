@@ -1,17 +1,17 @@
 package app.kaito_dogi.smopin
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import app.kaito_dogi.smopin.feature.counter.CounterEntry
@@ -24,7 +24,9 @@ internal fun App(
   viewModelFactory: MetroViewModelFactory,
 ) {
   CompositionLocalProvider(value = LocalMetroViewModelFactory provides viewModelFactory) {
-    val topLevelBackStack = remember { TopLevelBackStack<ScreenRoute>(ScreenRoute.Map) }
+    val topLevelBackStack = rememberSaveable(saver = TopLevelBackStack.Saver) {
+      TopLevelBackStack(startRoute = ScreenRoute.Map)
+    }
 
     Scaffold(
       bottomBar = {
@@ -40,13 +42,18 @@ internal fun App(
           }
         }
       },
-    ) { _ ->
+    ) { innerPadding ->
       NavDisplay(
+        modifier = Modifier.padding(innerPadding),
         backStack = topLevelBackStack.backStack,
         onBack = { topLevelBackStack.removeLast() },
         entryProvider = entryProvider {
-          entry<ScreenRoute.Map> { MapEntry() }
-          entry<ScreenRoute.Counter> { CounterEntry() }
+          entry<ScreenRoute> { screenRoute ->
+            when (screenRoute) {
+              ScreenRoute.Map -> MapEntry()
+              ScreenRoute.Counter -> CounterEntry()
+            }
+          }
         },
       )
     }
@@ -58,36 +65,42 @@ private enum class ScreenRoute(val label: String) {
   Counter(label = "counter"),
 }
 
-private class TopLevelBackStack<T : Any>(startKey: T) {
-  private val topLevelStackMap: LinkedHashMap<T, SnapshotStateList<T>> = linkedMapOf(startKey to mutableStateListOf(startKey))
-
-  var topLevelKey by mutableStateOf(startKey)
-    private set
-
-  val backStack = mutableStateListOf(startKey)
-
-  fun addTopLevel(key: T) {
-    if (topLevelStackMap[key] == null) {
-      topLevelStackMap[key] = mutableStateListOf(key)
-    } else {
-      topLevelStackMap.remove(key)?.let { topLevelStack ->
-        topLevelStackMap[key] = topLevelStack
-      }
+private class TopLevelBackStack(
+  startRoute: ScreenRoute,
+  routeHistory: List<ScreenRoute> = listOf(startRoute),
+) {
+  val backStack: SnapshotStateList<ScreenRoute> = mutableStateListOf<ScreenRoute>()
+    .apply {
+      addAll(elements = routeHistory.ifEmpty { listOf(startRoute) })
     }
-    topLevelKey = key
-    updateBackStack()
+
+  val topLevelKey: ScreenRoute
+    get() = backStack.last()
+
+  fun addTopLevel(key: ScreenRoute) {
+    if (key == topLevelKey) return
+
+    backStack.remove(element = key)
+    backStack.add(element = key)
   }
 
   fun removeLast() {
-    val removedKey = topLevelStackMap[topLevelKey]?.removeLastOrNull() ?: return
-    if (topLevelStackMap.size == 1 && removedKey == topLevelKey) return
-    topLevelStackMap.remove(removedKey)
-    topLevelKey = topLevelStackMap.keys.last()
-    updateBackStack()
+    if (backStack.size > 1) {
+      backStack.removeAt(index = backStack.lastIndex)
+    }
   }
 
-  private fun updateBackStack() {
-    backStack.clear()
-    backStack.addAll(topLevelStackMap.values.flatten())
+  companion object {
+    val Saver = listSaver<TopLevelBackStack, String>(
+      save = { topLevelBackStack ->
+        topLevelBackStack.backStack.map(transform = ScreenRoute::name)
+      },
+      restore = { routeNameList ->
+        TopLevelBackStack(
+          startRoute = ScreenRoute.Map,
+          routeHistory = routeNameList.map(transform = ScreenRoute::valueOf),
+        )
+      },
+    )
   }
 }

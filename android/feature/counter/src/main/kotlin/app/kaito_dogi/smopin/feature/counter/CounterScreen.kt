@@ -8,18 +8,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 
 @Composable
-internal fun CounterEntry() = Box(
+fun CounterEntry() = Box(
   modifier = Modifier
     .fillMaxSize()
-    .background(Color.White),
+    .background(color = MaterialTheme.colorScheme.surface),
   contentAlignment = Alignment.Center,
 ) {
   Text(
     text = ":feature:counter",
     style = MaterialTheme.typography.headlineMedium,
-    color = Color.Black,
+    color = MaterialTheme.colorScheme.onSurface,
   )
 }
