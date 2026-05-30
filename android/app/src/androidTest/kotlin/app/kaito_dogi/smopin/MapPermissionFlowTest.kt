@@ -3,6 +3,7 @@ package app.kaito_dogi.smopin
 import android.os.Build
 import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -44,9 +45,6 @@ class MapPermissionFlowTest {
       By.res(permissionPackage, "permission_allow_foreground_only_button"),
       By.res(permissionPackage, "permission_allow_one_time_button"),
       By.res(permissionPackage, "permission_allow_button"),
-      By.textContains("While using"),
-      By.textContains("使用中のみ"),
-      By.textContains("許可"),
     )
 
     candidates.firstNotNullOfOrNull { selector -> device.findObject(selector) }?.click()
