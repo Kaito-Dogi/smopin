@@ -44,6 +44,12 @@ gh pr view --json number,url,headRefName,baseRefName,title,state
 .agents/skills/address-review-comment/scripts/fetch-review-state.sh <pull-request-number-or-url>
 ```
 
+未解決のレビュー会話だけを確認する場合は、次を使う。
+
+```bash
+.agents/skills/address-review-comment/scripts/fetch-review-state.sh --unresolved <pull-request-number-or-url>
+```
+
 確認対象は次の順に優先する。
 
 1. 未解決のレビュー会話
@@ -97,6 +103,12 @@ git push origin HEAD
 - 延期する場合: 作成した Issue URL と、なぜ今回扱わないかを書く。
 
 返信後、解決できるレビュー会話を解決済みにする。詳細な `gh` 操作が必要な場合は `references/github-cli.md` を読む。
+
+解決操作後は、未解決のレビュー会話が残っていないことを確認する。
+
+```bash
+.agents/skills/address-review-comment/scripts/fetch-review-state.sh --unresolved <pull-request-number-or-url>
+```
 
 ### 7. 延期用 Issue を作成する
 

@@ -3,11 +3,13 @@ set -euo pipefail
 
 usage() {
   cat >&2 <<'USAGE'
-使い方: fetch-review-state.sh [<pull-request-number-or-url>]
+使い方: fetch-review-state.sh [--unresolved] [<pull-request-number-or-url>]
 
 プルリクエストのメタデータ、レビュー会話、プルリクエストコメント、レビュー要約を
 1 つの JSON として出力します。プルリクエスト引数を省略した場合は、gh が現在の
 ブランチからプルリクエストを推測します。
+
+--unresolved を指定した場合は、未解決のレビュー会話だけを TSV で出力します。
 USAGE
 }
 
@@ -23,7 +25,25 @@ for cmd in gh jq; do
   fi
 done
 
-pr_arg="${1:-}"
+unresolved_only=false
+pr_arg=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --unresolved)
+      unresolved_only=true
+      shift
+      ;;
+    *)
+      if [[ -n "$pr_arg" ]]; then
+        usage
+        exit 1
+      fi
+      pr_arg="$1"
+      shift
+      ;;
+  esac
+done
 
 if [[ -n "$pr_arg" ]]; then
   pr_json=$(gh pr view "$pr_arg" --json number,url,headRefName,baseRefName,title,state)
@@ -115,4 +135,17 @@ fi
 jq -n \
   --argjson pr "$pr_json" \
   --argjson reviewState "$threads_json" \
-  '{ pullRequest: $pr, reviewState: ($reviewState | .data?.repository?.pullRequest // null) }'
+  '{ pullRequest: $pr, reviewState: ($reviewState | .data?.repository?.pullRequest // null) }' |
+  if [[ "$unresolved_only" == true ]]; then
+    jq -r '.reviewState.reviewThreads.nodes[]
+      | select(.isResolved == false)
+      | [
+          .id,
+          .path,
+          ((.comments.nodes[0].databaseId // "") | tostring),
+          (.comments.nodes[0].url // "")
+        ]
+      | @tsv'
+  else
+    cat
+  fi
