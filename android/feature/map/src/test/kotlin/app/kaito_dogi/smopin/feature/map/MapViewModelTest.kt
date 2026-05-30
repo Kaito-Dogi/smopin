@@ -6,17 +6,35 @@ import app.kaito_dogi.smopin.shared.domain.smokingArea.location.LocationReposito
 import app.kaito_dogi.smopin.shared.domain.smokingArea.location.Longitude
 import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingArea
 import app.kaito_dogi.smopin.shared.domain.smokingArea.smokingArea.SmokingAreaRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Duration
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MapViewModelTest {
+  @BeforeTest
+  fun setUp() {
+    Dispatchers.setMain(dispatcher = UnconfinedTestDispatcher())
+  }
+
+  @AfterTest
+  fun tearDown() {
+    Dispatchers.resetMain()
+  }
+
   @Test
   fun `onCreate success then uiState contains smoking area list`() = runTest {
     val expectedSmokingAreaList = listOf(

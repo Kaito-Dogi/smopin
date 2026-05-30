@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,7 +43,8 @@ class MapViewModel(
         is MapViewModelState.LocationPermission.Granted -> locationRepository.getCurrentLocationStream(
           isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
-        )
+        ).map<Location, Location?> { location -> location }
+          .onStart { emit(value = null) }
 
         MapViewModelState.LocationPermission.Denied, MapViewModelState.LocationPermission.NotRequested -> flowOf(value = null)
       }
