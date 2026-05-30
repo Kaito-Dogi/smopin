@@ -96,6 +96,8 @@ gh api graphql \
   -f query='mutation($threadId: ID!) { resolveReviewThread(input: { threadId: $threadId }) { thread { id isResolved } } }'
 ```
 
+`gh api graphql` が認証や権限で失敗する場合は、`references/github-connector.md` を確認する。
+
 ## Gemini Code Assist に再レビューを依頼する
 
 ```bash
