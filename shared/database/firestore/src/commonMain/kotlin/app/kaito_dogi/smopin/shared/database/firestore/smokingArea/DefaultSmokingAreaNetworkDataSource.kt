@@ -24,7 +24,7 @@ internal class DefaultSmokingAreaNetworkDataSource(
             latitude = documentSnapshot.get<Double?>(field = "latitude"),
             longitude = documentSnapshot.get<Double?>(field = "longitude"),
           )
-          SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+          rawDocument.toDataModel()
         }.getOrNull()
       }
   }
@@ -40,15 +40,13 @@ internal data class SmokingAreaRawDocument(
   val longitude: Double?,
 )
 
-internal object SmokingAreaRawDocumentMapper {
-  fun toDataModel(smokingAreaRawDocument: SmokingAreaRawDocument): SmokingAreaDataModel? {
-    val name = smokingAreaRawDocument.name ?: return null
-    val latitude = smokingAreaRawDocument.latitude ?: return null
-    val longitude = smokingAreaRawDocument.longitude ?: return null
-    return SmokingAreaDataModel(
-      name = name,
-      latitude = latitude,
-      longitude = longitude,
-    )
-  }
+internal fun SmokingAreaRawDocument.toDataModel(): SmokingAreaDataModel? {
+  val name = name ?: return null
+  val latitude = latitude ?: return null
+  val longitude = longitude ?: return null
+  return SmokingAreaDataModel(
+    name = name,
+    latitude = latitude,
+    longitude = longitude,
+  )
 }

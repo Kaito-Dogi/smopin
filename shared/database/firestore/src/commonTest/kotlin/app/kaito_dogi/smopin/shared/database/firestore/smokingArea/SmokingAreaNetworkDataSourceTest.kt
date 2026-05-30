@@ -13,7 +13,7 @@ internal class SmokingAreaNetworkDataSourceTest {
       longitude = 2.0,
     )
 
-    val actual = SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+    val actual = rawDocument.toDataModel()
 
     assertEquals(
       expected = SmokingAreaDataModel(
@@ -33,7 +33,7 @@ internal class SmokingAreaNetworkDataSourceTest {
       longitude = 2.0,
     )
 
-    val actual = SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+    val actual = rawDocument.toDataModel()
 
     assertEquals(expected = null, actual = actual)
   }
@@ -46,7 +46,7 @@ internal class SmokingAreaNetworkDataSourceTest {
       longitude = 2.0,
     )
 
-    val actual = SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+    val actual = rawDocument.toDataModel()
 
     assertEquals(expected = null, actual = actual)
   }
@@ -59,7 +59,7 @@ internal class SmokingAreaNetworkDataSourceTest {
       longitude = null,
     )
 
-    val actual = SmokingAreaRawDocumentMapper.toDataModel(smokingAreaRawDocument = rawDocument)
+    val actual = rawDocument.toDataModel()
 
     assertEquals(expected = null, actual = actual)
   }
