@@ -1,16 +1,16 @@
 ---
 name: address-review-comment
-description: Pull Request のレビューコメント対応を行う Skill。GitHub の review thread と PR コメントを取得し、指摘を修正または説明し、commit・push して、Gemini Code Assist などへ再レビューを依頼する。ユーザーが「レビューコメントに対応して」「Gemini Code Assist の指摘を直して」「PR の未解決レビューを処理して」「修正後に /gemini review して」などを依頼したときに使用する。
+description: プルリクエスト（PR）のレビューコメント対応を行う Skill。GitHub の review thread とプルリクエストコメントを取得し、指摘を修正または説明し、commit・push して、Gemini Code Assist などへ再レビューを依頼する。ユーザーが「レビューコメントに対応して」「Gemini Code Assist の指摘を直して」「プルリクエストの未解決レビューを処理して」「修正後に /gemini review して」などを依頼したときに使用する。
 ---
 
 # Address Review Comment
 
 ## 概要
 
-Pull Request のレビューコメント対応を、次のループとして実行する。
+プルリクエスト（PR）のレビューコメント対応を、次のループとして実行する。
 
-1. 対象 PR を特定する。
-2. 未解決の review thread と PR コメントを取得する。
+1. 対象プルリクエストを特定する。
+2. 未解決の review thread とプルリクエストコメントを取得する。
 3. コメントを確認し、修正するか説明で返すか判断する。
 4. 必要なファイルを修正し、検証する。
 5. 変更を commit して push する。
@@ -21,22 +21,22 @@ Pull Request のレビューコメント対応を、次のループとして実�
 
 ## リソース
 
-- `scripts/fetch-review-state.sh`: PR メタデータ、review thread、PR コメント、review summary を JSON で取得する。
+- `scripts/fetch-review-state.sh`: プルリクエストのメタデータ、review thread、プルリクエストコメント、review summary を JSON で取得する。
 - `references/github-cli.md`: スクリプトだけでは足りない場合の `gh` コマンド例を確認する。
 
 まずはスクリプトを使い、失敗した場合や thread 返信・resolve などの個別操作が必要な場合だけリファレンスを読む。
 
 ## ワークフロー
 
-### 1. 対象 PR を特定する
+### 1. 対象プルリクエストを特定する
 
-ユーザーが PR 番号または URL を指定している場合は、それを使う。指定がない場合は現在のブランチに紐づく PR を確認する。
+ユーザーがプルリクエスト番号または URL を指定している場合は、それを使う。指定がない場合は現在のブランチに紐づくプルリクエストを確認する。
 
 ```bash
 gh pr view --json number,url,headRefName,baseRefName,title,state
 ```
 
-PR を 1 つに特定できない場合は、作業を進める前にユーザーへ PR 番号または URL を確認する。
+プルリクエストを 1 つに特定できない場合は、作業を進める前にユーザーへプルリクエスト番号または URL を確認する。
 
 ### 2. レビュー状態を取得する
 
@@ -49,7 +49,7 @@ PR を 1 つに特定できない場合は、作業を進める前にユーザ�
 確認対象は次の順に優先する。
 
 1. 未解決の review thread
-2. 具体的な修正要求を含む PR コメント
+2. 具体的な修正要求を含むプルリクエストコメント
 3. review summary に含まれる具体的な修正要求
 
 解決済み thread、単なる要約、対応不要な通知は作業対象にしない。
@@ -58,9 +58,9 @@ PR を 1 つに特定できない場合は、作業を進める前にユーザ�
 
 各コメントを次のどれかに分類する。
 
-- **修正する**: 指摘が妥当で、今回の PR で直せる。
+- **修正する**: 指摘が妥当で、今回のプルリクエストで直せる。
 - **説明する**: 現在の内容が正しい、または指摘の前提が誤っている。
-- **延期する**: 指摘は妥当だが、今回の PR 範囲外または対応規模が大きい。
+- **延期する**: 指摘は妥当だが、今回のプルリクエスト範囲外または対応規模が大きい。
 
 延期する場合は、なぜ今やらないのかを具体的に返信する。
 
@@ -79,7 +79,7 @@ git diff --check
 
 ### 5. commit して push する
 
-変更を commit し、PR ブランチへ push する。push 前に再レビューを依頼してはならない。
+変更を commit し、プルリクエストブランチへ push する。push 前に再レビューを依頼してはならない。
 
 ```bash
 git status --short

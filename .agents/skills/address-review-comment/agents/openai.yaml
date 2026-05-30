@@ -1,4 +1,4 @@
 interface:
   display_name: "レビューコメント対応"
-  short_description: "PRレビューコメントの取得、修正、push、再レビュー依頼を支援するSkill"
-  default_prompt: "Use $address-review-comment: この Pull Request の未解決レビューコメントに対応してください。"
+  short_description: "プルリクエストのレビューコメント取得、修正、push、再レビュー依頼を支援するSkill"
+  default_prompt: "Use $address-review-comment: このプルリクエストの未解決レビューコメントに対応してください。"
