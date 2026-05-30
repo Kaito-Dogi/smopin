@@ -6,9 +6,11 @@
 
 ## 基本方針
 
-本プロジェクトのコミット規約は Conventional Commits をベースとする。
+コミットメッセージは日本語で記述する。
 
-参考: [Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
+コミット規約は Conventional Commits をベースとする。
+
+参考：[Conventional Commits 1.0.0](https://www.conventionalcommits.org/ja/v1.0.0/)
 
 ## 形式
 
