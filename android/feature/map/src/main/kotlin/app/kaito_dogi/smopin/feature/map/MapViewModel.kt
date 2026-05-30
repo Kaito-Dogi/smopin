@@ -43,8 +43,7 @@ class MapViewModel(
         is MapViewModelState.LocationPermission.Granted -> locationRepository.getCurrentLocationStream(
           isPrecise = locationPermission.isPrecise,
           intervalDuration = 1.seconds,
-        ).map { it as Location? }
-          .onStart { emit(value = null) }
+        ).onStart<Location?> { emit(value = null) }
 
         MapViewModelState.LocationPermission.Denied, MapViewModelState.LocationPermission.NotRequested -> flowOf(value = null)
       }
