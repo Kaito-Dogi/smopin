@@ -10,8 +10,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -97,10 +100,11 @@ class MapViewModelTest {
       locationRepository = FakeLocationRepository(),
       smokingAreaRepository = FakeSmokingAreaRepository(),
     )
+    val uiStateList = collectUiStateList(mapViewModel = mapViewModel)
 
     mapViewModel.onLocationPermissionGranted(isPrecise = true)
 
-    assertIs<MapUiState.PermissionGranted.LocationLoading>(mapViewModel.uiState.first())
+    assertIs<MapUiState.PermissionGranted.LocationLoading>(uiStateList.last())
   }
 
   @Test
@@ -110,12 +114,14 @@ class MapViewModelTest {
       locationRepository = locationRepository,
       smokingAreaRepository = FakeSmokingAreaRepository(),
     )
+    val uiStateList = collectUiStateList(mapViewModel = mapViewModel)
 
     mapViewModel.onLocationPermissionGranted(isPrecise = false)
     locationRepository.emitCurrentLocation(LOCATION_A)
 
-    val uiState = mapViewModel.uiState.first { it is MapUiState.PermissionGranted.LocationSuccess }
-    assertEquals(expected = LOCATION_A, actual = (uiState as MapUiState.PermissionGranted.LocationSuccess).currentLocation)
+    val uiState = uiStateList.last()
+    assertIs<MapUiState.PermissionGranted.LocationSuccess>(uiState)
+    assertEquals(expected = LOCATION_A, actual = uiState.currentLocation)
   }
 
   @Test
@@ -125,13 +131,23 @@ class MapViewModelTest {
       locationRepository = locationRepository,
       smokingAreaRepository = FakeSmokingAreaRepository(),
     )
+    val uiStateList = collectUiStateList(mapViewModel = mapViewModel)
 
     mapViewModel.onLocationPermissionGranted(isPrecise = true)
     locationRepository.emitCurrentLocation(LOCATION_B)
     mapViewModel.onCameraPositionAdjust()
 
-    val uiState = mapViewModel.uiState.first { it is MapUiState.PermissionGranted.LocationSuccess }
-    assertEquals(expected = true, actual = (uiState as MapUiState.PermissionGranted.LocationSuccess).isCameraPositionAdjusted)
+    val uiState = uiStateList.last()
+    assertIs<MapUiState.PermissionGranted.LocationSuccess>(uiState)
+    assertEquals(expected = true, actual = uiState.isCameraPositionAdjusted)
+  }
+
+  private fun TestScope.collectUiStateList(mapViewModel: MapViewModel): MutableList<MapUiState> {
+    val uiStateList = mutableListOf<MapUiState>()
+    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+      mapViewModel.uiState.collect(uiStateList::add)
+    }
+    return uiStateList
   }
 
   private class FakeLocationRepository : LocationRepository {
