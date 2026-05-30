@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.kaito_dogi.smopin.feature.map.effect.AdjustCameraPositionEffect
@@ -27,6 +28,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 private val DEFAULT_CAMERA_POSITION_TARGET = LatLng(35.6905, 139.6995)
 private const val DEFAULT_CAMERA_POSITION_ZOOM = 17f
+internal const val TEST_TAG_MAP = "map"
+internal const val TEST_TAG_LOADING = "mapLoading"
 
 @Composable
 internal fun MapScreen(
@@ -78,6 +81,7 @@ private fun MapScreen(
   modifier = modifier.fillMaxSize(),
 ) { innerPadding ->
   GoogleMap(
+    modifier = Modifier.testTag(TEST_TAG_MAP),
     cameraPositionState = cameraPositionState,
     properties = MapProperties(isMyLocationEnabled = uiState is MapUiState.PermissionGranted),
     onMapLoaded = onMapLoad,
@@ -97,7 +101,9 @@ private fun MapScreen(
 
   if (!uiState.isMapLoaded) {
     Box(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier
+        .fillMaxSize()
+        .testTag(TEST_TAG_LOADING),
       contentAlignment = Alignment.Center,
     ) {
       CircularProgressIndicator()
