@@ -161,11 +161,21 @@ gh issue create \
 
 push 後に Gemini Code Assist などの AI エージェントへレビューを依頼または再依頼する。GitHub connector と `gh` のどちらを使ってもよい。
 
+GitHub connector のコメント投稿例：
+
+```text
+mcp__codex_apps__github._add_comment_to_issue
+```
+
+- `repo_full_name`：`owner/name`
+- `pr_number`：プルリクエスト番号
+- `comment`：`/gemini review`
+
+`gh` のコメント投稿例：
+
 ```bash
 gh pr comment <pull-request-number-or-url> --body "/gemini review"
 ```
-
-GitHub connector を使う場合は、プルリクエスト会話へのトップレベルコメントとして `/gemini review` を投稿する。
 
 ### 9. 追加コメントを確認する
 

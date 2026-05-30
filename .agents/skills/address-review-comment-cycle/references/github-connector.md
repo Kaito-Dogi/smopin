@@ -65,5 +65,9 @@ mcp__codex_apps__github._resolve_review_thread
 ## 注意
 
 - 返信を先に投稿してから解決する
+- パラメータ名は実際の connector schema に合わせる
+- `mcp__codex_apps__github._create_pull_request` と `mcp__codex_apps__github._create_issue` では `repository_full_name` を使う
+- `mcp__codex_apps__github._reply_to_review_comment` と `mcp__codex_apps__github._add_comment_to_issue` では `repo_full_name` を使う
+- `mcp__codex_apps__github._add_comment_to_issue` はプルリクエスト会話への投稿でも schema 上の `pr_number` を使う
 - GitHub connector に存在しない操作や、現在のセッションで tool が公開されていない操作だけ `gh` を使う
 - GitHub connector が使えない場合は、GitHub 上で手動対応するか、`gh` の認証スコープを見直す

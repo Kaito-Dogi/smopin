@@ -28,13 +28,13 @@ description: このリポジトリの Git 運用に沿って GitHub プルリク
 6. 最小限で有効な検証を先に実行し、変更範囲に応じてより広い検証を実行する
 7. `docs/convention-commit.md` に従って Conventional Commits 形式でコミットする
 8. ブランチを push する
-9. `gh` を使う可能性がある場合は `mkdir -p /tmp/pr-body` を実行する
-10. プルリクエスト本文を作成する。`gh` を使う場合は、`/tmp/pr-body/ISSUE-{issue-number}.md` に保存する
+9. `mkdir -p /tmp/pr-body` を実行する
+10. プルリクエスト本文を作成し、`/tmp/pr-body/ISSUE-{issue-number}.md` に保存する
 11. ユーザーが明示的に止めていない限り、追加の指示を待たずにプルリクエストを作成する
 
 ## プルリクエスト作成
 
-プルリクエスト作成には GitHub connector の `_create_pull_request` または `gh pr create` を使用する。
+プルリクエスト作成には GitHub connector の `mcp__codex_apps__github._create_pull_request` または `gh pr create` を使用する。
 
 Codex アプリでは `gh` が不安定なことがあるため、GitHub connector を `gh` と同格のデフォルト選択肢として扱う。特に、Codex アプリからそのまま GitHub へ操作を送る場合は、GitHub connector を優先してよい。
 

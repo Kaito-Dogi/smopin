@@ -104,7 +104,7 @@ gh api graphql \
 gh pr comment <pull-request-number-or-url> --body "/gemini review"
 ```
 
-GitHub connector を使う場合は、`_add_comment_to_issue` で同じ本文を投稿する。
+GitHub connector を使う場合は、`mcp__codex_apps__github._add_comment_to_issue` で同じ本文を投稿する。
 
 ## ポーリング方針
 
